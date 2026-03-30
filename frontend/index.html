@@ -4,75 +4,96 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IP 军火库 · 知识资产管理平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ─── Reset & Variables ───────────────────────────────── */
+/* ─── Siftly-style Dark Theme Variables ───────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg: #ffffff;
-  --bg2: #f8f9fa;
-  --bg3: #f1f3f4;
-  --border: #e8eaed;
-  --border2: #dadce0;
-  --text: #202124;
-  --text2: #5f6368;
-  --text3: #9aa0a6;
-  --accent: #4285f4;
-  --accent2: #1a73e8;
-  --accent-glow: rgba(66,133,244,0.15);
-  --green: #34a853;
-  --orange: #fbbc04;
-  --red: #ea4335;
-  --yellow: #fbbc04;
-  --blue: #4285f4;
-  --pink: #e91e63;
-  --cyan: #00bcd4;
-  --r: 10px;
+  /* Siftly-style zinc dark palette */
+  --bg: #09090b;
+  --bg2: #18181b;
+  --bg3: #27272a;
+  --border: #3f3f46;
+  --border2: #52525b;
+  --text: #fafafa;
+  --text2: #a1a1aa;
+  --text3: #71717a;
+
+  /* Brand colors - Siftly style */
+  --accent: #4A90D9;
+  --accent2: #3B82F6;
+  --accent-glow: rgba(74, 144, 217, 0.12);
+  --brand-orange: #F5A623;
+  --brand-navy: #1E3A6E;
+
+  /* Semantic colors */
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+  --pink: #f472b6;
+  --cyan: #22d3ee;
+
+  /* Siftly-style radius & shadow */
+  --r: 12px;
   --r2: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+  --shadow: 0 4px 16px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 }
-/* ─── Dark Theme ─────────────────────────────────────── */
-html.dark {
-  --bg: #1f1f1f;
-  --bg2: #2d2d2d;
-  --bg3: #3d3d3d;
-  --border: #444444;
-  --border2: #555555;
-  --text: #e8eaed;
-  --text2: #9aa0a6;
-  --text3: #5f6368;
-  --accent: #8ab4f8;
-  --accent2: #669df6;
-  --accent-glow: rgba(138,180,248,0.15);
-  --green: #81c995;
-  --orange: #fcc934;
-  --red: #f28b82;
-  --yellow: #fdd663;
-  --blue: #8ab4f8;
-  --pink: #f48fb1;
-  --cyan: #80deea;
-  --shadow: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+
+/* Light mode - Siftly inverted zinc scale */
+html.light {
+  --bg: #f4f4f5;
+  --bg2: #ffffff;
+  --bg3: #e4e4e7;
+  --border: #d4d4d8;
+  --border2: #a1a1aa;
+  --text: #18181b;
+  --text2: #52525b;
+  --text3: #71717a;
+  --shadow: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
 }
+
 html.dark ::-webkit-scrollbar-thumb { background: var(--border2); }
 
-/* Theme toggle button */
+/* Theme toggle button - Siftly style */
 .theme-toggle {
-  width: 34px; height: 34px;
-  border-radius: 50%;
+  width: 30px; height: 30px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--bg2);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
   transition: all 0.2s;
   flex-shrink: 0;
 }
-.theme-toggle:hover { background: var(--bg3); transform: scale(1.08); }
+.theme-toggle:hover { background: var(--bg3); }
+
+/* Language toggle */
+.lang-toggle {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text2);
+  transition: all 0.2s;
+}
+.lang-toggle:hover { background: var(--bg3); color: var(--text); }
 
 html { scroll-behavior: smooth; }
 body {
-  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -81,118 +102,91 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
-/* ─── Layout ──────────────────────────────────────────── */
+/* ─── Layout - Siftly Style ─────────────────────────────────────────── */
 #app { display: flex; height: 100vh; overflow: hidden; }
 
-/* Sidebar */
+/* Sidebar - Siftly zinc-900 style */
 .sidebar {
-  width: 240px;
-  min-width: 240px;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
+  width: 228px;
+  min-width: 228px;
+  background: #18181b;
+  border-right: 1px solid #27272a;
   display: flex;
   flex-direction: column;
-  padding: 6px 6px 12px;
-  gap: 1px;
+  padding: 0;
+  gap: 0;
   overflow-y: auto;
-  /* Notion-like smooth feel */
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 .sidebar-logo {
   display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px 14px;
-  margin-bottom: 4px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #27272a;
 }
 .sidebar-logo .logo-icon {
-  width: 26px; height: 26px; border-radius: 6px;
-  background: linear-gradient(135deg, #4285f4, #7c5cfc);
+  width: 32px; height: 32px; border-radius: 8px;
+  background: linear-gradient(135deg, #4A90D9, #F5A623);
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
+  font-size: 16px;
   flex-shrink: 0;
 }
-.sidebar-logo .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
-.sidebar-logo .logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; font-weight: 400; }
+.sidebar-logo .logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: #fafafa; }
+.sidebar-logo .logo-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
 
-/* Notion-style nav items */
+/* Siftly-style nav items */
 .nav-item {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 10px;
-  border-radius: 6px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  margin: 2px 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  color: var(--text2);
+  font-size: 13px;
+  font-weight: 500;
+  color: #71717a;
   user-select: none;
-  position: relative;
-  /* Super smooth transitions - Notion's signature feel */
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-  will-change: background, color;
+  transition: all 0.15s ease;
 }
 .nav-item:hover {
-  background: var(--bg3);
-  color: var(--text);
-  transform: translateX(1px);
+  background: rgba(255,255,255,0.05);
+  color: #e4e4e7;
 }
 .nav-item.active {
-  background: var(--accent-glow);
-  color: var(--accent);
-  font-weight: 500;
-}
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 60%;
-  background: var(--accent);
-  border-radius: 0 3px 3px 0;
-  opacity: 0.8;
+  background: rgba(74, 144, 217, 0.12);
+  color: #60a5fa;
 }
 .nav-item .nav-icon {
-  font-size: 16px;
-  width: 22px;
+  font-size: 15px;
+  width: 20px;
   text-align: center;
   flex-shrink: 0;
-  /* Subtle scale on hover */
-  transition: transform 0.15s ease;
-}
-.nav-item:hover .nav-icon {
-  transform: scale(1.05);
 }
 .nav-section {
-  font-size: 11px;
-  color: var(--text3);
-  padding: 12px 10px 4px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
+  font-size: 10px;
+  color: #52525b;
+  padding: 16px 18px 6px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
-/* Notion-style stats at bottom */
+/* Stats at bottom - Siftly style */
 .sidebar-stats {
   margin-top: auto;
-  padding: 10px 12px;
-  background: var(--bg3);
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  margin: 12px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #27272a;
+  border-radius: 10px;
 }
 .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; }
 .stat-row:last-child { margin-bottom: 0; }
-.stat-label { color: var(--text3); }
-.stat-val { color: var(--accent); font-weight: 600; font-size: 13px; }
-
-/* Notion-style ultra-thin scrollbar */
-.sidebar::-webkit-scrollbar { width: 6px; }
-.sidebar::-webkit-scrollbar-track { background: transparent; }
-.sidebar::-webkit-scrollbar-thumb {
-  background: var(--border2);
-  border-radius: 3px;
-}
-.sidebar::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+.stat-label { color: #71717a; }
+.stat-val { color: #60a5fa; font-weight: 600; font-size: 13px; }
 
 /* Main content */
 .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -200,104 +194,110 @@ body {
   height: 56px; min-height: 56px;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 24px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid #27272a;
   background: var(--bg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
-.topbar-title { font-size: 18px; font-weight: 500; color: var(--text); }
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--text); }
 .topbar-right { display: flex; align-items: center; gap: 8px; }
 
-/* AI 模型按钮 */
+/* AI model button - Siftly style */
 .ai-model-btn {
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  color: var(--text2);
-  border-radius: 20px;
-  padding: 6px 14px;
+  border: 1px solid #3f3f46;
+  background: #27272a;
+  color: #a1a1aa;
+  border-radius: 8px;
+  padding: 6px 12px;
   font-size: 12px;
-  gap: 5px;
+  gap: 6px;
   transition: all 0.2s;
-  min-width: 90px;
+  font-weight: 500;
 }
-.ai-model-btn:hover { background: var(--bg2); }
+.ai-model-btn:hover { background: #3f3f46; color: #e4e4e7; }
 
 .content { flex: 1; overflow-y: auto; padding: 24px; }
 
-/* ─── Buttons ─────────────────────────────────────────── */
+/* ─── Buttons - Siftly Style ─────────────────────────────────────────── */
 .btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: var(--r2);
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; border-radius: 10px;
   font-size: 13px; font-weight: 500;
   cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
   white-space: nowrap;
 }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent2); box-shadow: var(--shadow); }
-.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--text3); }
-.btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
-.btn-danger:hover { background: rgba(234,67,53,0.08); }
-.btn-sm { padding: 6px 12px; font-size: 12px; }
-.btn-icon { padding: 8px; font-size: 14px; }
+.btn-primary { background: #2563EB; color: #fff; }
+.btn-primary:hover { background: #3B82F6; }
+.btn-ghost { background: transparent; color: #a1a1aa; border: 1px solid #3f3f46; }
+.btn-ghost:hover { background: #27272a; color: #e4e4e7; border-color: #52525b; }
+.btn-danger { background: transparent; color: #f87171; border: 1px solid #3f3f46; }
+.btn-danger:hover { background: rgba(248, 113, 113, 0.1); border-color: #f87171; }
+.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+.btn-icon { padding: 8px; font-size: 14px; border-radius: 8px; }
 
-/* ─── Cards ───────────────────────────────────────────── */
+/* ─── Cards - Siftly Style ───────────────────────────────────────────── */
 .card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 20px;
-  transition: box-shadow 0.15s;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
 }
-.card:hover { box-shadow: var(--shadow); }
+.card:hover { border-color: #3f3f46; box-shadow: 0 4px 16px rgba(0,0,0,0.3); }
 
-/* ─── Search bar ──────────────────────────────────────── */
+/* ─── Search bar - Siftly Style ──────────────────────────────────────── */
 .search-bar {
   display: flex; align-items: center; gap: 10px;
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: 24px; padding: 8px 16px;
-  flex: 1; max-width: 380px;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 10px;
+  padding: 10px 16px;
+  flex: 1; max-width: 400px;
 }
 .search-bar input {
   background: transparent; border: none; outline: none;
   color: var(--text); font-size: 13px; flex: 1;
   min-width: 0;
 }
-.search-bar input::placeholder { color: var(--text3); }
-.search-bar .search-icon { color: var(--text3); font-size: 14px; }
+.search-bar input::placeholder { color: #71717a; }
+.search-bar .search-icon { color: #71717a; font-size: 14px; }
 
-/* ─── Tags / Pills ────────────────────────────────────── */
+/* ─── Tags / Pills - Siftly Style ────────────────────────────────────── */
 .tag {
   display: inline-flex; align-items: center; gap: 4px;
-  padding: 3px 8px; border-radius: 20px;
+  padding: 4px 10px; border-radius: 6px;
   font-size: 11px; font-weight: 600;
 }
-.tag-quote  { background: rgba(124,92,252,0.15); color: var(--accent); }
-.tag-case   { background: rgba(34,197,94,0.12); color: var(--green); }
-.tag-viewpoint { background: rgba(59,130,246,0.12); color: var(--blue); }
-.tag-action { background: rgba(249,115,22,0.12); color: var(--orange); }
-.tag-topic  { background: rgba(236,72,153,0.12); color: var(--pink); }
-.tag-rating { background: rgba(234,179,8,0.12); color: var(--yellow); }
-.tag-safe   { background: rgba(34,197,94,0.12); color: var(--green); }
-.tag-context{ background: rgba(234,179,8,0.12); color: var(--yellow); }
-.tag-forbidden { background: rgba(239,68,68,0.12); color: var(--red); }
+.tag-quote  { background: rgba(74, 144, 217, 0.15); color: #60a5fa; }
+.tag-case   { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.tag-viewpoint { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+.tag-action { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
+.tag-topic  { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
+.tag-rating { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.tag-safe   { background: rgba(52, 211, 153, 0.15); color: #34d399; }
+.tag-context{ background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.tag-forbidden { background: rgba(248, 113, 113, 0.15); color: #f87171; }
 
-/* ─── Input / Select ──────────────────────────────────── */
+/* ─── Input / Select - Siftly Style ──────────────────────────────────── */
 .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+.form-label { font-size: 12px; font-weight: 600; color: #a1a1aa; }
 .form-input, .form-select, .form-textarea {
-  background: var(--bg3); border: 1px solid var(--border);
-  border-radius: var(--r2); padding: 10px 12px;
-  color: var(--text); font-size: 13px;
-  transition: border-color 0.15s;
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 13px;
+  transition: all 0.15s;
   outline: none;
   font-family: inherit;
 }
 .form-input:focus, .form-select:focus, .form-textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(124,92,252,0.1);
+  border-color: #4A90D9;
+  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
 }
 .form-select { cursor: pointer; }
 .form-textarea { resize: vertical; min-height: 100px; }
 
-/* ─── Modal ───────────────────────────────────────────── */
+/* ─── Modal - Siftly Style ────────────────────────────────────────────── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(0,0,0,0.7);
