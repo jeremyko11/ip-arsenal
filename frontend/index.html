@@ -2945,18 +2945,8 @@ function setLanguage(lang) {
   if (c) renderSettingsPage(c);
 }
 
-function toggleTheme() {
-  const html = document.documentElement;
-  if (html.classList.contains('dark')) {
-    html.classList.remove('dark');
-    localStorage.setItem('theme', 'light');
-  } else {
-    html.classList.add('dark');
-    localStorage.setItem('theme', 'dark');
-  }
-}
-
 async function renderSettingsPage(c) {
+  const savedTheme = localStorage.getItem('ip-arsenal-theme') || 'light';
   c.innerHTML = `
     <div style="max-width:600px;margin:0 auto;padding:24px">
       <h2 style="font-size:20px;font-weight:600;margin-bottom:24px">${t('appearance')}</h2>
@@ -2984,7 +2974,7 @@ async function renderSettingsPage(c) {
             <div style="font-size:12px;color:var(--text3)">${t('themeDesc')}</div>
           </div>
           <button onclick="toggleTheme()" class="btn btn-ghost">
-            🌙 ${t('darkMode')}
+            ${savedTheme === 'dark' ? '☀️ ' + t('lightMode') : '🌙 ' + t('darkMode')}
           </button>
         </div>
       </div>
