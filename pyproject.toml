@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ip-arsenal"
+version = "1.0.0"
+description = "IP Arsenal - Personal Knowledge Asset Management Platform"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+authors = [
+    {name = "jeremyko11"}
+]
+keywords = ["knowledge-management", "content-extraction", "chunking", "fastapi"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "python-multipart>=0.0.6",
+    "fitz>=1.18.0",
+    "numpy>=1.24.0",
+    "Pillow>=10.0.0",
+    "openai>=1.0.0",
+    "httpx>=0.25.0",
+    "beautifulsoup4>=4.12.0",
+]
+
+[project.optional-dependencies]
+ocr = [
+    "paddleocr>=2.7.0",
+    "paddlepaddle>=2.5.0",
+]
+pdf-ocr = [
+    "opendataloader-pdf>=0.1.0",
+]
+
+[project.scripts]
+ip-arsenal = "backend.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*"]

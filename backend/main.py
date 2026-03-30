@@ -4505,7 +4505,17 @@ def cross_integrate(req: CrossIntegrateRequest):
 # MediaCrawler 数据接入
 # ═══════════════════════════════════════════════════════════════════════════
 
-MEDIA_CRAWLER_DATA_DIR = Path("d:/P-workplace/MediaCrawler-main/data")
+# 从 config.json 读取 MediaCrawler 数据目录
+_CONFIG_PATH = BASE_DIR / "config.json"
+if _CONFIG_PATH.exists():
+    try:
+        with open(_CONFIG_PATH, "r", encoding="utf-8") as f:
+            _cfg = json.load(f)
+            MEDIA_CRAWLER_DATA_DIR = Path(_cfg.get("media_crawler", {}).get("data_dir", ""))
+    except Exception:
+        MEDIA_CRAWLER_DATA_DIR = Path("d:/P-workplace/MediaCrawler-main/data")
+else:
+    MEDIA_CRAWLER_DATA_DIR = Path("d:/P-workplace/MediaCrawler-main/data")
 
 # 平台 ID → 中文名映射
 PLATFORM_NAMES = {

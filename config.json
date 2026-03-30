@@ -9,5 +9,8 @@
     "app_id": "",
     "app_secret": "",
     "author": ""
+  },
+  "media_crawler": {
+    "data_dir": "D:/P-workplace/MediaCrawler-main/data"
   }
 }
