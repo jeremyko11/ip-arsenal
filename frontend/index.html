@@ -8,11 +8,37 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* ─── Siftly-style Dark Theme Variables ───────────────────────────────── */
+/* ─── Reset & Variables ───────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* Default: Light theme */
 :root {
-  /* Siftly-style zinc dark palette */
+  --bg: #ffffff;
+  --bg2: #f8f9fa;
+  --bg3: #f1f3f4;
+  --border: #e8eaed;
+  --border2: #dadce0;
+  --text: #202124;
+  --text2: #5f6368;
+  --text3: #9aa0a6;
+  --accent: #4A90D9;
+  --accent2: #3B82F6;
+  --accent-glow: rgba(74, 144, 217, 0.12);
+  --green: #34d399;
+  --orange: #fb923c;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --blue: #60a5fa;
+  --pink: #f472b6;
+  --cyan: #22d3ee;
+  --r: 10px;
+  --r2: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Dark theme */
+html.dark {
   --bg: #09090b;
   --bg2: #18181b;
   --bg3: #27272a;
@@ -21,47 +47,18 @@
   --text: #fafafa;
   --text2: #a1a1aa;
   --text3: #71717a;
-
-  /* Brand colors - Siftly style */
-  --accent: #4A90D9;
-  --accent2: #3B82F6;
-  --accent-glow: rgba(74, 144, 217, 0.12);
-  --brand-orange: #F5A623;
-  --brand-navy: #1E3A6E;
-
-  /* Semantic colors */
-  --green: #34d399;
-  --orange: #fb923c;
-  --red: #f87171;
-  --yellow: #fbbf24;
-  --blue: #60a5fa;
-  --pink: #f472b6;
-  --cyan: #22d3ee;
-
-  /* Siftly-style radius & shadow */
-  --r: 12px;
-  --r2: 8px;
   --shadow: 0 4px 16px rgba(0,0,0,0.4);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
 }
 
-/* Light mode - Siftly inverted zinc scale */
-html.light {
-  --bg: #f4f4f5;
-  --bg2: #ffffff;
-  --bg3: #e4e4e7;
-  --border: #d4d4d8;
-  --border2: #a1a1aa;
-  --text: #18181b;
-  --text2: #52525b;
-  --text3: #71717a;
-  --shadow: 0 4px 16px rgba(0,0,0,0.12);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
-}
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
+html.dark ::-webkit-scrollbar-thumb { background: #52525b; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #71717a; }
 
-html.dark ::-webkit-scrollbar-thumb { background: var(--border2); }
-
-/* Theme toggle button - Siftly style */
+/* Theme toggle button */
 .theme-toggle {
   width: 30px; height: 30px;
   border-radius: 8px;
@@ -74,22 +71,7 @@ html.dark ::-webkit-scrollbar-thumb { background: var(--border2); }
   flex-shrink: 0;
 }
 .theme-toggle:hover { background: var(--bg3); }
-
-/* Language toggle */
-.lang-toggle {
-  width: 30px; height: 30px;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text2);
-  transition: all 0.2s;
-}
-.lang-toggle:hover { background: var(--bg3); color: var(--text); }
-
 html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
@@ -102,12 +84,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: #52525b; }
 
-/* ─── Layout - Siftly Style ─────────────────────────────────────────── */
+/* ─── Layout ─────────────────────────────────────────── */
 #app { display: flex; height: 100vh; overflow: hidden; }
 
 /* Sidebar - Siftly zinc-900 style */
@@ -2895,98 +2873,33 @@ async function deletePushutree(scriptId) {
 }
 
 // ─── 设置页面 ───────────────────────────────────────────
-let currentLang = localStorage.getItem('ip-arsenal-lang') || 'zh';
-
-const i18n = {
-  zh: {
-    appearance: '外观设置',
-    language: '界面语言',
-    languageDesc: '选择你喜欢的界面语言',
-    theme: '主题',
-    themeDesc: '切换浅色和深色模式',
-    lightMode: '浅色',
-    darkMode: '深色',
-    apiSettings: 'API 设置',
-    apiKey: 'API 密钥',
-    apiKeyPlaceholder: '输入你的 API 密钥',
-    save: '保存',
-    saved: '已保存',
-    about: '关于',
-    version: '版本',
-  },
-  en: {
-    appearance: 'Appearance',
-    language: 'Interface Language',
-    languageDesc: 'Choose your preferred interface language',
-    theme: 'Theme',
-    themeDesc: 'Toggle between light and dark mode',
-    lightMode: 'Light',
-    darkMode: 'Dark',
-    apiSettings: 'API Settings',
-    apiKey: 'API Key',
-    apiKeyPlaceholder: 'Enter your API key',
-    save: 'Save',
-    saved: 'Saved',
-    about: 'About',
-    version: 'Version',
-  }
-};
-
-function t(key) {
-  return i18n[currentLang][key] || key;
-}
-
-function setLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem('ip-arsenal-lang', lang);
-  document.documentElement.lang = lang;
-  // 重新渲染设置页面
-  const c = document.getElementById('main-content');
-  if (c) renderSettingsPage(c);
-}
-
 async function renderSettingsPage(c) {
   const savedTheme = localStorage.getItem('ip-arsenal-theme') || 'light';
   c.innerHTML = `
     <div style="max-width:600px;margin:0 auto;padding:24px">
-      <h2 style="font-size:20px;font-weight:600;margin-bottom:24px">${t('appearance')}</h2>
+      <h2 style="font-size:20px;font-weight:600;margin-bottom:24px">设置</h2>
 
-      <!-- 语言设置 -->
+      <!-- 主题设置 -->
       <div class="card" style="margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div>
-            <div style="font-weight:500;margin-bottom:4px">${t('language')}</div>
-            <div style="font-size:12px;color:var(--text3)">${t('languageDesc')}</div>
-          </div>
-          <div style="display:flex;gap:8px">
-            <button onclick="setLanguage('zh')" class="btn ${currentLang === 'zh' ? 'btn-primary' : 'btn-ghost'}" style="min-width:70px">
-              中文
-            </button>
-            <button onclick="setLanguage('en')" class="btn ${currentLang === 'en' ? 'btn-primary' : 'btn-ghost'}" style="min-width:70px">
-              English
-            </button>
-          </div>
-        </div>
-
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
-            <div style="font-weight:500;margin-bottom:4px">${t('theme')}</div>
-            <div style="font-size:12px;color:var(--text3)">${t('themeDesc')}</div>
+            <div style="font-weight:500;margin-bottom:4px">主题</div>
+            <div style="font-size:12px;color:var(--text3)">切换浅色和深色模式</div>
           </div>
           <button onclick="toggleTheme()" class="btn btn-ghost">
-            ${savedTheme === 'dark' ? '☀️ ' + t('lightMode') : '🌙 ' + t('darkMode')}
+            ${savedTheme === 'dark' ? '☀️ 浅色' : '🌙 深色'}
           </button>
         </div>
       </div>
 
       <!-- 关于 -->
-      <h2 style="font-size:20px;font-weight:600;margin:24px 0 16px">${t('about')}</h2>
+      <h2 style="font-size:20px;font-weight:600;margin:24px 0 16px">关于</h2>
       <div class="card">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
           <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#4A90D9,#F5A623);display:flex;align-items:center;justify-content:center;font-size:20px">📚</div>
           <div>
             <div style="font-weight:600;font-size:16px">IP 军火库</div>
-            <div style="font-size:12px;color:var(--text3)">${t('version')} 1.0.0</div>
+            <div style="font-size:12px;color:var(--text3)">版本 1.0.0</div>
           </div>
         </div>
         <div style="font-size:13px;color:var(--text2);line-height:1.6">
