@@ -738,6 +738,9 @@ body {
     <div class="nav-item" onclick="navigate('mediacrawler')" data-page="mediacrawler">
       <span class="nav-icon">📡</span> MediaCrawler
     </div>
+    <div class="nav-item" onclick="navigate('settings')" data-page="settings">
+      <span class="nav-icon">⚙️</span> 设置
+    </div>
 
     <div class="nav-section">快捷</div>
     <div class="nav-item" onclick="openAddModal()">
@@ -911,7 +914,7 @@ function navigate(page, params = {}) {
   document.querySelectorAll('.nav-item').forEach(el => {
     el.classList.toggle('active', el.dataset.page === page);
   });
-  const titles = { home: '首页总览', library: '资料库', materials: '素材库', studio: '创作台', creations: '我的创作', pushutree: '🌳 朴树之道分享', wechat: '📱 公众号排版', mediacrawler: '📡 MediaCrawler' };
+  const titles = { home: '首页总览', library: '资料库', materials: '素材库', studio: '创作台', creations: '我的创作', pushutree: '🌳 朴树之道分享', wechat: '📱 公众号排版', mediacrawler: '📡 MediaCrawler', settings: '⚙️ 设置' };
   document.getElementById('page-title').textContent = titles[page] || '';
   document.getElementById('global-search').style.display = ['library','materials','creations'].includes(page) ? 'flex' : 'none';
   document.getElementById('global-search-input').value = '';
@@ -928,6 +931,7 @@ function navigate(page, params = {}) {
     else if (page === 'pushutree') renderPushutree(c, params);
     else if (page === 'wechat') renderWechatPage(c, params);
     else if (page === 'mediacrawler') renderMediaCrawlerPage(c, params);
+    else if (page === 'settings') renderSettingsPage(c);
   });
 }
 
@@ -2888,6 +2892,119 @@ async function deletePushutree(scriptId) {
   showToast('已删除', 'success');
   const c = document.getElementById('main-content');
   if (c) renderPushutree(c);
+}
+
+// ─── 设置页面 ───────────────────────────────────────────
+let currentLang = localStorage.getItem('ip-arsenal-lang') || 'zh';
+
+const i18n = {
+  zh: {
+    appearance: '外观设置',
+    language: '界面语言',
+    languageDesc: '选择你喜欢的界面语言',
+    theme: '主题',
+    themeDesc: '切换浅色和深色模式',
+    lightMode: '浅色',
+    darkMode: '深色',
+    apiSettings: 'API 设置',
+    apiKey: 'API 密钥',
+    apiKeyPlaceholder: '输入你的 API 密钥',
+    save: '保存',
+    saved: '已保存',
+    about: '关于',
+    version: '版本',
+  },
+  en: {
+    appearance: 'Appearance',
+    language: 'Interface Language',
+    languageDesc: 'Choose your preferred interface language',
+    theme: 'Theme',
+    themeDesc: 'Toggle between light and dark mode',
+    lightMode: 'Light',
+    darkMode: 'Dark',
+    apiSettings: 'API Settings',
+    apiKey: 'API Key',
+    apiKeyPlaceholder: 'Enter your API key',
+    save: 'Save',
+    saved: 'Saved',
+    about: 'About',
+    version: 'Version',
+  }
+};
+
+function t(key) {
+  return i18n[currentLang][key] || key;
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('ip-arsenal-lang', lang);
+  document.documentElement.lang = lang;
+  // 重新渲染设置页面
+  const c = document.getElementById('main-content');
+  if (c) renderSettingsPage(c);
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  if (html.classList.contains('dark')) {
+    html.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
+  } else {
+    html.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  }
+}
+
+async function renderSettingsPage(c) {
+  c.innerHTML = `
+    <div style="max-width:600px;margin:0 auto;padding:24px">
+      <h2 style="font-size:20px;font-weight:600;margin-bottom:24px">${t('appearance')}</h2>
+
+      <!-- 语言设置 -->
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div>
+            <div style="font-weight:500;margin-bottom:4px">${t('language')}</div>
+            <div style="font-size:12px;color:var(--text3)">${t('languageDesc')}</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="setLanguage('zh')" class="btn ${currentLang === 'zh' ? 'btn-primary' : 'btn-ghost'}" style="min-width:70px">
+              中文
+            </button>
+            <button onclick="setLanguage('en')" class="btn ${currentLang === 'en' ? 'btn-primary' : 'btn-ghost'}" style="min-width:70px">
+              English
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:500;margin-bottom:4px">${t('theme')}</div>
+            <div style="font-size:12px;color:var(--text3)">${t('themeDesc')}</div>
+          </div>
+          <button onclick="toggleTheme()" class="btn btn-ghost">
+            🌙 ${t('darkMode')}
+          </button>
+        </div>
+      </div>
+
+      <!-- 关于 -->
+      <h2 style="font-size:20px;font-weight:600;margin:24px 0 16px">${t('about')}</h2>
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#4A90D9,#F5A623);display:flex;align-items:center;justify-content:center;font-size:20px">📚</div>
+          <div>
+            <div style="font-weight:600;font-size:16px">IP 军火库</div>
+            <div style="font-size:12px;color:var(--text3)">${t('version')} 1.0.0</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.6">
+          个人知识资产管理平台 - 专注于内容提取、chunking 与智能整理
+        </div>
+      </div>
+    </div>
+  `;
 }
 
 async function renderCreations(c, params={}) {
