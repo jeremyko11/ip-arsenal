@@ -28,5 +28,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# 媒体爬虫数据（外部依赖）
-# MediaCrawler 数据目录配置在 config.json 中
+# MediaCrawler 子目录
+media_crawler/__pycache__/
+media_crawler/*/__pycache__/
+media_crawler/browser_data/
+media_crawler/.venv/
+
