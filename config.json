@@ -1,0 +1,13 @@
+{
+  "output_dir": "C:/Users/jeremyko11/WorkBuddy/Claw/ip-arsenal/data/wechat-output",
+  "vault_root": "/",
+  "settings": {
+    "default_theme": "wechat-native",
+    "auto_open_browser": false
+  },
+  "wechat": {
+    "app_id": "",
+    "app_secret": "",
+    "author": ""
+  }
+}

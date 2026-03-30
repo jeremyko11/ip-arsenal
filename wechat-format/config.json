@@ -1,0 +1,13 @@
+{
+  "output_dir": "/tmp/wechat-format",
+  "vault_root": "/",
+  "settings": {
+    "default_theme": "wechat-native",
+    "auto_open_browser": false
+  },
+  "wechat": {
+    "app_id": "",
+    "app_secret": "",
+    "author": ""
+  }
+}

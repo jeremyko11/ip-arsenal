@@ -1,0 +1,4427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IP 军火库 · 知识资产管理平台</title>
+<style>
+/* ─── Reset & Variables ───────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff;
+  --bg2: #f8f9fa;
+  --bg3: #f1f3f4;
+  --border: #e8eaed;
+  --border2: #dadce0;
+  --text: #202124;
+  --text2: #5f6368;
+  --text3: #9aa0a6;
+  --accent: #4285f4;
+  --accent2: #1a73e8;
+  --accent-glow: rgba(66,133,244,0.15);
+  --green: #34a853;
+  --orange: #fbbc04;
+  --red: #ea4335;
+  --yellow: #fbbc04;
+  --blue: #4285f4;
+  --pink: #e91e63;
+  --cyan: #00bcd4;
+  --r: 10px;
+  --r2: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+}
+/* ─── Dark Theme ─────────────────────────────────────── */
+html.dark {
+  --bg: #1f1f1f;
+  --bg2: #2d2d2d;
+  --bg3: #3d3d3d;
+  --border: #444444;
+  --border2: #555555;
+  --text: #e8eaed;
+  --text2: #9aa0a6;
+  --text3: #5f6368;
+  --accent: #8ab4f8;
+  --accent2: #669df6;
+  --accent-glow: rgba(138,180,248,0.15);
+  --green: #81c995;
+  --orange: #fcc934;
+  --red: #f28b82;
+  --yellow: #fdd663;
+  --blue: #8ab4f8;
+  --pink: #f48fb1;
+  --cyan: #80deea;
+  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
+}
+html.dark ::-webkit-scrollbar-thumb { background: var(--border2); }
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.theme-toggle:hover { background: var(--bg3); transform: scale(1.08); }
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* ─── Layout ──────────────────────────────────────────── */
+#app { display: flex; height: 100vh; overflow: hidden; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 6px 6px 12px;
+  gap: 1px;
+  overflow-y: auto;
+  /* Notion-like smooth feel */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.sidebar-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px 14px;
+  margin-bottom: 4px;
+}
+.sidebar-logo .logo-icon {
+  width: 26px; height: 26px; border-radius: 6px;
+  background: linear-gradient(135deg, #4285f4, #7c5cfc);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.sidebar-logo .logo-text { font-size: 14px; font-weight: 600; letter-spacing: -0.2px; }
+.sidebar-logo .logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; font-weight: 400; }
+
+/* Notion-style nav items */
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  user-select: none;
+  position: relative;
+  /* Super smooth transitions - Notion's signature feel */
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  will-change: background, color;
+}
+.nav-item:hover {
+  background: var(--bg3);
+  color: var(--text);
+  transform: translateX(1px);
+}
+.nav-item.active {
+  background: var(--accent-glow);
+  color: var(--accent);
+  font-weight: 500;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 60%;
+  background: var(--accent);
+  border-radius: 0 3px 3px 0;
+  opacity: 0.8;
+}
+.nav-item .nav-icon {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+  /* Subtle scale on hover */
+  transition: transform 0.15s ease;
+}
+.nav-item:hover .nav-icon {
+  transform: scale(1.05);
+}
+.nav-section {
+  font-size: 11px;
+  color: var(--text3);
+  padding: 12px 10px 4px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* Notion-style stats at bottom */
+.sidebar-stats {
+  margin-top: auto;
+  padding: 10px 12px;
+  background: var(--bg3);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; }
+.stat-row:last-child { margin-bottom: 0; }
+.stat-label { color: var(--text3); }
+.stat-val { color: var(--accent); font-weight: 600; font-size: 13px; }
+
+/* Notion-style ultra-thin scrollbar */
+.sidebar::-webkit-scrollbar { width: 6px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+/* Main content */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  height: 56px; min-height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.topbar-title { font-size: 18px; font-weight: 500; color: var(--text); }
+.topbar-right { display: flex; align-items: center; gap: 8px; }
+
+/* AI 模型按钮 */
+.ai-model-btn {
+  border: 1px solid var(--border);
+  background: var(--bg2);
+  color: var(--text2);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  gap: 5px;
+  transition: all 0.2s;
+  min-width: 90px;
+}
+.ai-model-btn:hover { background: var(--bg2); }
+
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* ─── Buttons ─────────────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--r2);
+  font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); box-shadow: var(--shadow); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--text3); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
+.btn-danger:hover { background: rgba(234,67,53,0.08); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-icon { padding: 8px; font-size: 14px; }
+
+/* ─── Cards ───────────────────────────────────────────── */
+.card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+  transition: box-shadow 0.15s;
+}
+.card:hover { box-shadow: var(--shadow); }
+
+/* ─── Search bar ──────────────────────────────────────── */
+.search-bar {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 24px; padding: 8px 16px;
+  flex: 1; max-width: 380px;
+}
+.search-bar input {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 13px; flex: 1;
+  min-width: 0;
+}
+.search-bar input::placeholder { color: var(--text3); }
+.search-bar .search-icon { color: var(--text3); font-size: 14px; }
+
+/* ─── Tags / Pills ────────────────────────────────────── */
+.tag {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+}
+.tag-quote  { background: rgba(124,92,252,0.15); color: var(--accent); }
+.tag-case   { background: rgba(34,197,94,0.12); color: var(--green); }
+.tag-viewpoint { background: rgba(59,130,246,0.12); color: var(--blue); }
+.tag-action { background: rgba(249,115,22,0.12); color: var(--orange); }
+.tag-topic  { background: rgba(236,72,153,0.12); color: var(--pink); }
+.tag-rating { background: rgba(234,179,8,0.12); color: var(--yellow); }
+.tag-safe   { background: rgba(34,197,94,0.12); color: var(--green); }
+.tag-context{ background: rgba(234,179,8,0.12); color: var(--yellow); }
+.tag-forbidden { background: rgba(239,68,68,0.12); color: var(--red); }
+
+/* ─── Input / Select ──────────────────────────────────── */
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+.form-input, .form-select, .form-textarea {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 10px 12px;
+  color: var(--text); font-size: 13px;
+  transition: border-color 0.15s;
+  outline: none;
+  font-family: inherit;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(124,92,252,0.1);
+}
+.form-select { cursor: pointer; }
+.form-textarea { resize: vertical; min-height: 100px; }
+
+/* ─── Modal ───────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.15s;
+}
+.modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 28px;
+  width: 540px; max-width: 95vw;
+  max-height: 85vh; overflow-y: auto;
+  animation: slideUp 0.2s;
+  box-shadow: var(--shadow);
+}
+.modal-lg { width: 720px; }
+.modal-xl { width: 900px; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close { cursor: pointer; color: var(--text3); font-size: 20px; line-height: 1; padding: 4px; transition: color 0.15s; }
+.modal-close:hover { color: var(--text); }
+
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp { from { transform:translateY(20px); opacity:0 } to { transform:translateY(0); opacity:1 } }
+
+/* ─── Progress bar ────────────────────────────────────── */
+.progress-bar {
+  background: var(--bg3); border-radius: 99px; height: 8px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--cyan));
+  transition: width 0.4s;
+}
+
+/* ─── Home page ───────────────────────────────────────── */
+.home-hero {
+  text-align: center; padding: 48px 0 32px;
+}
+.home-hero h1 {
+  font-size: 32px; font-weight: 800;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--cyan) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 10px;
+}
+.home-hero p { color: var(--text2); font-size: 15px; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+  text-align: center;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.stat-card:hover { transform: translateY(-2px); border-color: var(--border2); }
+.stat-card .stat-num { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+.stat-card .stat-name { font-size: 12px; color: var(--text3); }
+
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
+.quick-btn {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px 16px;
+  text-align: center; cursor: pointer;
+  transition: all 0.15s;
+}
+.quick-btn:hover { border-color: var(--accent); background: rgba(124,92,252,0.05); transform: translateY(-2px); }
+.quick-btn .quick-icon { font-size: 28px; margin-bottom: 8px; }
+.quick-btn .quick-label { font-size: 13px; font-weight: 600; color: var(--text2); }
+.quick-btn .quick-desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
+
+/* ─── Source cards ────────────────────────────────────── */
+.source-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.source-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px;
+  cursor: pointer; transition: all 0.15s;
+  position: relative; overflow: hidden;
+}
+.source-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.source-card.book::before { background: linear-gradient(90deg, var(--accent), #a855f7); }
+.source-card.url::before  { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+.source-card.text::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
+.source-card.image::before{ background: linear-gradient(90deg, var(--orange), var(--yellow)); }
+.source-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
+.source-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.source-card-title { font-size: 14px; font-weight: 700; line-height: 1.4; }
+.source-card-type { font-size: 18px; }
+.source-card-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.source-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+/* Status badge */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 600;
+}
+.status-badge.done     { background: rgba(34,197,94,0.12); color: var(--green); }
+.status-badge.processing { background: rgba(59,130,246,0.12); color: var(--blue); }
+.status-badge.pending  { background: rgba(234,179,8,0.12); color: var(--yellow); }
+.status-badge.error    { background: rgba(239,68,68,0.12); color: var(--red); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.status-badge.processing .status-dot { animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ─── Material cards ──────────────────────────────────── */
+.materials-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.cat-tab {
+  padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.15s;
+}
+.cat-tab:hover { border-color: var(--accent); color: var(--accent); }
+.cat-tab.active { border-color: var(--accent); background: rgba(124,92,252,0.1); color: var(--accent); }
+
+.material-list { display: flex; flex-direction: column; gap: 12px; }
+.material-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px;
+  transition: all 0.15s;
+}
+.material-card:hover { border-color: var(--border2); }
+.material-card.starred { border-color: rgba(234,179,8,0.4); }
+.material-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.material-content { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-all; }
+.material-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+.material-actions { display: flex; gap: 6px; }
+.material-source { font-size: 11px; color: var(--text3); }
+
+/* ─── Creator / Studio ────────────────────────────────── */
+.studio-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100vh - 104px); overflow: hidden; }
+.studio-panel { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
+.studio-panel-header { font-size: 13px; font-weight: 700; color: var(--text2); padding: 12px 16px; background: var(--bg3); border-radius: var(--r2) var(--r2) 0 0; border: 1px solid var(--border); border-bottom: none; }
+.studio-textarea {
+  flex: 1; background: var(--bg2); border: 1px solid var(--border);
+  border-top: none; border-radius: 0 0 var(--r2) var(--r2);
+  padding: 16px; color: var(--text); font-size: 13px;
+  line-height: 1.7; resize: none; outline: none;
+  font-family: inherit;
+  overflow-y: auto;
+}
+.studio-textarea:focus { border-color: var(--accent); }
+
+.studio-toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 0; flex-wrap: wrap; }
+.platform-btn {
+  padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.15s; background: transparent;
+}
+.platform-btn:hover, .platform-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ─── WeChat Format Panel ─────────────────────────────── */
+.wf-panel { border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; margin-top: 16px; }
+.wf-panel-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; background: var(--bg3);
+  border-bottom: 1px solid var(--border); cursor: pointer;
+  user-select: none;
+}
+.wf-panel-header:hover { background: var(--border); }
+.wf-panel-title { font-size: 13px; font-weight: 700; color: var(--text2); flex: 1; }
+.wf-panel-body { padding: 14px 16px; display: none; flex-direction: column; gap: 12px; }
+.wf-panel-body.open { display: flex; }
+
+.wf-theme-group { margin-bottom: 4px; }
+.wf-theme-group-label { font-size: 11px; color: var(--text3); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+.wf-theme-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.wf-theme-btn {
+  padding: 5px 11px; border-radius: 6px; font-size: 12px;
+  border: 1px solid var(--border2); color: var(--text2);
+  cursor: pointer; background: transparent; transition: all 0.15s;
+  white-space: nowrap;
+}
+.wf-theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+.wf-theme-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.wf-theme-desc { font-size: 11px; color: var(--text3); margin-top: 4px; min-height: 16px; }
+
+.wf-preview-wrap {
+  border: 1px solid var(--border); border-radius: var(--r2);
+  background: #ffffff; color: #333; min-height: 300px; max-height: 600px;
+  overflow-y: auto; padding: 20px; font-size: 15px; line-height: 1.75;
+}
+.wf-preview-wrap * { max-width: 100%; }
+.wf-preview-placeholder { color: #aaa; font-size: 13px; text-align: center; padding: 40px 0; }
+.wf-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.wf-copy-html-btn { font-size: 12px; }
+.wf-word-count { font-size: 11px; color: var(--text3); margin-left: auto; }
+
+/* ─── 朴树之道 ───────────────────────────────────────────── */
+.pt-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 2000; display: flex; align-items: center; justify-content: center;
+}
+.pt-modal {
+  background: var(--bg2); border-radius: var(--r); padding: 28px;
+  width: 480px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.pt-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.pt-modal-sub { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
+.pt-form-row { margin-bottom: 14px; }
+.pt-form-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; font-weight: 600; }
+.pt-progress-bar-wrap { background: var(--bg3); border-radius: 99px; height: 8px; overflow: hidden; margin: 10px 0 6px; }
+.pt-progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 99px; transition: width 0.4s ease; }
+.pt-progress-text { font-size: 12px; color: var(--text3); }
+
+.pt-page { padding: 0; }
+.pt-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+
+/* 独立创建面板 */
+.pt-create-panel {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); margin-bottom: 8px; overflow: hidden;
+}
+.pt-create-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; user-select: none;
+  font-size: 13px; font-weight: 600; color: var(--text1);
+  border-bottom: 1px solid transparent;
+  transition: background 0.15s;
+}
+.pt-create-header:hover { background: var(--bg3); }
+.pt-create-body { padding: 18px; border-top: 1px solid var(--border); }
+.pt-upload-area {
+  border: 2px dashed var(--border); border-radius: var(--r);
+  padding: 20px 12px; text-align: center; cursor: pointer;
+  font-size: 13px; color: var(--text3);
+  transition: all 0.15s; background: var(--bg1);
+}
+.pt-upload-area:hover { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.05); }
+.pt-series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.pt-series-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 18px; cursor: pointer;
+  transition: all 0.15s; position: relative; overflow: hidden;
+}
+.pt-series-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,#22c55e,#16a34a); }
+.pt-series-card:hover { border-color: #22c55e; transform: translateY(-2px); box-shadow: var(--shadow); }
+.pt-series-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+.pt-series-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; flex-wrap: wrap; }
+.pt-series-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+.pt-detail-back { font-size: 13px; color: var(--accent); cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px; }
+.pt-detail-back:hover { text-decoration: underline; }
+.pt-episode-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.pt-ep-tab {
+  padding: 6px 14px; border-radius: 99px; font-size: 12px; cursor: pointer;
+  border: 1px solid var(--border); color: var(--text2); background: transparent;
+  transition: all 0.15s; white-space: nowrap;
+}
+.pt-ep-tab:hover { border-color: #22c55e; color: #22c55e; }
+.pt-ep-tab.active { background: #22c55e; color: #fff; border-color: #22c55e; }
+.pt-content-box {
+  background: var(--bg3); border-radius: var(--r2); padding: 20px;
+  font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word;
+  min-height: 300px; max-height: 60vh; overflow-y: auto;
+}
+.pt-content-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+/* Basket (素材购物车) */
+.basket-panel {
+  position: fixed; right: 0; top: 56px; bottom: 0;
+  width: 300px; background: var(--bg2);
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+  transition: transform 0.25s;
+  z-index: 100;
+  display: flex; flex-direction: column;
+}
+.basket-panel.open { transform: translateX(0); }
+.basket-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.basket-items { flex: 1; overflow-y: auto; padding: 12px; }
+.basket-item { background: var(--bg3); border-radius: var(--r2); padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; position: relative; }
+.basket-item-remove { position: absolute; top: 6px; right: 8px; cursor: pointer; color: var(--text3); font-size: 14px; }
+.basket-item-remove:hover { color: var(--red); }
+.basket-footer { padding: 12px; border-top: 1px solid var(--border); }
+
+/* Floating basket btn */
+.basket-fab {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 22px;
+  box-shadow: 0 4px 20px rgba(124,92,252,0.5);
+  transition: transform 0.15s;
+  z-index: 9999;
+}
+.basket-fab:hover { transform: scale(1.1); }
+/* 有内容时脉冲动画，提示用户购物车有东西 */
+.basket-fab.has-items {
+  animation: basket-pulse 2s infinite;
+  box-shadow: 0 4px 25px rgba(124,92,252,0.7);
+}
+@keyframes basket-pulse {
+  0%   { box-shadow: 0 4px 20px rgba(124,92,252,0.5); }
+  50%  { box-shadow: 0 4px 30px rgba(124,92,252,0.9), 0 0 0 8px rgba(124,92,252,0.15); }
+  100% { box-shadow: 0 4px 20px rgba(124,92,252,0.5); }
+}
+.basket-count {
+  position: absolute; top: -4px; right: -4px;
+  background: var(--red); color: #fff;
+  font-size: 11px; font-weight: 700;
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ─── Misc ────────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 80px 24px; color: var(--text3); }
+.empty-state .empty-icon { font-size: 56px; margin-bottom: 16px; }
+.empty-state p { font-size: 14px; margin-bottom: 20px; }
+
+.upload-zone {
+  border: 2px dashed var(--border2); border-radius: var(--r);
+  padding: 40px; text-align: center; cursor: pointer;
+  transition: all 0.15s; color: var(--text3);
+}
+.upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(124,92,252,0.05); color: var(--accent); }
+.upload-zone .upload-icon { font-size: 40px; margin-bottom: 10px; }
+
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.mt-4 { margin-top: 4px; }
+.mt-12 { margin-top: 12px; }
+.text-sm { font-size: 12px; }
+.text-muted { color: var(--text3); }
+.font-bold { font-weight: 700; }
+
+.input-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; }
+.input-tab {
+  flex: 1; padding: 10px; text-align: center; font-size: 12px; font-weight: 600;
+  cursor: pointer; color: var(--text3); background: var(--bg3); transition: all 0.15s;
+  border-right: 1px solid var(--border);
+}
+.input-tab:last-child { border-right: none; }
+.input-tab:hover { color: var(--text); }
+.input-tab.active { background: var(--accent); color: #fff; }
+
+/* Toast */
+.toast-container {
+  position: fixed; top: 20px; right: 20px; z-index: 9999;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: var(--r2); padding: 12px 16px;
+  font-size: 13px; min-width: 220px;
+  box-shadow: var(--shadow);
+  animation: toastIn 0.2s;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error   { border-left: 3px solid var(--red); }
+.toast.info    { border-left: 3px solid var(--blue); }
+@keyframes toastIn { from { transform: translateX(100%); opacity:0 } to { transform: translateX(0); opacity:1 } }
+
+/* Highlight */
+.highlight { color: var(--accent); }
+
+/* Pagination */
+.pagination { display: flex; gap: 6px; align-items: center; justify-content: center; margin-top: 24px; }
+.page-btn {
+  width: 32px; height: 32px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 13px;
+  border: 1px solid var(--border2); color: var(--text2);
+  transition: all 0.15s; background: transparent;
+}
+.page-btn:hover, .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* Detail drawer */
+.drawer {
+  position: fixed; right: 0; top: 0; bottom: 0;
+  width: 600px; max-width: 95vw;
+  background: var(--bg2); border-left: 1px solid var(--border);
+  z-index: 500; overflow-y: auto;
+  transform: translateX(100%); transition: transform 0.25s;
+  box-shadow: var(--shadow);
+}
+.drawer.open { transform: translateX(0); }
+.drawer-overlay {
+  position: fixed; inset: 0; z-index: 499;
+  background: rgba(0,0,0,0.4);
+  display: none;
+}
+.drawer-overlay.open { display: block; }
+.drawer-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg2); z-index: 1; }
+.drawer-body { padding: 24px; }
+
+/* ─── Page visibility ─────────────────────────────────── */
+.page { display: none; }
+.page.active { display: block; }
+.page-fill { display: none; }
+.page-fill.active { display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⚔️</div>
+      <div>
+        <div class="logo-text">IP 军火库</div>
+        <div class="logo-sub">知识资产管理</div>
+      </div>
+    </div>
+
+    <div class="nav-section">导航</div>
+    <div class="nav-item active" onclick="navigate('home')" data-page="home">
+      <span class="nav-icon">🏠</span> 首页总览
+    </div>
+    <div class="nav-item" onclick="navigate('library')" data-page="library">
+      <span class="nav-icon">📚</span> 资料库
+    </div>
+    <div class="nav-item" onclick="navigate('materials')" data-page="materials">
+      <span class="nav-icon">💎</span> 素材库
+    </div>
+    <div class="nav-item" onclick="navigate('studio')" data-page="studio">
+      <span class="nav-icon">✍️</span> 创作台
+    </div>
+    <div class="nav-item" onclick="navigate('creations')" data-page="creations">
+      <span class="nav-icon">📋</span> 我的创作
+    </div>
+    <div class="nav-item" onclick="navigate('pushutree')" data-page="pushutree">
+      <span class="nav-icon">🌳</span> 朴树之道
+    </div>
+    <div class="nav-item" onclick="navigate('wechat')" data-page="wechat">
+      <span class="nav-icon">📱</span> 公众号排版
+    </div>
+    <div class="nav-item" onclick="navigate('mediacrawler')" data-page="mediacrawler">
+      <span class="nav-icon">📡</span> MediaCrawler
+    </div>
+
+    <div class="nav-section">快捷</div>
+    <div class="nav-item" onclick="openAddModal()">
+      <span class="nav-icon">➕</span> 添加内容
+    </div>
+    <div class="nav-item" onclick="navigate('materials', {starred: 1})">
+      <span class="nav-icon">⭐</span> 收藏夹
+    </div>
+    <div class="nav-item" onclick="navigate('materials', {review_only: 1})" style="color:#f97316" title="查看智能提取后需要人工审核的素材">
+      <span class="nav-icon">⚠️</span> 待审核
+    </div>
+
+    <div class="sidebar-stats" id="sidebar-stats">
+      <div class="stat-row"><span class="stat-label">📚 书籍</span><span class="stat-val" id="ss-sources">0</span></div>
+      <div class="stat-row"><span class="stat-label">💎 素材</span><span class="stat-val" id="ss-materials">0</span></div>
+      <div class="stat-row"><span class="stat-label">⭐ 收藏</span><span class="stat-val" id="ss-starred">0</span></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">首页总览</div>
+      <div class="topbar-right">
+        <div class="search-bar" id="global-search" style="display:none">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="全局搜索..." id="global-search-input" oninput="onGlobalSearch(this.value)">
+        </div>
+        <!-- AI 模型切换按钮 -->
+        <button class="btn btn-sm ai-model-btn" id="ai-model-btn" onclick="openAiModelModal()" title="切换 AI 模型">
+          <span id="ai-model-icon">🤖</span>
+          <span id="ai-model-label">加载中...</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openAddModal()">➕ 添加内容</button>
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="切换明/暗主题">🌙</button>
+      </div>
+    </div>
+
+    <div class="content" id="main-content">
+      <!-- Pages rendered here -->
+    </div>
+  </main>
+</div>
+
+<!-- Basket FAB -->
+<div class="basket-fab" onclick="toggleBasket()" title="素材购物车">
+  🧺
+  <div class="basket-count" id="basket-count" style="display:none">0</div>
+</div>
+
+<!-- Basket Panel -->
+<div class="basket-panel" id="basket-panel">
+  <div class="basket-header">
+    <div class="font-bold">🧺 素材购物车</div>
+    <span class="modal-close" onclick="toggleBasket()">✕</span>
+  </div>
+  <div class="basket-items" id="basket-items-list"></div>
+  <div class="basket-footer">
+    <button class="btn btn-primary" style="width:100%" onclick="sendToStudio()">✍️ 发送到创作台</button>
+  </div>
+</div>
+
+<!-- Modals container -->
+<div id="modals"></div>
+
+<!-- AI 模型切换弹窗 -->
+<div class="modal-overlay" id="ai-model-modal" style="display:none" onclick="if(event.target===this)closeAiModelModal()">
+  <div class="modal" style="width:480px;max-width:95vw">
+    <div class="modal-header">
+      <span class="modal-title">🤖 AI 模型切换</span>
+      <span class="modal-close" onclick="closeAiModelModal()">×</span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">
+      选择后，所有提炼任务从该模型开始调用，失败后自动降级到下一级。
+    </div>
+    
+    <!-- 模型选择卡片 -->
+    <div id="ai-model-cards" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px"></div>
+
+    <!-- MiniMax 账号2 Key 配置区 -->
+    <div id="minimax2-key-section" style="background:var(--bg3);border-radius:var(--r2);padding:14px;border:1px solid var(--border);margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">🔑 MiniMax 账号2 API Key</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">
+        新账号开会员后，在 
+        <a href="https://www.minimaxi.com/user-center/basic-information/interface-key" target="_blank" style="color:var(--accent)">MiniMax 控制台</a> 
+        复制 API Key 填入：
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="password" id="minimax2-key-input" placeholder="sk-..." 
+          style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 12px;color:var(--text);font-size:13px;outline:none"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+        <button class="btn btn-sm" id="minimax2-show-btn" onclick="toggleMinimax2KeyVisibility()" style="min-width:52px">显示</button>
+      </div>
+      <div id="minimax2-key-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
+      <!-- API Base URL（可选） -->
+      <div style="margin-top:10px">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">API Base（默认官方直连，一般不用改）</div>
+        <input type="text" id="minimax2-base-input" value="https://api.minimax.chat/v1"
+          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 12px;color:var(--text);font-size:12px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn" onclick="closeAiModelModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveAiModel()">✅ 应用切换</button>
+    </div>
+  </div>
+</div>
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+<!-- Detail drawer -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="detail-drawer">
+  <div class="drawer-header">
+    <div class="modal-title" id="drawer-title">素材详情</div>
+    <span class="modal-close" onclick="closeDrawer()">✕</span>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<script>
+// ─── State ──────────────────────────────────────────────
+const API = 'http://localhost:8765/api';
+let currentPage = 'home';
+let stats = { sources: 0, materials: 0, starred: 0, by_category: {} };
+let basket = []; // [{id, content, category, source_title}]
+let materialsState = { page: 1, total: 0, category: '', q: '', source_id: '', starred: -1, review_only: 0, items: [] };
+let creationsState = { items: [] }; // 存储创作列表
+let pollingTasks = {}; // task_id -> {source_id, title, onDone}
+
+// 页面切换
+function animatePageTransition(container, callback) {
+  callback();
+}
+
+// ─── Theme ───────────────────────────────────────────────
+function applyTheme(mode) {
+  const html = document.documentElement;
+  const btn  = document.getElementById('theme-toggle-btn');
+  if (mode === 'dark') {
+    html.classList.add('dark');
+    if (btn) btn.textContent = '☀️';
+    if (btn) btn.title = '切换为浅色';
+  } else {
+    html.classList.remove('dark');
+    if (btn) btn.textContent = '🌙';
+    if (btn) btn.title = '切换为深色';
+  }
+}
+function toggleTheme() {
+  const isDark = document.documentElement.classList.contains('dark');
+  const next = isDark ? 'light' : 'dark';
+  localStorage.setItem('ip-arsenal-theme', next);
+  applyTheme(next);
+}
+
+// ─── Init ────────────────────────────────────────────────
+(async function init() {
+  // 恢复主题偏好
+  const savedTheme = localStorage.getItem('ip-arsenal-theme') || 'light';
+  applyTheme(savedTheme);
+  await loadStats();
+  loadAiModelState();   // 加载 AI 模型状态（不阻塞）
+  navigate('home');
+})();
+
+// ─── Navigation ──────────────────────────────────────────
+function navigate(page, params = {}) {
+  currentPage = page;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+  const titles = { home: '首页总览', library: '资料库', materials: '素材库', studio: '创作台', creations: '我的创作', pushutree: '🌳 朴树之道分享', wechat: '📱 公众号排版', mediacrawler: '📡 MediaCrawler' };
+  document.getElementById('page-title').textContent = titles[page] || '';
+  document.getElementById('global-search').style.display = ['library','materials','creations'].includes(page) ? 'flex' : 'none';
+  document.getElementById('global-search-input').value = '';
+
+  const c = document.getElementById('main-content');
+
+  // 页面切换过渡动画
+  animatePageTransition(c, () => {
+    if (page === 'home') renderHome(c);
+    else if (page === 'library') renderLibrary(c, params);
+    else if (page === 'materials') renderMaterials(c, params);
+    else if (page === 'studio') renderStudio(c, params);
+    else if (page === 'creations') renderCreations(c, params);
+    else if (page === 'pushutree') renderPushutree(c, params);
+    else if (page === 'wechat') renderWechatPage(c, params);
+    else if (page === 'mediacrawler') renderMediaCrawlerPage(c, params);
+  });
+}
+
+// ─── API helpers ─────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(API + path, opts);
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return r.json();
+}
+async function upload(formData, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', API + '/sources/upload-pdf');
+    xhr.upload.onprogress = e => e.lengthComputable && onProgress && onProgress(e.loaded/e.total*100);
+    xhr.onload = () => {
+      if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+      else reject(new Error(xhr.responseText));
+    };
+    xhr.onerror = () => reject(new Error('上传失败'));
+    xhr.send(formData);
+  });
+}
+
+async function loadStats() {
+  try {
+    stats = await api('GET', '/stats');
+    document.getElementById('ss-sources').textContent = stats.sources;
+    document.getElementById('ss-materials').textContent = stats.materials;
+    document.getElementById('ss-starred').textContent = stats.starred;
+  } catch(e) {}
+}
+
+// ─── HOME ────────────────────────────────────────────────
+async function renderHome(c) {
+  await loadStats();
+  const cats = stats.by_category || {};
+  c.innerHTML = `
+  <div class="home-hero">
+    <h1>⚔️ IP 军火库</h1>
+    <p>将书籍与内容提炼为可复用的创作弹药，让每一条素材都能持续爆款</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--accent)">${stats.sources}</div>
+      <div class="stat-name">📚 已处理资料</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--green)">${stats.materials}</div>
+      <div class="stat-name">💎 全部素材</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--yellow)">${stats.starred}</div>
+      <div class="stat-name">⭐ 收藏素材</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--pink)">${(cats.quote||0)+(cats.topic||0)}</div>
+      <div class="stat-name">🔥 金句+选题</div>
+    </div>
+  </div>
+
+  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px">⚡ 快速开始</div>
+  <div class="quick-actions">
+    <div class="quick-btn" onclick="openAddModal('book')">
+      <div class="quick-icon">📖</div>
+      <div class="quick-label">上传书籍 PDF</div>
+      <div class="quick-desc">一键提炼全书弹药</div>
+    </div>
+    <div class="quick-btn" onclick="openAddModal('folder')">
+      <div class="quick-icon">📁</div>
+      <div class="quick-label">导入文件夹</div>
+      <div class="quick-desc">批量导入整个书库</div>
+    </div>
+    <div class="quick-btn" onclick="openAddModal('url')">
+      <div class="quick-icon">🌐</div>
+      <div class="quick-label">输入网址</div>
+      <div class="quick-desc">自动抓取网页内容</div>
+    </div>
+    <div class="quick-btn" onclick="openAddModal('text')">
+      <div class="quick-icon">📝</div>
+      <div class="quick-label">粘贴文字</div>
+      <div class="quick-desc">文章/段落/笔记</div>
+    </div>
+    <div class="quick-btn" onclick="navigate('studio')">
+      <div class="quick-icon">✍️</div>
+      <div class="quick-label">打开创作台</div>
+      <div class="quick-desc">组合素材一键创作</div>
+    </div>
+  </div>
+
+  <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:12px">📊 素材分布</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px">
+    ${[
+      ['quote','🔫','金句弹药',cats.quote||0],
+      ['case','🎭','故事案例',cats.case||0],
+      ['viewpoint','🧠','认知观点',cats.viewpoint||0],
+      ['action','✅','行动库',cats.action||0],
+      ['topic','🎯','IP选题',cats.topic||0],
+    ].map(([cat,icon,label,n])=>`
+    <div class="quick-btn" onclick="navigate('materials',{category:'${cat}'})">
+      <div class="quick-icon">${icon}</div>
+      <div class="quick-label">${label}</div>
+      <div class="quick-desc" style="color:var(--accent);font-weight:700;font-size:14px">${n}</div>
+    </div>`).join('')}
+
+  </div>`;
+}
+
+// ─── LIBRARY ─────────────────────────────────────────────
+async function renderLibrary(c, params={}) {
+  c.innerHTML = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:8px">
+    <div style="display:flex;gap:8px;align-items:center">
+      <select class="form-select" style="width:120px" id="lib-filter-type" onchange="loadLibrary()">
+        <option value="">全部类型</option>
+        <option value="book">📖 书籍</option>
+        <option value="url">🌐 网址</option>
+        <option value="text">📝 文字</option>
+      </select>
+      <span id="queue-status-badge" style="font-size:12px;color:var(--text2);padding:4px 10px;background:var(--bg3);border-radius:99px;cursor:pointer" onclick="refreshQueueStatus()" title="点击刷新队列状态">⏳ 加载中...</span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="recoverAllStuck()" title="将所有卡住的 pending/processing 任务重新加入处理队列">🔄 恢复队列</button>
+      <button class="btn btn-ghost btn-sm" onclick="skipStuckTasks()" title="将所有'处理中'卡住的任务强制标记为出错，让队列继续" style="color:#f97316">⏭️ 跳过卡住</button>
+      <button class="btn btn-ghost btn-sm" onclick="retryErrorTasks()" title="将所有出错的任务重新入队重试">↩️ 重试出错</button>
+      <button class="btn btn-ghost btn-sm" id="aistudio-token-btn" onclick="openAistudioTokenModal()" title="配置百度AI Studio OCR Token，大幅提升扫描版识别率">🔑 OCR配置</button>
+      <button class="btn btn-ghost btn-sm" onclick="deleteAllSources()" title="一键删除所有书籍/资料（不可恢复！）" style="color:#ef4444;border-color:#ef4444">🗑️ 清空书库</button>
+      <button class="btn btn-primary btn-sm" onclick="openAddModal()">➕ 添加资料</button>
+    </div>
+  </div>
+  <div id="processing-strip" style="display:none;margin-bottom:10px;flex-wrap:wrap;gap:6px;align-items:center">
+  </div>
+  <div id="queue-warn-bar" style="display:none;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:8px 14px;margin-bottom:12px;font-size:13px;color:#f97316;display:flex;align-items:center;gap:10px">
+    <span>⚠️ 有任务正在处理中，若超过 5 分钟没有进展，可点击「⏭️ 跳过卡住」强制解锁队列</span>
+    <button class="btn btn-sm" style="background:rgba(249,115,22,0.2);color:#f97316;border:none;padding:3px 10px" onclick="skipStuckTasks()">跳过卡住</button>
+  </div>
+  <div class="source-grid" id="source-grid">
+    <div class="empty-state"><div class="empty-icon">📚</div><p>加载中...</p></div>
+  </div>`;
+  loadLibrary();
+  refreshQueueStatus();
+  startAutoRefresh();  // 进入页面立即启动3秒轮询
+  // 检查 AI Studio token 状态
+  api('GET', '/ocr/aistudio-token').then(s => {
+    const btn = document.getElementById('aistudio-token-btn');
+    if (btn) btn.textContent = s.configured ? '🔑 OCR配置 ✅' : '🔑 OCR配置';
+  }).catch(() => {});
+}
+
+async function refreshQueueStatus() {
+  try {
+    const s = await api('GET', '/queue-status');
+    const badge = document.getElementById('queue-status-badge');
+    if (!badge) return;
+    const parts = [];
+    if (s.processing > 0) parts.push(`🔄 处理中 ${s.processing}`);
+    if (s.pending > 0)    parts.push(`⏳ 排队中 ${s.pending}`);
+    if (s.queue_size > 0) parts.push(`📥 队列 ${s.queue_size}`);
+    parts.push(`✅ 已完成 ${s.done}`);
+    if (s.error > 0)      parts.push(`❌ 出错 ${s.error}`);
+    // 显示 worker 状态
+    if (s.worker_states) {
+      const wState = s.worker_states.map((st, i) => `W${i+1}:${st}`).join(' ');
+      parts.push(`[${wState}]`);
+    }
+    badge.textContent = parts.join('  |  ');
+    // 如果有卡住的 processing 任务，显示警告提示
+    const warnEl = document.getElementById('queue-warn-bar');
+    if (warnEl) {
+      if (s.processing > 0) {
+        warnEl.style.display = '';
+      } else {
+        warnEl.style.display = 'none';
+      }
+    }
+  } catch(e) {}
+  // 同步刷新实时进度面板
+  refreshProcessingPanel();
+}
+
+async function refreshProcessingPanel() {
+  const strip = document.getElementById('processing-strip');
+  if (!strip) return;
+  try {
+    const tasks = await api('GET', '/processing-tasks');
+    const active = (tasks || []).filter(t => t.source_status === 'processing');
+    if (!active.length) {
+      strip.style.display = 'none';
+      strip.innerHTML = '';
+      return;
+    }
+    strip.style.display = 'flex';
+    strip.innerHTML = active.map(t => {
+      const pct = t.progress || 0;
+      const title = (t.title || '').length > 14 ? t.title.slice(0, 14) + '…' : (t.title || '');
+      const msg = (t.message || '处理中...').replace(/"/g, '&quot;');
+      const fullTitle = (t.title || '').replace(/"/g, '&quot;');
+      return `<div title="${fullTitle}\n${t.message || ''}" style="display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:99px;padding:3px 10px 3px 7px;font-size:12px;color:var(--text2);max-width:200px;cursor:default">
+        <span style="width:6px;height:6px;border-radius:50%;background:#3b82f6;flex-shrink:0;animation:pulse 1.5s infinite"></span>
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(title)}</span>
+        <span style="color:#3b82f6;font-weight:600;flex-shrink:0">${pct}%</span>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    strip.style.display = 'none';
+  }
+}
+
+async function skipStuckTasks() {
+  if (!confirm('将所有"处理中"状态的任务标记为出错，让队列继续处理其他任务？\n（适用于任务卡住不动的情况）')) return;
+  try {
+    const res = await api('POST', '/sources/skip-stuck');
+    showToast(`✅ 已跳过 ${res.skipped} 个卡住任务，队列继续运行`, 'success');
+    setTimeout(() => { loadLibrary(); refreshQueueStatus(); }, 500);
+  } catch(e) {
+    showToast('操作失败：' + e.message, 'error');
+  }
+}
+
+async function retryErrorTasks() {
+  try {
+    const res = await api('POST', '/sources/retry-errors');
+    showToast(`✅ 已将 ${res.retried} 个出错任务重新入队`, 'success');
+    setTimeout(() => { loadLibrary(); refreshQueueStatus(); }, 500);
+  } catch(e) {
+    showToast('操作失败：' + e.message, 'error');
+  }
+}
+
+async function recoverAllStuck() {
+  try {
+    const res = await api('POST', '/sources/recover-all');
+    showToast(`✅ 已恢复 ${res.queued} 个任务入队，当前队列 ${res.queue_size} 个`, 'success');
+    setTimeout(() => { loadLibrary(); refreshQueueStatus(); }, 500);
+  } catch(e) {
+    showToast('恢复失败：' + e.message, 'error');
+  }
+}
+
+async function loadLibrary() {
+  const q = document.getElementById('global-search-input')?.value || '';
+  const type = document.getElementById('lib-filter-type')?.value || '';
+  try {
+    const sources = await api('GET', `/sources?q=${encodeURIComponent(q)}&type=${type}`);
+    const grid = document.getElementById('source-grid');
+    if (!grid) return;
+    if (!sources.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-icon">📚</div>
+        <p>还没有资料，点击右上角添加第一本书吧</p>
+        <button class="btn btn-primary" onclick="openAddModal()">➕ 添加资料</button>
+      </div>`;
+      return;
+    }
+    const typeIcon = {book:'📖', url:'🌐', text:'📝', image:'🖼️', epub:'📗', txt:'📄'};
+    const statusLabel = {done:'已完成', processing:'处理中', pending:'等待中', error:'出错了'};
+    grid.innerHTML = sources.map(s => `
+    <div class="source-card ${s.type}" data-source-id="${s.id}" onclick="viewSourceMaterials('${s.id}','${escHtml(s.title)}')">
+      <div class="source-card-header">
+        <div class="source-card-title">${escHtml(s.title)}</div>
+        <div class="source-card-type">${typeIcon[s.type]||'📄'}${s.is_scanned && s.type==='book' ? ' <span title="扫描版·已AI-OCR" style="font-size:11px;background:rgba(249,115,22,0.15);color:#f97316;padding:1px 6px;border-radius:99px;vertical-align:middle">OCR</span>' : (s.type==='epub' ? ' <span style="font-size:11px;background:rgba(34,197,94,0.15);color:#22c55e;padding:1px 6px;border-radius:99px;vertical-align:middle">EPUB</span>' : (s.type==='txt' ? ' <span style="font-size:11px;background:rgba(96,165,250,0.15);color:#60a5fa;padding:1px 6px;border-radius:99px;vertical-align:middle">TXT</span>' : ''))}</div>
+      </div>
+      <div class="source-card-meta">
+        <span>${s.page_count > 0 ? s.page_count+'页' : ''}</span>
+        <span>${s.char_count > 0 ? Math.round(s.char_count/1000)+'K字' : ''}</span>
+        <span>${formatDate(s.created_at)}</span>
+      </div>
+      <div class="source-card-footer">
+        <div class="status-badge ${s.status}">
+          <div class="status-dot"></div>
+          ${statusLabel[s.status]||s.status}
+          ${s.status === 'done' ? `<span style="margin-left:4px;color:var(--text3)">${s.material_count}条</span>` : ''}
+        </div>
+        <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
+          ${s.status === 'error' ? `<button class="btn btn-ghost btn-sm" onclick="reprocess('${s.id}')">重试</button>` : ''}
+          ${(s.status === 'done' || s.status === 'pending') ? `<button class="btn btn-ghost btn-sm" style="color:#a78bfa;border-color:#a78bfa" title="智能提炼：分层Chunking+四轮迭代+质量评分（比普通提炼更深度）" onclick="smartExtract('${s.id}','${escHtml(s.title)}')">🧠 智能</button>` : ''}
+          <button class="btn btn-ghost btn-sm" style="color:#22c55e;border-color:#22c55e" title="朴树之道分享：一键把书变成系列文案（无需先提炼）" onclick="openPushutreeModal('${s.id}','${escHtml(s.title)}')">🌳 分享</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSource('${s.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+  } catch(e) {
+    showToast('加载失败: ' + e.message, 'error');
+  }
+}
+
+function viewSourceMaterials(sourceId, title) {
+  navigate('materials', { source_id: sourceId, source_title: title });
+}
+
+// 重试失败任务
+async function reprocess(sourceId) {
+  // 从卡片 DOM 读取书名
+  const cardEl = document.querySelector(`[data-source-id="${sourceId}"]`);
+  const title = cardEl?.querySelector('.source-card-title')?.textContent?.trim() || '该书籍';
+
+  showToast(`《${title}》重新排队中...`, 'info');
+  try {
+    const res = await api('POST', `/sources/${sourceId}/retry`);
+    showToast(`✅ 《${title}》已重新加入队列，正在提炼...`, 'success');
+    // 立即刷新列表，让状态从 error 变回 pending
+    loadLibrary();
+    // 启动轮询，完成后自动提示
+    startPolling(res.task_id, sourceId, title);
+  } catch(e) {
+    showToast('重试失败：' + e.message, 'error');
+  }
+}
+
+// 智能提炼（四轮迭代 + 质量评分）
+async function smartExtract(sourceId, title) {
+  if (!confirm(`确认对《${title}》启动智能提炼？\n\n智能提炼流程：\n① 分层Chunking（保留章节结构）\n② 四轮迭代提取（结构理解→逐章提取→跨章分析→IP选题）\n③ 五维质量评分（自动批准/待审核/过滤）\n\n耗时约为普通提炼的 2-5 倍，但质量显著更高。`)) return;
+  showToast(`《${title}》智能提炼任务已排队...`, 'info');
+  try {
+    const res = await api('POST', `/sources/${sourceId}/extract-smart`);
+    showToast(`✅ 《${title}》已启动智能提炼（分层Chunking+四轮迭代），请等待...`, 'success');
+    loadLibrary();
+    startPolling(res.task_id, sourceId, title);
+  } catch(e) {
+    showToast('智能提炼启动失败：' + e.message, 'error');
+  }
+}
+
+async function deleteSource(id) {
+  if (!confirm('确认删除？将同时删除所有相关素材。')) return;
+  try {
+    await api('DELETE', `/sources/${id}`);
+    showToast('已删除', 'success');
+    loadLibrary();
+    loadStats();
+  } catch(e) { showToast('删除失败', 'error'); }
+}
+
+async function deleteAllSources() {
+  // 两步确认，防止误触
+  if (!confirm('⚠️ 确定要清空整个书库吗？\n\n所有书籍/资料及相关素材将被永久删除，不可恢复！')) return;
+  if (!confirm('⚠️ 二次确认：清空后无法还原，确定继续？')) return;
+  try {
+    const res = await api('DELETE', '/sources');
+    showToast(`✅ 已清空书库（共删除 ${res.deleted ?? '全部'} 条记录）`, 'success');
+    loadLibrary();
+    loadStats();
+  } catch(e) { showToast('清空失败：' + e.message, 'error'); }
+}
+
+// ─── MATERIALS ───────────────────────────────────────────
+async function renderMaterials(c, params={}) {
+  if (params.category) materialsState.category = params.category;
+  if (params.source_id) materialsState.source_id = params.source_id;
+  if (params.starred !== undefined) materialsState.starred = params.starred;
+  if (params.review_only !== undefined) materialsState.review_only = params.review_only;
+  if (!params.category && !params.source_id && params.starred === undefined && params.review_only === undefined) {
+    materialsState.category = '';
+    materialsState.source_id = '';
+    materialsState.starred = -1;
+    materialsState.review_only = 0;
+  }
+  materialsState.q = '';
+  materialsState.page = 1;
+
+  const sourceTitle = params.source_title ? `《${escHtml(params.source_title)}》的素材` : '';
+
+  c.innerHTML = `
+  <div class="materials-header">
+    ${sourceTitle ? `<div style="font-size:13px;color:var(--text2)">${sourceTitle}</div>` : ''}
+    <div class="cat-tabs" id="cat-tabs">
+      ${['all','quote','case','viewpoint','action','topic'].map((cat,i) => {
+        const labels = {all:'全部',quote:'🔫 金句',case:'🎭 案例',viewpoint:'🧠 观点',action:'✅ 行动',topic:'🎯 选题'};
+        return `<div class="cat-tab ${materialsState.category === (cat === 'all' ? '' : cat) ? 'active' : ''}" onclick="filterMaterials('${cat === 'all' ? '' : cat}')">${labels[cat]}</div>`;
+      }).join('')}
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:var(--text2)">
+        <input type="checkbox" id="starred-only" ${materialsState.starred === 1 ? 'checked' : ''} onchange="filterStarred(this.checked)"> ⭐ 只看收藏
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;color:#f97316" title="只显示智能提取后需要人工审核的素材">
+        <input type="checkbox" id="review-only" ${materialsState.review_only === 1 ? 'checked' : ''} onchange="filterReviewOnly(this.checked)"> ⚠️ 待审核
+      </label>
+      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="exportMaterials('excel')" title="导出为 Excel，按分类分 Sheet">
+        📊 导出 Excel
+      </button>
+      <button class="btn btn-ghost" style="font-size:12px;padding:5px 12px" onclick="exportMaterials('markdown')" title="导出为 Markdown 文本">
+        📝 导出 Markdown
+      </button>
+    </div>
+  </div>
+  <div id="materials-list"><div class="empty-state"><div class="empty-icon">💎</div><p>加载中...</p></div></div>
+  <div id="materials-pagination"></div>`;
+
+  loadMaterials();
+}
+
+function filterMaterials(cat) {
+  materialsState.category = cat;
+  materialsState.page = 1;
+  document.querySelectorAll('.cat-tab').forEach((el, i) => {
+    const cats = ['', 'quote','case','viewpoint','action','topic'];
+    el.classList.toggle('active', cats[i] === cat);
+  });
+  loadMaterials();
+}
+
+function filterStarred(checked) {
+  materialsState.starred = checked ? 1 : -1;
+  materialsState.page = 1;
+  loadMaterials();
+}
+
+function filterReviewOnly(checked) {
+  materialsState.review_only = checked ? 1 : 0;
+  materialsState.page = 1;
+  loadMaterials();
+}
+
+function exportMaterials(fmt) {
+  // 把当前筛选条件带入导出
+  const { category, source_id, starred } = materialsState;
+  const params = new URLSearchParams();
+  if (category)    params.set('category',     category);
+  if (source_id)   params.set('source_id',    source_id);
+  if (starred===1) params.set('starred_only', 'true');
+  // 用完整 URL，避免被静态文件服务拦截
+  const url = `${API}/export/${fmt}?${params.toString()}`;
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast(`正在生成 ${fmt === 'excel' ? 'Excel' : 'Markdown'} 文件，稍后自动下载...`, 'info');
+}
+
+
+
+async function loadMaterials() {
+  const { page, category, q, source_id, starred, review_only } = materialsState;
+  const limit = 20;
+  const skip = (page-1)*limit;
+  const qs = new URLSearchParams({ skip, limit });
+  if (category) qs.set('category', category);
+  if (q) qs.set('q', q);
+  if (source_id) qs.set('source_id', source_id);
+  if (starred === 1) qs.set('starred', '1');
+  if (review_only === 1) qs.set('review_only', '1');
+
+  try {
+    const data = await api('GET', `/materials?${qs}`);
+    materialsState.total = data.total;
+    materialsState.items = data.items;
+    renderMaterialsList(data.items);
+    renderPagination(data.total, limit, page);
+  } catch(e) {
+    showToast('加载失败', 'error');
+  }
+}
+
+const catInfo = {
+  quote:     { icon:'🔫', label:'金句', cls:'tag-quote' },
+  case:      { icon:'🎭', label:'案例', cls:'tag-case' },
+  viewpoint: { icon:'🧠', label:'观点', cls:'tag-viewpoint' },
+  action:    { icon:'✅', label:'行动', cls:'tag-action' },
+  topic:     { icon:'🎯', label:'选题', cls:'tag-topic' },
+  rating:    { icon:'⭐', label:'评级', cls:'tag-rating' },
+};
+
+function renderMaterialsList(items) {
+  const el = document.getElementById('materials-list');
+  if (!el) return;
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">💎</div><p>还没有素材，先去资料库添加内容并提炼吧</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="material-list">${items.map(m => {
+    const info = catInfo[m.category] || {icon:'📄',label:m.category,cls:'tag-quote'};
+    const meta = safeJson(m.metadata, {});
+    const riskLabel = {safe:'✅安全',context:'⚠️需语境',forbidden:'❌禁用'}[meta.risk];
+    const sceneLabel = {viral:'🔥爆款',heal:'💡治愈',deep:'📚深度'}[meta.scene];
+    const inBasket = basket.some(b => b.id === m.id);
+    // 质量评分
+    const qs = m._quality_score;
+    const qScoreHtml = qs ? (() => {
+      const overall = qs.overall || 0;
+      const pct = Math.round(overall * 100);
+      const color = pct >= 80 ? '#22c55e' : pct >= 55 ? '#f97316' : '#ef4444';
+      return `<span style="font-size:11px;background:${color}22;color:${color};padding:1px 6px;border-radius:99px;border:1px solid ${color}44" title="质量得分: 完整度${Math.round((qs.completeness||0)*100)}% IP契合${Math.round((qs.ip_fit||0)*100)}% 唯一性${Math.round((qs.uniqueness||0)*100)}%">★ ${pct}%</span>`;
+    })() : '';
+    const reviewBadge = m._review_needed ? `<span style="font-size:11px;background:rgba(249,115,22,0.12);color:#f97316;padding:1px 6px;border-radius:99px;border:1px solid rgba(249,115,22,0.3)" title="此素材质量中等，建议人工复核">⚠️ 待审核</span>` : '';
+    return `<div class="material-card ${m.is_starred ? 'starred' : ''}" id="mc-${m.id}">
+      <div class="material-header">
+        <span class="tag ${info.cls}">${info.icon} ${info.label}</span>
+        ${riskLabel ? `<span class="tag">${riskLabel}</span>` : ''}
+        ${sceneLabel ? `<span class="tag">${sceneLabel}</span>` : ''}
+        ${qScoreHtml}
+        ${reviewBadge}
+        <span style="margin-left:auto;font-size:11px;color:var(--text3)">${m.source_title||''}</span>
+      </div>
+      <div class="material-content">${escHtml(m.content).substring(0,400)}${m.content.length>400?'<span style="color:var(--text3)">...<span onclick="openMaterialDetail(${JSON.stringify(m.id)})" style="cursor:pointer;color:var(--accent)"> 展开全文</span></span>':''}</div>
+      <div class="material-footer">
+        <div class="material-source">使用 ${m.use_count} 次</div>
+        <div class="material-actions">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="toggleStar('${m.id}',${m.is_starred})" title="${m.is_starred?'取消收藏':'收藏'}">${m.is_starred?'⭐':'☆'}</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="copyMaterial('${m.id}')" title="复制">📋</button>
+          <button class="btn ${inBasket?'btn-primary':'btn-ghost'} btn-sm basket-toggle-btn" data-mid="${m.id}" title="加入购物车">🧺${inBasket?' ✓':''}</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="deleteMaterial('${m.id}')" title="删除">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderPagination(total, limit, page) {
+  const el = document.getElementById('materials-pagination');
+  if (!el) return;
+  const pages = Math.ceil(total / limit);
+  if (pages <= 1) { el.innerHTML = ''; return; }
+  const start = Math.max(1, page-2), end = Math.min(pages, page+2);
+  let html = `<div class="pagination" style="margin-top:24px;display:flex;align-items:center;gap:4px;flex-wrap:wrap">`;
+
+  // 首页
+  if (page > 1) html += `<button class="page-btn" onclick="goPage(1)" title="首页">«</button>`;
+  // 上一页
+  if (page > 1) html += `<button class="page-btn" onclick="goPage(${page-1})" title="上一页">‹</button>`;
+
+  for (let i = start; i <= end; i++) {
+    html += `<button class="page-btn ${i===page?'active':''}" onclick="goPage(${i})">${i}</button>`;
+  }
+
+  // 下一页
+  if (page < pages) html += `<button class="page-btn" onclick="goPage(${page+1})" title="下一页">›</button>`;
+  // 尾页
+  if (page < pages) html += `<button class="page-btn" onclick="goPage(${pages})" title="尾页">»</button>`;
+
+  html += `<span style="font-size:12px;color:var(--text3);margin-left:8px">第 ${page}/${pages} 页，共 ${total} 条</span></div>`;
+  el.innerHTML = html;
+}
+
+function goPage(p) {
+  materialsState.page = p;
+  loadMaterials();
+  document.getElementById('main-content').scrollTo(0, 0);
+}
+
+async function toggleStar(id, current) {
+  try {
+    const res = await api('POST', `/materials/${id}/star`);
+    const card = document.getElementById(`mc-${id}`);
+    if (card) {
+      card.classList.toggle('starred', res.is_starred === 1);
+      const btn = card.querySelector('[title="收藏"],[title="取消收藏"]');
+      if (btn) { btn.textContent = res.is_starred ? '⭐' : '☆'; btn.title = res.is_starred ? '取消收藏' : '收藏'; }
+    }
+    loadStats();
+  } catch(e) {}
+}
+
+async function copyMaterial(id) {
+  const item = materialsState.items.find(m => m.id === id);
+  if (!item) return;
+  try {
+    await navigator.clipboard.writeText(item.content);
+    await api('POST', `/materials/${id}/use`);
+    showToast('已复制！', 'success');
+    const card = document.getElementById(`mc-${id}`);
+    if (card) { const fc = card.querySelector('.material-footer .material-source'); if(fc) fc.textContent = `使用 ${item.use_count+1} 次`; }
+  } catch(e) { showToast('复制失败', 'error'); }
+}
+
+async function deleteMaterial(id) {
+  if (!confirm('确认删除这条素材？')) return;
+  try {
+    await api('DELETE', `/materials/${id}`);
+    showToast('已删除', 'success');
+    loadMaterials();
+    loadStats();
+  } catch(e) { showToast('删除失败', 'error'); }
+}
+
+function openMaterialDetail(id) {
+  const item = materialsState.items.find(m => m.id === id);
+  if (!item) return;
+  const info = catInfo[item.category] || {icon:'📄',label:item.category,cls:'tag-quote'};
+  const meta = safeJson(item.metadata, {});
+  document.getElementById('drawer-title').textContent = `${info.icon} ${info.label} 详情`;
+  document.getElementById('drawer-body').innerHTML = `
+    <div style="margin-bottom:16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="tag ${info.cls}">${info.icon} ${info.label}</span>
+      ${meta.risk ? `<span class="tag">${{safe:'✅安全',context:'⚠️需语境',forbidden:'❌禁用'}[meta.risk]||''}</span>` : ''}
+      ${meta.scene ? `<span class="tag">${{viral:'🔥爆款',heal:'💡治愈',deep:'📚深度'}[meta.scene]||''}</span>` : ''}
+      ${meta.cost ? `<span class="tag">${{zero:'⚡零成本',mid:'✂️中成本',high:'🛠️高成本'}[meta.cost]||''}</span>` : ''}
+      ${meta.timeliness ? `<span class="tag">${{long:'✅长效',update:'⚠️需更新',expired:'❌已过期'}[meta.timeliness]||''}</span>` : ''}
+    </div>
+    <div style="background:var(--bg3);border-radius:var(--r2);padding:16px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-all;margin-bottom:16px">${escHtml(item.content)}</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">来源：${item.source_title||''}  |  使用 ${item.use_count} 次</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="copyAndClose('${id}')">📋 复制全文</button>
+      <button class="btn btn-ghost" onclick="toggleStar('${id}',${item.is_starred});closeDrawer()">⭐ ${item.is_starred?'取消收藏':'收藏'}</button>
+      <button class="btn btn-ghost" onclick="toggleBasketItemById('${id}');closeDrawer()">🧺 加购物车</button>
+    </div>`;
+  document.getElementById('detail-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+async function copyAndClose(id) {
+  await copyMaterial(id);
+  closeDrawer();
+}
+
+function toggleBasketItemById(id) {
+  const item = materialsState.items.find(m => m.id === id);
+  if (item) toggleBasketItem(item);
+}
+
+function closeDrawer() {
+  document.getElementById('detail-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+}
+
+// ─── BASKET ──────────────────────────────────────────────
+// 事件委托：通过 data-mid 安全查找素材，避免 JSON.stringify 嵌入 onclick 时特殊字符截断
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.basket-toggle-btn');
+  if (!btn) return;
+  const mid = btn.dataset.mid;
+  if (!mid) return;
+  const item = (materialsState.items || []).find(m => String(m.id) === String(mid));
+  if (item) toggleBasketItem(item);
+});
+
+function toggleBasket() {
+  document.getElementById('basket-panel').classList.toggle('open');
+}
+
+function toggleBasketItem(m) {
+  const idx = basket.findIndex(b => b.id === m.id);
+  if (idx >= 0) {
+    basket.splice(idx, 1);
+    showToast('已从购物车移除', 'info');
+  } else {
+    basket.push({ id: m.id, content: m.content, category: m.category, source_title: m.source_title });
+    showToast(`✅ 已加入购物车（共${basket.length}条）— 点右下角 🧺 查看`, 'success');
+  }
+  updateBasketUI();
+  if (currentPage === 'materials') loadMaterials();
+}
+
+function updateBasketUI() {
+  const cnt = document.getElementById('basket-count');
+  const fab = document.querySelector('.basket-fab');
+  if (basket.length) {
+    cnt.textContent = basket.length;
+    cnt.style.display = 'flex';
+    if (fab) fab.classList.add('has-items');
+  } else {
+    cnt.style.display = 'none';
+    if (fab) fab.classList.remove('has-items');
+  }
+  renderBasketItems();
+}
+
+function renderBasketItems() {
+  const el = document.getElementById('basket-items-list');
+  if (!el) return;
+  if (!basket.length) { el.innerHTML = '<div style="text-align:center;color:var(--text3);padding:24px;font-size:13px">购物车是空的<br>去素材库加入素材</div>'; return; }
+  el.innerHTML = basket.map((b,i) => {
+    const info = catInfo[b.category] || {icon:'📄',label:b.category};
+    return `<div class="basket-item">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${info.icon} ${b.source_title||''}</div>
+      ${escHtml(b.content).substring(0,100)}${b.content.length>100?'...':''}
+      <span class="basket-item-remove" onclick="removeBasketItem(${i})">✕</span>
+    </div>`;
+  }).join('');
+}
+
+function removeBasketItem(i) {
+  basket.splice(i, 1);
+  updateBasketUI();
+}
+
+function sendToStudio() {
+  if (!basket.length) { showToast('购物车是空的', 'info'); return; }
+  const count = basket.length;
+  toggleBasket();
+  navigate('studio', { basket: [...basket] });
+  setTimeout(() => showToast(`✅ ${count} 条素材已发送到创作台！`, 'success'), 300);
+}
+
+// ─── STUDIO ──────────────────────────────────────────────
+function importBasketToStudio() {
+  if (!basket.length) { showToast('购物车是空的，先去素材库加入素材', 'info'); return; }
+  const ta = document.getElementById('studio-input');
+  if (!ta) return;
+  const content = basket.map(b => b.content).join('\n\n---\n\n');
+  ta.value = content;
+  showToast(`✅ 已导入 ${basket.length} 条购物车素材`, 'success');
+}
+
+function renderStudio(c, params={}) {
+  const initContent = params.initialContent
+    ? params.initialContent
+    : (params.basket ? params.basket.map(b => b.content).join('\n\n---\n\n') : '');
+
+  c.innerHTML = `
+  <div class="studio-layout">
+    <div class="studio-panel">
+      <div class="studio-panel-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>📥 输入 / 素材</span>
+        <button class="btn btn-ghost btn-sm" onclick="importBasketToStudio()" title="把购物车里的素材全部导入到输入框">🧺 从购物车导入${basket.length ? ` (${basket.length})` : ''}</button>
+      </div>
+      <textarea class="studio-textarea" id="studio-input" placeholder="把素材粘贴到这里，或点上方「🧺 从购物车导入」...">${initContent}</textarea>
+    </div>
+    <div class="studio-panel" style="display:flex;flex-direction:column;gap:10px;overflow:auto;padding-bottom:20px">
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">🎯 平台适配</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${['抖音脚本','小红书图文','公众号文章','微博段子','通用正文'].map(p => `
+          <button class="platform-btn" onclick="setPlatform(this,'${p}')" data-platform="${p}">${p}</button>`).join('')}
+        </div>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:10px">✨ AI 改写</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('爆款化')">🔥 爆款化</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('口语化')">🗣️ 口语化</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('精简')">✂️ 精简</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('深度扩展')">📚 深度展开</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('添加钩子')">🪝 加开头钩子</button>
+          <button class="btn btn-ghost btn-sm" onclick="aiRewrite('添加互动结尾')">💬 加互动结尾</button>
+          <button class="btn btn-ghost btn-sm" style="border-color:#f59e0b;color:#f59e0b" onclick="aiRewriteEnsemble()">🎭 多版本</button>
+        </div>
+      </div>
+      <!-- 跨书整合模块 -->
+      <div style="background:var(--bg3);border:1px solid rgba(167,139,250,0.3);border-radius:var(--r2);padding:12px 16px">
+        <div style="font-size:12px;font-weight:700;color:#a78bfa;margin-bottom:8px">🔗 跨书整合 <span style="font-size:11px;font-weight:400;color:var(--text3)">发现多本书共同的深层规律</span></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:10px">把多本书的素材放入输入框，AI自动发现跨书主题关联，生成系列内容策划</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" style="border-color:#a78bfa;color:#a78bfa" onclick="crossBookIntegrate('主题关联')">🌐 发现主题关联</button>
+          <button class="btn btn-ghost btn-sm" style="border-color:#a78bfa;color:#a78bfa" onclick="crossBookIntegrate('系列策划')">📅 生成系列策划</button>
+          <button class="btn btn-ghost btn-sm" style="border-color:#a78bfa;color:#a78bfa" onclick="crossBookIntegrate('思维模型')">🧩 提炼思维模型</button>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column">
+        <div class="studio-panel-header" style="border-radius:var(--r2) var(--r2) 0 0">📤 输出结果</div>
+        <textarea class="studio-textarea" id="studio-output" placeholder="AI改写结果会显示在这里..."></textarea>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="copyOutput()">📋 复制结果</button>
+        <button class="btn btn-ghost" onclick="saveCreation()">💾 保存创作</button>
+        <button class="btn btn-ghost" onclick="clearStudio()">🗑️ 清空</button>
+      </div>
+
+      <!-- 公众号排版区 → 跳转入口 -->
+      <div style="border:1px solid var(--border);border-radius:var(--r2);background:var(--bg2);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:4px">📱 公众号排版</div>
+          <div style="font-size:12px;color:var(--text3)">将生成的文章一键转为带样式的公众号内容，可直接粘贴到编辑器</div>
+        </div>
+        <button class="btn btn-primary" style="white-space:nowrap;flex-shrink:0" onclick="goToWechatFormatWithContent()">
+          📤 去公众号排版
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+let activePlatform = '';
+function setPlatform(btn, platform) {
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activePlatform = platform;
+}
+
+async function aiRewrite(mode) {
+  const input = document.getElementById('studio-input')?.value?.trim();
+  if (!input) { showToast('请先输入素材内容', 'info'); return; }
+  const output = document.getElementById('studio-output');
+  output.value = `⏳ AI 改写中（${mode}）...`;
+
+  try {
+    const resp = await fetch(API + '/rewrite', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        content: input,
+        mode: mode,
+        platform: activePlatform || ''
+      })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${resp.status}`);
+    }
+    const res = await resp.json();
+    output.value = res.result || '（AI 未返回内容）';
+    showToast(`✅ ${mode} 改写完成`, 'success');
+  } catch(e) {
+    output.value = '';
+    showToast('AI 改写失败：' + e.message, 'error');
+  }
+}
+
+// ─── 多版本改写 ───────────────────────────────────────────────
+async function aiRewriteEnsemble() {
+  const input = document.getElementById('studio-input')?.value?.trim();
+  if (!input) { showToast('请先输入素材内容', 'info'); return; }
+  const output = document.getElementById('studio-output');
+  output.value = '⏳ 正在生成多版本，请稍候...';
+
+  try {
+    const resp = await fetch(API + '/rewrite-ensemble', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        content: input,
+        mode: '口语化',
+        platform: activePlatform || ''
+      })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${resp.status}`);
+    }
+    const res = await resp.json();
+    const versions = res.versions || [];
+    if (!versions.length) { output.value = '（未返回版本）'; return; }
+
+    // 展示多版本选择器
+    output.value = '';
+    const container = output.parentElement;
+    // 隐藏标准textarea，改为版本选择器
+    output.style.display = 'none';
+
+    // 移除旧版本选择器
+    const oldPicker = document.getElementById('studio-version-picker');
+    if (oldPicker) oldPicker.remove();
+
+    const picker = document.createElement('div');
+    picker.id = 'studio-version-picker';
+    picker.style.cssText = 'display:flex;flex-direction:column;gap:12px;padding:12px;background:var(--bg2);border-radius:var(--r2);max-height:400px;overflow-y:auto;';
+
+    versions.forEach((v, i) => {
+      const charCount = v.text ? v.text.replace(/[^\u4e00-\u9fff]/g, '').length : 0;
+      const card = document.createElement('div');
+      card.style.cssText = 'border:1px solid var(--border);border-radius:var(--r2);padding:12px;cursor:pointer;background:var(--bg3);transition:all 0.15s;';
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:12px;font-weight:700;color:${i===0?'#22c55e':'#f59e0b'}">${v.label}</span>
+          <span style="font-size:11px;color:var(--text3)">${charCount}字 · ${v.temp===0.7?'稳重':'创意'}风格</span>
+        </div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow:hidden">${escapeHtml(v.text.substring(0, 300))}${v.text.length > 300 ? '...' : ''}</div>
+      `;
+      card.onclick = () => {
+        document.getElementById('studio-output').value = v.text;
+        document.getElementById('studio-output').style.display = 'block';
+        picker.remove();
+        showToast(`已选择「${v.label}」`, 'success');
+      };
+      card.onmouseenter = () => card.style.borderColor = 'var(--accent)';
+      card.onmouseleave = () => card.style.borderColor = 'var(--border)';
+      picker.appendChild(card);
+    });
+
+    container.insertBefore(picker, output);
+    showToast('✅ 多版本生成完成，点击选择', 'success');
+  } catch(e) {
+    output.style.display = 'block';
+    output.value = '';
+    showToast('AI 改写失败：' + e.message, 'error');
+  }
+}
+
+// 跨书整合：对输入框里的多本书素材进行深度跨书分析
+async function crossBookIntegrate(mode) {
+  const input = document.getElementById('studio-input')?.value?.trim();
+  if (!input) {
+    showToast('请先在输入框中粘贴多本书的素材内容', 'info');
+    return;
+  }
+  if (input.length < 100) {
+    showToast('素材内容太少，建议把多本书的金句/观点拼合在一起再分析', 'info');
+    return;
+  }
+  const output = document.getElementById('studio-output');
+  const modeLabel = { '主题关联': '🌐 发现主题关联', '系列策划': '📅 生成系列策划', '思维模型': '🧩 提炼思维模型' }[mode] || mode;
+  output.value = `⏳ 跨书整合（${modeLabel}）分析中...\n\n把多本书的深层规律找出来，稍等片刻...`;
+
+  try {
+    const resp = await fetch(API + '/studio/cross-integrate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: input, mode: mode })
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${resp.status}`);
+    }
+    const res = await resp.json();
+    output.value = res.result || '（AI 未返回内容）';
+    showToast(`✅ ${modeLabel} 完成`, 'success');
+  } catch(e) {
+    output.value = '';
+    showToast('跨书整合失败：' + e.message, 'error');
+  }
+}
+
+function copyOutput() {
+  const output = document.getElementById('studio-output')?.value
+    || document.getElementById('studio-input')?.value || '';
+  if (!output) { showToast('没有内容', 'info'); return; }
+  navigator.clipboard.writeText(output).then(() => showToast('已复制！', 'success'));
+}
+
+async function saveCreation() {
+  const input = document.getElementById('studio-input')?.value?.trim();
+  const output = document.getElementById('studio-output')?.value?.trim();
+  const content = output || input;
+  if (!content) { showToast('没有内容可保存', 'info'); return; }
+  const title = `创作 ${formatDate(new Date().toISOString())}`;
+  try {
+    await api('POST', '/creations', { title, content, platform: activePlatform, source_ids: [], material_ids: basket.map(b=>b.id) });
+    showToast('已保存到"我的创作"', 'success');
+  } catch(e) { showToast('保存失败', 'error'); }
+}
+
+function clearStudio() {
+  const i = document.getElementById('studio-input');
+  const o = document.getElementById('studio-output');
+  if (i) i.value = '';
+  if (o) o.value = '';
+}
+
+// ─── 公众号排版 ──────────────────────────────────────────────
+let wfActiveTheme = 'wechat-native';
+let wfHtmlResult  = '';
+
+// 展开/收起排版面板
+function toggleWfPanel() {
+  const body = document.getElementById('wf-panel-body');
+  const icon = document.getElementById('wf-toggle-icon');
+  const isOpen = body.classList.toggle('open');
+  if (icon) icon.textContent = isOpen ? '▲' : '▼';
+  if (isOpen) {
+    loadWfThemes();  // 每次展开都刷新主题（保证渲染）
+    // 如果还没有排版结果，写入提示
+    const iframe = document.getElementById('wf-preview');
+    if (iframe && !wfHtmlResult) {
+      setTimeout(() => setPreviewIframeLoading('wf-preview', '粘贴文章 → 选主题 → 点「生成排版」后在此预览效果'), 50);
+    }
+  }
+}
+
+// 加载主题列表
+async function loadWfThemes() {
+  const container = document.getElementById('wf-themes-container');
+  if (!container) return;
+  try {
+    const themes = await api('GET', '/wechat-themes');
+    // 按 group 分组
+    const groups = {};
+    themes.forEach(t => {
+      if (!groups[t.group]) groups[t.group] = [];
+      groups[t.group].push(t);
+    });
+    container.innerHTML = Object.entries(groups).map(([group, items]) => `
+      <div class="wf-theme-group">
+        <div class="wf-theme-group-label">${group}</div>
+        <div class="wf-theme-grid">
+          ${items.map(t => `
+            <button class="wf-theme-btn ${t.id === wfActiveTheme ? 'active' : ''}"
+              data-theme="${t.id}" data-desc="${t.desc}"
+              onclick="selectWfTheme(this, '${t.id}', '${t.desc}')"
+            >${t.label}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('') + `<div class="wf-theme-desc" id="wf-theme-desc">${getWfActiveDesc(themes)}</div>`;
+  } catch(e) {
+    if (container) container.innerHTML = '<div style="color:var(--text3);font-size:12px">主题列表加载失败</div>';
+  }
+}
+
+function getWfActiveDesc(themes) {
+  const t = themes.find(x => x.id === wfActiveTheme);
+  return t ? t.desc : '';
+}
+
+function selectWfTheme(btn, themeId, desc) {
+  wfActiveTheme = themeId;
+  document.querySelectorAll('.wf-theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const themeName = btn.textContent.trim();
+  const descEl = document.getElementById('wf-theme-desc');
+  if (descEl) descEl.textContent = `✅ 已切换：${themeName} — ${desc}`;
+  // 有输入内容或之前排版过，立即自动重新排版
+  const inputEl = document.getElementById('wf-input');
+  const hasInput = (inputEl && inputEl.value.trim())
+    || document.getElementById('studio-output')?.value?.trim()
+    || document.getElementById('studio-input')?.value?.trim();
+  if (hasInput || wfHtmlResult) {
+    showToast(`正在切换主题：${themeName}...`, 'info');
+    doWechatFormat(true);
+  }
+}
+
+// 从创作台跳转到独立排版页并带入内容
+function goToWechatFormatWithContent() {
+  const content = document.getElementById('studio-output')?.value?.trim()
+    || document.getElementById('studio-input')?.value?.trim();
+  if (!content) { showToast('创作台暂无内容，请先生成文章', 'info'); return; }
+  // 存入全局待导入变量
+  _wfpPendingImport = content;
+  // 跳转到独立排版页
+  navigate('wechat');
+}
+
+// 从创作台导入内容到排版输入框（保留兼容）
+function importFromStudio() {
+  const content = document.getElementById('studio-output')?.value?.trim()
+    || document.getElementById('studio-input')?.value?.trim();
+  if (!content) { showToast('创作台暂无内容', 'info'); return; }
+  // 跳转到公众号排版页
+  goToWechatFormatWithContent();
+}
+
+// 清空排版输入框
+function clearWfInput() {
+  const el = document.getElementById('wf-input');
+  if (el) el.value = '';
+  setPreviewIframeLoading('wf-preview', '粘贴文章 → 选主题 → 点「生成排版」后在此预览效果');
+  const iframe = document.getElementById('wf-preview');
+  if (iframe) iframe.style.height = '120px';
+  const copyBtn = document.getElementById('wf-copy-btn');
+  if (copyBtn) copyBtn.style.display = 'none';
+  const countEl = document.getElementById('wf-word-count');
+  if (countEl) countEl.textContent = '';
+  wfHtmlResult = '';
+}
+
+// 向 iframe 写入 HTML（多种方式容错）
+// autoHeight=true: 自动撑高(创作台小预览); autoHeight=false: 固定高度内部滚动(独立排版页)
+function writeToPreviewIframe(iframeId, htmlContent, autoHeight) {
+  const iframe = document.getElementById(iframeId);
+  if (!iframe) return;
+  // BASE_STYLE 仅作 reset，不覆盖内联样式
+  const BASE_STYLE = `*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{padding:16px 20px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333}img{max-width:100%;display:block;margin:8px auto}`;
+  const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${BASE_STYLE}</style></head><body>${htmlContent}</body></html>`;
+
+  // 方式1：Blob URL（最优，完全规避属性转义）
+  try {
+    const blob = new Blob([fullHtml], { type: 'text/html; charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    if (iframe._prevBlobUrl) URL.revokeObjectURL(iframe._prevBlobUrl);
+    iframe._prevBlobUrl = url;
+    iframe.src = url;
+    if (autoHeight !== false) {
+      iframe.onload = function() {
+        try {
+          const h = iframe.contentDocument?.body?.scrollHeight || 400;
+          iframe.style.height = Math.max(400, h + 30) + 'px';
+        } catch(e) {}
+      };
+    }
+    return;
+  } catch(e) {
+    // Blob URL 失败，降级到方式2
+  }
+
+  // 方式2：srcdoc（需要 HTML 转义双引号）
+  try {
+    const safeSrcdoc = fullHtml.replace(/"/g, '&quot;');
+    iframe.removeAttribute('src');
+    iframe.setAttribute('srcdoc', safeSrcdoc);
+    if (autoHeight !== false) {
+      iframe.onload = function() {
+        try {
+          const h = iframe.contentDocument?.body?.scrollHeight || 400;
+          iframe.style.height = Math.max(400, h + 30) + 'px';
+        } catch(e) {}
+      };
+    }
+    return;
+  } catch(e) {}
+
+  // 方式3：document.open/write（兜底）
+  try {
+    iframe.removeAttribute('srcdoc');
+    iframe.src = 'about:blank';
+    setTimeout(() => {
+      const doc = iframe.contentDocument || iframe.contentWindow?.document;
+      if (!doc) return;
+      doc.open();
+      doc.write(fullHtml);
+      doc.close();
+      if (autoHeight !== false) {
+        try {
+          const h = doc.body?.scrollHeight || 400;
+          iframe.style.height = Math.max(400, h + 30) + 'px';
+        } catch(e) {}
+      }
+    }, 50);
+  } catch(e) {
+    console.error('writeToPreviewIframe 全部方式失败', e);
+  }
+}
+
+
+// 向 iframe 写入加载中/错误提示（也用 Blob URL）
+function setPreviewIframeLoading(iframeId, msg, adjustHeight) {
+  const iframe = document.getElementById(iframeId);
+  if (!iframe) return;
+  const html = `<!DOCTYPE html><html><body style="margin:0;padding:40px 20px;background:#fff;font-family:sans-serif;text-align:center;color:#999;font-size:13px">${msg}</body></html>`;
+  const blob = new Blob([html], { type: 'text/html; charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  if (iframe._prevBlobUrl) URL.revokeObjectURL(iframe._prevBlobUrl);
+  iframe._prevBlobUrl = url;
+  iframe.src = url;
+  if (adjustHeight !== false) iframe.style.height = '140px';
+}
+
+// 生成排版（silent=true 时不弹 toast，用于主题切换自动刷新）
+async function doWechatFormat(silent) {
+  // 优先用排版面板自己的输入框，没有则 fallback 到创作台区域
+  const content = document.getElementById('wf-input')?.value?.trim()
+    || document.getElementById('studio-output')?.value?.trim()
+    || document.getElementById('studio-input')?.value?.trim();
+  if (!content) {
+    if (!silent) showToast('请先在输入框中粘贴文章内容', 'info');
+    return;
+  }
+
+  const copyBtn  = document.getElementById('wf-copy-btn');
+  const countEl  = document.getElementById('wf-word-count');
+  setPreviewIframeLoading('wf-preview', '⏳ 排版中，请稍候...');
+
+  try {
+    const res = await api('POST', '/wechat-format', { content, theme: wfActiveTheme });
+    wfHtmlResult = res.html;
+    writeToPreviewIframe('wf-preview', wfHtmlResult);
+    if (copyBtn) copyBtn.style.display = '';
+    if (countEl) countEl.textContent = res.word_count ? `约 ${res.word_count} 字` : '';
+    if (!silent) showToast('排版完成！', 'success');
+  } catch(e) {
+    setPreviewIframeLoading('wf-preview', '❌ 排版失败：' + e.message);
+    showToast('排版失败：' + e.message, 'error');
+  }
+}
+
+// 复制 HTML
+function copyWechatHtml() {
+  if (!wfHtmlResult) { showToast('请先生成排版', 'info'); return; }
+  navigator.clipboard.writeText(wfHtmlResult)
+    .then(() => showToast('✅ HTML已复制！直接粘贴进公众号编辑器即可', 'success'))
+    .catch(() => {
+      // 降级：用 textarea
+      const ta = document.createElement('textarea');
+      ta.value = wfHtmlResult;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('✅ HTML已复制！', 'success');
+    });
+}
+
+
+// ─── 朴树之道分享 ─────────────────────────────────────────────────────
+
+// 打开「朴树之道」配置弹窗（从书库里点按钮触发）
+function openPushutreeModal(sourceId, sourceTitle) {
+  const overlay = document.createElement('div');
+  overlay.className = 'pt-modal-overlay';
+  overlay.id = 'pt-modal-overlay';
+  overlay.innerHTML = `
+    <div class="pt-modal">
+      <div class="pt-modal-title">🌳 朴树之道分享</div>
+      <div class="pt-modal-sub">一键把《${escHtml(sourceTitle)}》变成系列分享文案</div>
+
+      <div class="pt-form-row">
+        <div class="pt-form-label">拆解期数（每期讲一个核心主题）</div>
+        <select class="form-select" id="pt-episode-count" style="width:100%">
+          <option value="1">1期（一次推荐，快速完成）</option>
+          <option value="3">3期（精华提炼）</option>
+          <option value="4">4期</option>
+          <option value="6">6期（中等深度）</option>
+          <option value="8" selected>8期（推荐）</option>
+          <option value="10">10期（完整解读）</option>
+          <option value="12">12期（深度长评）</option>
+        </select>
+      </div>
+
+      <div class="pt-form-row">
+        <div class="pt-form-label">发布平台</div>
+        <select class="form-select" id="pt-platform" style="width:100%">
+          <option value="抖音/视频号" selected>抖音 / 视频号</option>
+          <option value="公众号">公众号</option>
+          <option value="小红书">小红书</option>
+          <option value="B站">B站</option>
+        </select>
+      </div>
+
+      <div class="pt-form-row">
+        <div class="pt-form-label">文案风格</div>
+        <select class="form-select" id="pt-style" style="width:100%">
+          <option value="犀利、接地气、直击痛点" selected>犀利接地气（默认）</option>
+          <option value="温暖治愈、娓娓道来">温暖治愈</option>
+          <option value="硬核干货、逻辑清晰">硬核干货</option>
+          <option value="幽默轻松、让人会心一笑">幽默轻松</option>
+          <option value="沉稳深度、适合职场精英">深度商务</option>
+        </select>
+      </div>
+
+      <div id="pt-progress-area" style="display:none">
+        <div class="pt-progress-bar-wrap">
+          <div class="pt-progress-bar" id="pt-prog-bar" style="width:0%"></div>
+        </div>
+        <div class="pt-progress-text" id="pt-prog-text">准备中...</div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:20px">
+        <button class="btn btn-primary" id="pt-start-btn" onclick="startPushutree('${sourceId}','${escHtml(sourceTitle)}')">
+          🚀 开始生成
+        </button>
+        <button class="btn btn-ghost" onclick="closePushutreeModal()">取消</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closePushutreeModal(); });
+}
+
+function closePushutreeModal() {
+  const el = document.getElementById('pt-modal-overlay');
+  if (el) el.remove();
+}
+
+// 开始生成
+async function startPushutree(sourceId, sourceTitle) {
+  const episodeCount = parseInt(document.getElementById('pt-episode-count').value);
+  const platform = document.getElementById('pt-platform').value;
+  const style = document.getElementById('pt-style').value;
+
+  const startBtn = document.getElementById('pt-start-btn');
+  const progArea = document.getElementById('pt-progress-area');
+  if (startBtn) startBtn.disabled = true;
+  if (progArea) progArea.style.display = '';
+
+  try {
+    const res = await api('POST', '/pushutree/create', {
+      source_id: sourceId,
+      episode_count: episodeCount,
+      platform,
+      style,
+    });
+    const scriptId = res.script_id;
+
+    // 轮询进度
+    pollPushutreeProgress(scriptId, sourceTitle, () => {
+      closePushutreeModal();
+      navigate('pushutree');
+    });
+  } catch(e) {
+    showToast('启动失败：' + e.message, 'error');
+    if (startBtn) startBtn.disabled = false;
+  }
+}
+
+// 轮询进度
+function pollPushutreeProgress(scriptId, sourceTitle, onDone) {
+  let errorCount = 0;
+  const MAX_ERRORS = 5;         // 连续错误超过5次才停
+  const MAX_WAIT_MS = 15 * 60 * 1000; // 最长等15分钟
+  const startTime = Date.now();
+
+  const interval = setInterval(async () => {
+    // 超时保护
+    if (Date.now() - startTime > MAX_WAIT_MS) {
+      clearInterval(interval);
+      showToast('生成超时，请到「朴树之道」页面查看结果', 'info');
+      return;
+    }
+    try {
+      const data = await api('GET', `/pushutree/${scriptId}`);
+      errorCount = 0; // 成功则重置错误计数
+      const bar = document.getElementById('pt-prog-bar');
+      const text = document.getElementById('pt-prog-text');
+      if (bar) bar.style.width = data.progress + '%';
+      if (text) text.textContent = data.message || '';
+
+      if (data.status === 'done') {
+        clearInterval(interval);
+        showToast(`✅ 《${sourceTitle}》系列文案生成完毕，共${data.episodes.length}期！`, 'success');
+        if (onDone) onDone();
+      } else if (data.status === 'error') {
+        clearInterval(interval);
+        showToast('生成失败：' + (data.error_msg || data.message), 'error');
+        const startBtn = document.getElementById('pt-start-btn');
+        if (startBtn) startBtn.disabled = false;
+      }
+    } catch(e) {
+      errorCount++;
+      if (errorCount >= MAX_ERRORS) {
+        clearInterval(interval);
+        showToast('连接失败，请到「朴树之道」页面查看生成结果', 'info');
+      }
+      // 未到上限：静默继续轮询
+    }
+  }, 3000); // 每3秒查一次
+}
+
+// ─── 公众号排版独立页面 ─────────────────────────────────────────────────
+
+// 渲染排版 HTML 到预览 div（使用 Shadow DOM 完全隔离样式，无需 iframe/Blob URL）
+function renderToPreviewDiv(divId, htmlContent) {
+  const container = document.getElementById(divId);
+  if (!container) return;
+  // 创建或复用 Shadow Root
+  let shadow = container._shadowRoot;
+  if (!shadow) {
+    shadow = container.attachShadow({ mode: 'open' });
+    container._shadowRoot = shadow;
+  }
+  // 基础 reset 样式（不覆盖内联样式，仅做外层 padding/background）
+  const baseStyle = `
+    :host { display: block; background: #fff; }
+    * { box-sizing: border-box; }
+    body, :host > div { padding: 16px 20px; font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; font-size: 15px; line-height: 1.75; color: #333; }
+    img { max-width: 100%; display: block; margin: 8px auto; }
+  `;
+  shadow.innerHTML = `<style>${baseStyle}</style><div class="wfp-content">${htmlContent}</div>`;
+}
+
+// 跨页面切换时保留输入内容和排版结果
+let _wfpSavedInput = '';
+let _wfpSavedHtml  = '';
+let _wfpSavedToken = '';   // 最近一次排版的预览 token
+let _wfpPendingImport = '';  // 从创作台跳转带来的待导入内容
+
+// 向 iframe 写入任意 HTML（用 document.write，最可靠）
+function writeToIframe(iframeId, fullHtml) {
+  const f = document.getElementById(iframeId);
+  if (!f) return;
+  // 清掉 src，避免 src 和 document.write 冲突
+  try { f.src = ''; } catch(e) {}
+  try {
+    const doc = f.contentDocument || f.contentWindow?.document;
+    if (doc) { doc.open(); doc.write(fullHtml); doc.close(); return; }
+  } catch(e) {}
+  // 降级：srcdoc
+  f.srcdoc = fullHtml;
+}
+
+// 设置 iframe 占位提示
+function setPreviewPlaceholder(iframeId, msgHtml) {
+  writeToIframe(iframeId, `<!DOCTYPE html><html><body style="margin:0;padding:40px 20px;text-align:center;font-family:-apple-system,'PingFang SC',sans-serif;font-size:13px;color:#999">${msgHtml}</body></html>`);
+}
+
+async function renderWechatPage(c, params={}) {
+  // 保存当前 textarea 内容（如果页面已存在）
+  const existingInput = document.getElementById('wfp-input');
+  if (existingInput) _wfpSavedInput = existingInput.value;
+  if (wfpHtmlResult)  _wfpSavedHtml  = wfpHtmlResult;
+
+  const savedInputEscaped = _wfpSavedInput.replace(/`/g, '\\`').replace(/\$/g, '\\$');
+
+  c.innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:calc(100vh - 120px);min-height:500px">
+    <!-- 左栏：输入 + 主题 -->
+    <div style="display:flex;flex-direction:column;gap:12px;overflow:hidden">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px;flex-shrink:0">
+        <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:10px">📝 输入文章</div>
+        <textarea id="wfp-input" placeholder="把文章粘贴到这里（支持 Markdown 格式）..." style="width:100%;height:220px;padding:10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg1);color:var(--text1);resize:none;font-family:inherit;box-sizing:border-box;outline:none;line-height:1.6"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-primary" onclick="doWechatPageFormat()" id="wfp-gen-btn">🎨 生成排版</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('wfp-input').value=''">🗑️ 清空</button>
+          <span id="wfp-word-count" style="font-size:11px;color:var(--text3);margin-left:auto"></span>
+        </div>
+      </div>
+      <!-- 主题选择 -->
+      <div style="flex:1;overflow-y:auto;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px 16px">
+        <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:10px">🎨 选择排版主题</div>
+        <div id="wfp-themes-container"><div style="font-size:12px;color:var(--text3)">⏳ 加载主题...</div></div>
+        <div class="wf-theme-desc" id="wfp-theme-desc" style="margin-top:8px"></div>
+      </div>
+    </div>
+
+    <!-- 右栏：排版预览 -->
+    <div style="display:flex;flex-direction:column;gap:10px;overflow:hidden">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap">
+        <span style="font-size:13px;font-weight:700;color:var(--text2)">👁️ 排版预览</span>
+        <span id="wfp-current-theme-badge" style="font-size:11px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--text2);display:none">🎨 wechat-native</span>
+        <span style="font-size:11px;color:var(--text3)">白底，模拟公众号效果</span>
+        <div id="wfp-copy-btn" style="display:none;margin-left:auto;flex-direction:column;align-items:flex-end;gap:4px">
+          <button class="btn btn-primary btn-sm" onclick="copyWechatPageRichText()">📋 复制内容</button>
+          <span style="font-size:10px;color:var(--text3)">复制后打开公众号编辑器，直接 Ctrl+V 粘贴</span>
+        </div>
+      </div>
+      <iframe id="wfp-preview" style="flex:1;width:100%;height:calc(100vh - 210px);border:1px solid var(--border);border-radius:var(--r2);background:#fff;display:block;min-height:400px"></iframe>
+    </div>
+  </div>`;
+
+  // 加载主题，并初始化预览 iframe
+  loadWfPageThemes();
+
+  // 恢复上次的输入内容（切换页面再回来时保留），或处理来自创作台的跳转导入
+  setTimeout(() => {
+    const inputEl = document.getElementById('wfp-input');
+    // 优先处理来自创作台的待导入内容
+    if (_wfpPendingImport) {
+      if (inputEl) inputEl.value = _wfpPendingImport;
+      _wfpSavedInput = _wfpPendingImport;
+      _wfpPendingImport = '';
+      _wfpSavedHtml = '';   // 清除旧排版结果
+      wfpHtmlResult = '';
+      _wfpSavedToken = '';
+      setPreviewPlaceholder('wfp-preview', '✅ 已从创作台导入内容，选好主题后点「🎨 生成排版」<br><span style="font-size:12px;margin-top:6px;display:inline-block">排版完成后点「📋 复制内容」即可粘贴到公众号编辑器</span>');
+      showToast('内容已导入，请选择主题后点「生成排版」', 'success');
+      return;
+    }
+    if (inputEl && _wfpSavedInput) {
+      inputEl.value = _wfpSavedInput;
+    }
+    // 恢复上次的排版结果
+    if (_wfpSavedHtml) {
+      wfpHtmlResult = _wfpSavedHtml;
+      const baseStyle = "*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{padding:16px 24px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333}img{max-width:100%;display:block;margin:8px auto}";
+      writeToIframe('wfp-preview', `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${wfpHtmlResult}</body></html>`);
+      const copyBtn = document.getElementById('wfp-copy-btn');
+      if (copyBtn) copyBtn.style.display = 'flex';
+      const themeBadge = document.getElementById('wfp-current-theme-badge');
+      if (themeBadge) {
+        themeBadge.textContent = `🎨 ${wfpActiveTheme}`;
+        themeBadge.style.display = '';
+      }
+    } else {
+      setPreviewPlaceholder('wfp-preview', '← 左侧粘贴文章，选好主题，点「🎨 生成排版」<br><span style="font-size:12px;margin-top:8px;display:inline-block">排版完成后点「📋 复制内容」直接粘贴到公众号编辑器（保留样式）</span>');
+    }
+  }, 50);
+}
+
+let wfpActiveTheme = 'wechat-native';
+let wfpHtmlResult = '';
+
+async function loadWfPageThemes() {
+  const container = document.getElementById('wfp-themes-container');
+  if (!container) return;
+  try {
+    const themes = await api('GET', '/wechat-themes');
+    const groups = {};
+    themes.forEach(t => {
+      if (!groups[t.group]) groups[t.group] = [];
+      groups[t.group].push(t);
+    });
+    container.innerHTML = Object.entries(groups).map(([group, items]) => `
+      <div class="wf-theme-group">
+        <div class="wf-theme-group-label">${group}</div>
+        <div class="wf-theme-grid">
+          ${items.map(t => `
+            <button class="wf-theme-btn ${t.id === wfpActiveTheme ? 'active' : ''}"
+              onclick="selectWfpTheme(this, '${t.id}', '${t.desc}')"
+            >${t.label}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('') + `<div class="wf-theme-desc" id="wfp-theme-desc-inner"></div>`;
+  } catch(e) {
+    if (container) container.innerHTML = '<div style="color:var(--text3);font-size:12px">主题加载失败，请刷新重试</div>';
+  }
+}
+
+function selectWfpTheme(btn, themeId, desc) {
+  wfpActiveTheme = themeId;
+  document.querySelectorAll('#wfp-themes-container .wf-theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const themeName = btn.textContent.trim();
+  const descEl = document.getElementById('wfp-theme-desc-inner') || document.getElementById('wfp-theme-desc');
+  if (descEl) descEl.textContent = `✅ 已切换：${themeName} — ${desc}`;
+  // 更新顶部 badge
+  const themeBadge = document.getElementById('wfp-current-theme-badge');
+  if (themeBadge) {
+    themeBadge.textContent = `🎨 ${themeName}`;
+    themeBadge.style.display = '';
+  }
+  // 有输入内容时就立即重新排版（不再依赖 wfpHtmlResult，首次也能切换主题）
+  const inputEl = document.getElementById('wfp-input');
+  if (inputEl && inputEl.value.trim()) {
+    showToast(`正在切换主题：${themeName}...`, 'info');
+    doWechatPageFormat(true);
+  } else {
+    showToast(`已选择主题：${themeName}，粘贴文章后生成排版`, 'info');
+  }
+}
+
+async function doWechatPageFormat(silent) {
+  const content = document.getElementById('wfp-input')?.value?.trim();
+  if (!content) {
+    if (!silent) showToast('请先粘贴文章内容', 'info');
+    return;
+  }
+  const copyBtn = document.getElementById('wfp-copy-btn');
+  const countEl = document.getElementById('wfp-word-count');
+  const genBtn = document.getElementById('wfp-gen-btn');
+  // 显示加载状态
+  setPreviewPlaceholder('wfp-preview', '⏳ 排版中，请稍候...');
+  if (genBtn) { genBtn.disabled = true; genBtn.textContent = '⏳ 排版中...'; }
+  try {
+    // 调用排版接口
+    const res = await api('POST', '/wechat-format', { content, theme: wfpActiveTheme });
+    wfpHtmlResult = res.html;
+    _wfpSavedHtml = wfpHtmlResult;
+    _wfpSavedInput = content;
+    // 用 document.write 直接把完整 HTML 写进 iframe——最可靠，无跨域、无 Blob URL 问题
+    const baseStyle = "*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{padding:16px 24px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333}img{max-width:100%;display:block;margin:8px auto}";
+    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${wfpHtmlResult}</body></html>`;
+    writeToIframe('wfp-preview', fullHtml);
+    if (copyBtn) copyBtn.style.display = 'flex';
+    if (countEl) countEl.textContent = res.word_count ? `约 ${res.word_count} 字` : '';
+    // 更新主题 badge
+    const themeBadge = document.getElementById('wfp-current-theme-badge');
+    if (themeBadge) {
+      themeBadge.textContent = `🎨 ${res.theme || wfpActiveTheme}`;
+      themeBadge.style.display = '';
+    }
+    if (!silent) showToast('排版完成！点「📋 复制内容」粘贴到公众号', 'success');
+  } catch(e) {
+    setPreviewPlaceholder('wfp-preview', `❌ 排版失败：${e.message}`);
+    showToast('排版失败：' + e.message, 'error');
+  } finally {
+    if (genBtn) { genBtn.disabled = false; genBtn.textContent = '🎨 生成排版'; }
+  }
+}
+
+// 复制排版后的富文本内容（可直接粘贴进公众号编辑器，保留样式）
+async function copyWechatPageRichText() {
+  if (!wfpHtmlResult) { showToast('还没有排版结果，请先生成排版', 'info'); return; }
+  try {
+    // 方案1: 使用 ClipboardItem API 复制富文本（最佳，现代浏览器支持）
+    const blob = new Blob([wfpHtmlResult], { type: 'text/html' });
+    const textBlob = new Blob([wfpHtmlResult.replace(/<[^>]+>/g, '')], { type: 'text/plain' });
+    await navigator.clipboard.write([
+      new ClipboardItem({ 'text/html': blob, 'text/plain': textBlob })
+    ]);
+    showToast('✅ 已复制！打开公众号编辑器，直接 Ctrl+V 粘贴即可（样式完整保留）', 'success');
+  } catch(e) {
+    // 方案2: 从 iframe 中选中内容复制
+    copyRichTextFromIframe('wfp-preview');
+  }
+}
+
+// 从 iframe 中选中全部内容并复制（富文本）
+function copyRichTextFromIframe(iframeId) {
+  const iframe = document.getElementById(iframeId);
+  if (!iframe || !iframe.contentDocument) {
+    copyWechatPageHtml();
+    return;
+  }
+  try {
+    const iframeDoc = iframe.contentDocument;
+    const range = iframeDoc.createRange();
+    range.selectNodeContents(iframeDoc.body);
+    const selection = iframe.contentWindow.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+    const success = iframeDoc.execCommand('copy');
+    selection.removeAllRanges();
+    if (success) {
+      showToast('✅ 已复制！打开公众号编辑器，直接 Ctrl+V 粘贴即可', 'success');
+    } else {
+      copyWechatPageHtml();
+    }
+  } catch(e) {
+    copyWechatPageHtml();
+  }
+}
+
+// 备用：复制 HTML 源码（用于调试或特殊需求）
+function copyWechatPageHtml() {
+  if (!wfpHtmlResult) { showToast('还没有排版结果', 'info'); return; }
+  navigator.clipboard.writeText(wfpHtmlResult)
+    .then(() => showToast('已复制HTML源码（注意：公众号编辑器需要富文本，不是源码）', 'info'))
+    .catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = wfpHtmlResult;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('已复制HTML源码', 'info');
+    });
+}
+
+
+
+// 渲染朴树之道列表页
+async function renderPushutree(c, params={}) {
+  c.innerHTML = `
+    <div class="pt-page">
+      <div class="pt-page-header">
+        <div>
+          <div style="font-size:13px;color:var(--text3);margin-top:2px">三重身份审视 · 策划 → 撰写 → 精修 · 学习朴树/董宇辉分享风格</div>
+        </div>
+      </div>
+
+      <!-- 独立创建入口 -->
+      <div class="pt-create-panel" id="pt-create-panel">
+        <div class="pt-create-header" onclick="togglePtCreatePanel()">
+          <span>✨ 直接创建——无需书库，直接上传或粘贴书籍内容</span>
+          <span id="pt-create-chevron" style="font-size:12px;color:var(--text3)">▼ 展开</span>
+        </div>
+        <div class="pt-create-body" id="pt-create-body" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <!-- 左列：书名+PDF -->
+            <div>
+              <label class="form-label">书名 <span style="color:var(--red)">*</span></label>
+              <input id="pt-direct-bookname" class="form-input" placeholder="例：《被讨厌的勇气》" style="margin-bottom:10px">
+              <label class="form-label">上传PDF（可选）</label>
+              <div class="pt-upload-area" id="pt-upload-area" onclick="document.getElementById('pt-pdf-input').click()">
+                <div id="pt-upload-hint">📄 点击上传PDF，或拖放到这里</div>
+                <input type="file" id="pt-pdf-input" accept=".pdf" style="display:none" onchange="onPtPdfSelected(this)">
+              </div>
+            </div>
+            <!-- 右列：文本粘贴 -->
+            <div style="display:flex;flex-direction:column">
+              <label class="form-label">或粘贴书籍文本（可选）</label>
+              <textarea id="pt-direct-text" class="form-input" placeholder="粘贴书籍核心章节内容，500字以上效果更好。如果同时上传了PDF，以PDF为准。" style="flex:1;min-height:140px;resize:vertical"></textarea>
+            </div>
+          </div>
+          <!-- 参数配置 -->
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+            <div>
+              <label class="form-label">期数</label>
+              <select id="pt-direct-episodes" class="form-input">
+                <option value="1">1期（一次推荐）</option>
+                <option value="3">3期（快速预览）</option>
+                <option value="5">5期（精华版）</option>
+                <option value="8" selected>8期（完整版）</option>
+                <option value="12">12期（深度版）</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">目标平台</label>
+              <select id="pt-direct-platform" class="form-input">
+                <option>抖音/视频号</option>
+                <option>公众号</option>
+                <option>小红书</option>
+                <option>B站</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">内容风格</label>
+              <select id="pt-direct-style" class="form-input">
+                <option value="犀利、接地气、直击痛点">犀利接地气</option>
+                <option value="温暖治愈、娓娓道来">温暖治愈</option>
+                <option value="学术严谨、深度解析">深度解析</option>
+                <option value="幽默风趣、反差感强">幽默反差</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn btn-primary" onclick="startPtDirect()" id="pt-direct-btn">
+              🌳 开始生成系列文案
+            </button>
+            <span id="pt-direct-status" style="font-size:13px;color:var(--text3)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 历史列表 -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 12px">
+        <div style="font-size:14px;font-weight:600;color:var(--text1)">📋 已生成的系列</div>
+        <button class="btn btn-ghost btn-sm" onclick="navigate('library')">📚 去书库选书</button>
+      </div>
+      <div id="pt-series-list"><div class="empty-state"><div class="empty-icon">🌳</div><p>加载中...</p></div></div>
+    </div>`;
+
+  // 拖放上传
+  const uploadArea = document.getElementById('pt-upload-area');
+  if (uploadArea) {
+    uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor='var(--primary)'; });
+    uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor=''; });
+    uploadArea.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadArea.style.borderColor='';
+      const f = e.dataTransfer.files[0];
+      if (f && f.name.endsWith('.pdf')) {
+        const dt = new DataTransfer(); dt.items.add(f);
+        const inp = document.getElementById('pt-pdf-input');
+        inp.files = dt.files;
+        onPtPdfSelected(inp);
+      }
+    });
+  }
+
+  try {
+    await loadPtSeriesList();
+  } catch(e) {
+    showToast('加载失败：' + e.message, 'error');
+  }
+}
+
+function togglePtCreatePanel() {
+  const body = document.getElementById('pt-create-body');
+  const chev = document.getElementById('pt-create-chevron');
+  if (!body) return;
+  const isHidden = body.style.display === 'none';
+  body.style.display = isHidden ? 'block' : 'none';
+  chev.textContent = isHidden ? '▲ 收起' : '▼ 展开';
+}
+
+function onPtPdfSelected(input) {
+  const f = input.files[0];
+  if (!f) return;
+  const hint = document.getElementById('pt-upload-hint');
+  if (hint) hint.textContent = `✅ 已选择：${f.name}（${(f.size/1024/1024).toFixed(1)}MB）`;
+  // 自动填书名（如果还没填）
+  const nameInp = document.getElementById('pt-direct-bookname');
+  if (nameInp && !nameInp.value.trim()) {
+    nameInp.value = f.name.replace(/\.pdf$/i, '').replace(/[-_]/g, ' ');
+  }
+}
+
+async function startPtDirect() {
+  const bookName = document.getElementById('pt-direct-bookname')?.value.trim();
+  const bookText = document.getElementById('pt-direct-text')?.value.trim();
+  const pdfInput = document.getElementById('pt-pdf-input');
+  const episodeCount = parseInt(document.getElementById('pt-direct-episodes')?.value || '8');
+  const platform = document.getElementById('pt-direct-platform')?.value || '抖音/视频号';
+  const style = document.getElementById('pt-direct-style')?.value || '犀利、接地气、直击痛点';
+
+  if (!bookName) { showToast('请填写书名', 'error'); return; }
+  if (!bookText && (!pdfInput || !pdfInput.files.length)) {
+    showToast('请上传PDF或粘贴书籍文本', 'error'); return;
+  }
+
+  const btn = document.getElementById('pt-direct-btn');
+  const statusEl = document.getElementById('pt-direct-status');
+  btn.disabled = true;
+  btn.textContent = '⏳ 提交中...';
+  if (statusEl) statusEl.textContent = '';
+
+  try {
+    const formData = new FormData();
+    formData.append('book_name', bookName);
+    formData.append('book_text', bookText || '');
+    formData.append('episode_count', episodeCount);
+    formData.append('platform', platform);
+    formData.append('style', style);
+    if (pdfInput && pdfInput.files[0]) {
+      formData.append('file', pdfInput.files[0]);
+    }
+
+    const resp = await fetch(API_BASE + '/pushutree/upload-and-create', {
+      method: 'POST', body: formData
+    });
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.detail || resp.statusText);
+    }
+    const data = await resp.json();
+    showToast(`《${data.book_name}》已开始生成，请稍候...`, 'success');
+
+    // 折叠创建面板，跳到列表
+    const body = document.getElementById('pt-create-body');
+    const chev = document.getElementById('pt-create-chevron');
+    if (body) { body.style.display = 'none'; if (chev) chev.textContent = '▼ 展开'; }
+
+    // 刷新列表并开始轮询
+    await loadPtSeriesList();
+    pollPushutreeInPage(data.script_id);
+
+  } catch(e) {
+    showToast('创建失败：' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🌳 开始生成系列文案';
+  }
+}
+
+async function loadPtSeriesList() {
+  const el = document.getElementById('pt-series-list');
+  if (!el) return;
+
+  const items = await api('GET', '/pushutree');
+  if (!items.length) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">🌳</div>
+      <p>还没有生成任何系列文案</p>
+      <p style="font-size:12px;color:var(--text3);margin-top:4px">在上方直接创建，或去书库选书点「🌳 分享」</p>
+    </div>`;
+    return;
+  }
+
+  const statusLabel = { done:'已完成', processing:'生成中', pending:'等待中', error:'出错了' };
+  const statusColor = { done:'var(--green)', processing:'var(--blue)', pending:'var(--text3)', error:'var(--red)' };
+
+  el.innerHTML = `<div class="pt-series-grid">${items.map(s => `
+    <div class="pt-series-card" onclick="viewPushutreeDetail('${s.id}')">
+      <div class="pt-series-title">${escHtml(s.source_title)}</div>
+      <div class="pt-series-meta">
+        <span>📺 ${escHtml(s.platform)}</span>
+        <span>🗂 ${s.episode_count}期</span>
+        <span>🎨 ${escHtml(s.style)}</span>
+      </div>
+      <div class="pt-series-footer">
+        <span style="font-size:12px;font-weight:600;color:${statusColor[s.status]||'var(--text3)'}">
+          ${s.status === 'processing' ? `⏳ ${s.progress}% · ` : ''}
+          ${statusLabel[s.status]||s.status}
+          ${s.status === 'done' ? ` · ${s.episodes.length}期已就绪` : ''}
+          ${s.status === 'error' ? ` · ${escHtml(s.message||'')}` : ''}
+        </span>
+        <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
+          <button class="btn btn-danger btn-sm" onclick="deletePushutree('${s.id}')">🗑️</button>
+        </div>
+      </div>
+      ${s.status === 'processing' ? `
+        <div class="pt-progress-bar-wrap" style="margin-top:10px">
+          <div class="pt-progress-bar" style="width:${s.progress}%"></div>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">${escHtml(s.message||'')}</div>` : ''}
+    </div>`).join('')}
+  </div>`;
+
+  // 轮询处理中的任务
+  items.filter(s => s.status === 'processing' || s.status === 'pending').forEach(s => {
+    pollPushutreeInPage(s.id);
+  });
+}
+
+// 在朴树之道列表页内轮询更新
+function pollPushutreeInPage(scriptId) {
+  let errCnt = 0;
+  const interval = setInterval(async () => {
+    if (document.getElementById('pt-series-list') === null) { clearInterval(interval); return; }
+    try {
+      const data = await api('GET', `/pushutree/${scriptId}`);
+      errCnt = 0;
+      if (data.status === 'done' || data.status === 'error') {
+        clearInterval(interval);
+        await loadPtSeriesList();
+      }
+    } catch(e) {
+      errCnt++;
+      if (errCnt >= 5) clearInterval(interval); // 连续5次失败才停
+    }
+  }, 3000);
+}
+
+// 查看某个系列的详情
+async function viewPushutreeDetail(scriptId) {
+  const data = await api('GET', `/pushutree/${scriptId}`);
+  if (data.status !== 'done') {
+    showToast('系列文案还在生成中，请稍后查看', 'info');
+    return;
+  }
+
+  const c = document.getElementById('main-content');
+  let currentEp = 0;
+
+  const render = () => {
+    const ep = data.episodes[currentEp];
+    c.innerHTML = `
+      <div>
+        <div class="pt-detail-back" onclick="navigate('pushutree')">← 返回列表</div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:17px;font-weight:700">《${escHtml(data.source_title)}》系列文案</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px">
+            ${escHtml(data.platform)} · ${data.episodes.length}期 · ${escHtml(data.style)}
+          </div>
+        </div>
+
+        <div class="pt-episode-tabs">
+          ${data.episodes.map((ep, i) => `
+            <button class="pt-ep-tab ${i === currentEp ? 'active' : ''}" onclick="ptSwitchEp(${i},'${scriptId}')">
+              第${ep.ep_no}期
+            </button>`).join('')}
+        </div>
+
+        <div style="margin-bottom:10px">
+          <div style="font-size:15px;font-weight:700">${escHtml(ep.title)}</div>
+          ${ep.pain_point ? `<div style="font-size:12px;color:var(--text3);margin-top:4px">💡 痛点：${escHtml(ep.pain_point)}</div>` : ''}
+        </div>
+
+        <div class="pt-content-box" id="pt-content-display">${escHtml(ep.content)}</div>
+
+        <div class="pt-content-actions">
+          <button class="btn btn-primary" onclick="copyPtContent()">📋 复制文案</button>
+          <button class="btn btn-ghost" onclick="sendPtToStudio(${currentEp},'${scriptId}')">✍️ 发到创作台</button>
+          <button class="btn btn-ghost" id="pt-wf-btn" onclick="formatPtToWechat(${currentEp},'${scriptId}')">📱 公众号排版</button>
+          <button class="btn btn-ghost btn-sm" onclick="exportAllPt('${scriptId}')" style="margin-left:auto">💾 导出全部</button>
+        </div>
+      </div>`;
+
+    window._ptCurrentData = data;
+    window._ptCurrentEp = currentEp;
+  };
+
+  render();
+  window.ptSwitchEp = (idx, sid) => {
+    currentEp = idx;
+    render();
+  };
+}
+
+function copyPtContent() {
+  const el = document.getElementById('pt-content-display');
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent)
+    .then(() => showToast('✅ 文案已复制！', 'success'))
+    .catch(() => showToast('复制失败，请手动选择复制', 'error'));
+}
+
+function sendPtToStudio(epIdx, scriptId) {
+  const data = window._ptCurrentData;
+  if (!data) return;
+  const ep = data.episodes[epIdx];
+  navigate('studio');
+  setTimeout(() => {
+    const inp = document.getElementById('studio-input');
+    if (inp) inp.value = ep.content;
+  }, 300);
+}
+
+async function formatPtToWechat(epIdx, scriptId) {
+  const data = window._ptCurrentData;
+  if (!data) return;
+  const ep = data.episodes[epIdx];
+  try {
+    const res = await api('POST', '/wechat-format', { content: ep.content, theme: 'wechat-native' });
+    navigator.clipboard.writeText(res.html)
+      .then(() => showToast('✅ 公众号HTML已复制，直接粘贴进编辑器！', 'success'))
+      .catch(() => showToast('排版完成，但复制失败，请手动复制', 'info'));
+  } catch(e) {
+    showToast('排版失败：' + e.message, 'error');
+  }
+}
+
+function exportAllPt(scriptId) {
+  const data = window._ptCurrentData;
+  if (!data) return;
+  let content = `《${data.source_title}》系列分享文案\n`;
+  content += `平台：${data.platform} | 期数：${data.episodes.length}期\n`;
+  content += '='.repeat(50) + '\n\n';
+  data.episodes.forEach(ep => {
+    content += `【第${ep.ep_no}期】${ep.title}\n\n`;
+    content += ep.content + '\n\n';
+    content += '-'.repeat(40) + '\n\n';
+  });
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${data.source_title}_朴树之道系列文案.txt`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ 已导出全部文案', 'success');
+}
+
+async function deletePushutree(scriptId) {
+  if (!confirm('确定删除这套系列文案？')) return;
+  await api('DELETE', `/pushutree/${scriptId}`);
+  showToast('已删除', 'success');
+  const c = document.getElementById('main-content');
+  if (c) renderPushutree(c);
+}
+
+async function renderCreations(c, params={}) {
+  c.innerHTML = `<div style="margin-bottom:20px;display:flex;justify-content:flex-end">
+    <button class="btn btn-primary btn-sm" onclick="navigate('studio')">✍️ 去创作台</button>
+  </div>
+  <div id="creations-list"><div class="empty-state"><div class="empty-icon">📋</div><p>加载中...</p></div></div>`;
+  const q = document.getElementById('global-search-input')?.value || '';
+  try {
+    const items = await api('GET', `/creations?q=${encodeURIComponent(q)}`);
+    creationsState.items = items; // 保存到状态中以便后续查找
+    const el = document.getElementById('creations-list');
+    if (!items.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">📋</div><p>还没有创作记录，去创作台开始吧</p><button class="btn btn-primary" onclick="navigate('studio')">✍️ 打开创作台</button></div>`;
+      return;
+    }
+    el.innerHTML = `<div class="material-list">${items.map(item => `
+    <div class="material-card" data-id="${item.id}" data-title="${escHtml(item.title)}" data-content="${escHtml(item.content).replace(/"/g, '&quot;')}">
+      <div class="material-header">
+        <span style="font-weight:700">${escHtml(item.title)}</span>
+        ${item.platform ? `<span class="tag tag-quote">${item.platform}</span>` : ''}
+        <span style="margin-left:auto;font-size:11px;color:var(--text3)">${formatDate(item.created_at)}</span>
+      </div>
+      <div class="material-content">${escHtml(item.content).substring(0,300)}${item.content.length>300?'<span style="color:var(--accent);cursor:pointer" onclick="openCreationDetail(\'' + item.id + '\')">...展开全文</span>':''}</div>
+      <div class="material-footer">
+        <div></div>
+        <div class="material-actions">
+          <button class="btn btn-ghost btn-sm" onclick="copyCreationText('${item.id}')">📋 复制</button>
+          <button class="btn btn-ghost btn-sm" onclick="loadCreationToStudio('${item.id}')">✍️ 编辑</button>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+  } catch(e) { showToast('加载失败', 'error'); }
+}
+
+// 通过ID加载创作到创作台
+function loadCreationToStudio(id) {
+  const item = creationsState.items.find(c => c.id === id);
+  if (!item) { showToast('未找到该创作', 'error'); return; }
+  navigate('studio', { initialContent: item.content });
+  showToast('已加载到创作台，可继续编辑', 'success');
+}
+
+// 复制创作内容
+function copyCreationText(id) {
+  const item = creationsState.items.find(c => c.id === id);
+  if (!item) { showToast('未找到该创作', 'error'); return; }
+  navigator.clipboard.writeText(item.content).then(() => showToast('已复制！', 'success'));
+}
+
+// 展开创作详情（使用已有drawer）
+function openCreationDetail(id) {
+  const item = creationsState.items.find(c => c.id === id);
+  if (!item) { showToast('未找到该创作', 'error'); return; }
+  document.getElementById('drawer-title').textContent = `📝 ${escHtml(item.title)}`;
+  document.getElementById('drawer-body').innerHTML = `
+    <div style="margin-bottom:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      ${item.platform ? `<span class="tag tag-quote">${item.platform}</span>` : ''}
+      <span style="font-size:12px;color:var(--text3)">${formatDate(item.created_at)}</span>
+    </div>
+    <div style="background:var(--bg3);border-radius:var(--r2);padding:16px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-all;margin-bottom:16px;max-height:60vh;overflow-y:auto">${escHtml(item.content)}</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="copyCreationText('${item.id}')">📋 复制全文</button>
+      <button class="btn btn-ghost" onclick="loadCreationToStudio('${item.id}')">✍️ 编辑</button>
+    </div>`;
+  document.getElementById('detail-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('已复制！', 'success'));
+}
+
+// ─── AI Studio OCR Token 配置弹窗 ───────────────────────────────────
+async function openAistudioTokenModal() {
+  // 查询当前配置状态
+  let currentStatus = { configured: false, length: 0 };
+  try {
+    currentStatus = await api('GET', '/ocr/aistudio-token');
+  } catch(e) {}
+
+  const statusText = currentStatus.configured
+    ? `<span style="color:#22c55e">✅ 已配置（${currentStatus.length}位字符）</span>`
+    : `<span style="color:#f97316">⚠️ 未配置（扫描版将只使用本地PaddleOCR或讯飞AI视觉）</span>`;
+
+  showModal(`
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px">🔑 扫描版OCR配置</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:16px">配置百度AI Studio Token，大幅提升扫描版PDF识别率</div>
+    
+    <div style="background:var(--bg3);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:13px">
+      <div style="font-weight:700;margin-bottom:8px">📊 当前OCR策略（三级自动降级）</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="background:#8b5cf6;color:#fff;font-size:11px;padding:1px 8px;border-radius:99px">第1级</span>
+          <span>本地 PaddleOCR <span style="color:#22c55e">（300DPI高精度，完全离线）</span></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="background:#0ea5e9;color:#fff;font-size:11px;padding:1px 8px;border-radius:99px">第2级</span>
+          <span>百度AI Studio PaddleOCR云端 ${statusText}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="background:#64748b;color:#fff;font-size:11px;padding:1px 8px;border-radius:99px">第3级</span>
+          <span>讯飞AI视觉OCR（最后备用）</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">百度AI Studio Access Token</label>
+      <input type="password" id="aistudio-token-input" placeholder="粘贴你的 AI Studio token..." 
+             style="width:100%;box-sizing:border-box;padding:8px 12px;border:1px solid var(--border);border-radius:8px;background:var(--bg2);color:var(--text1);font-size:13px;font-family:monospace">
+    </div>
+    
+    <div style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2)">
+      <div style="font-weight:600;margin-bottom:4px;color:var(--text1)">🔗 如何获取免费Token？</div>
+      <div>1. 登录 <a href="https://aistudio.baidu.com" target="_blank" style="color:#0ea5e9">aistudio.baidu.com</a></div>
+      <div>2. 点击右上角头像 → <b>访问令牌</b></div>
+      <div>3. 复制 token 粘贴到上方输入框</div>
+      <div style="margin-top:4px;color:#22c55e">✅ 免费账号每天有足够的调用额度</div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="saveAistudioToken()">保存配置</button>
+    </div>
+  `);
+}
+
+async function saveAistudioToken() {
+  const token = document.getElementById('aistudio-token-input').value.trim();
+  try {
+    await api('POST', '/ocr/aistudio-token', { token });
+    showToast('✅ AI Studio Token 已保存，下次OCR将自动使用云端识别', 'success');
+    closeModal();
+    // 更新按钮状态
+    const btn = document.getElementById('aistudio-token-btn');
+    if (btn) btn.textContent = '🔑 OCR配置 ✅';
+  } catch(e) {
+    showToast('保存失败：' + e.message, 'error');
+  }
+}
+
+// ─── ADD MODAL ───────────────────────────────────────────
+function openAddModal(defaultType = 'book') {
+  const tabs = ['book','folder','url','text'];
+  const tabLabels = ['📖 上传书籍','📁 导入文件夹','🌐 输入网址','📝 粘贴文字'];
+  let activeTab = defaultType;
+  let folderScanResult = null;   // 扫描结果缓存
+
+  function tabContent(type) {
+    if (type === 'book') return `
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('pdf-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+        <div class="upload-icon">📖</div>
+        <div style="font-weight:700;margin-bottom:6px">点击或拖拽书籍文件</div>
+        <div style="font-size:12px;color:var(--text3)">支持 PDF · EPUB · TXT · Markdown · Word(.docx) · 最大 100MB</div>
+        <div style="font-size:11px;color:var(--orange);margin-top:6px">🔍 扫描版 PDF 自动启用 AI-OCR 识别；EPUB/TXT/DOCX 直接提取不走 OCR</div>
+        <input type="file" id="pdf-input" accept=".pdf,.epub,.txt,.md,.docx" style="display:none" multiple onchange="handleFileSelect(this.files)">
+      </div>
+      <div id="upload-progress" style="display:none;margin-top:16px">
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--text3);margin-top:6px" id="progress-label">上传中...</div>
+      </div>`;
+
+    if (type === 'folder') return `
+      <div style="margin-bottom:12px">
+        <label class="form-label">📁 文件夹路径</label>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="folder-path" placeholder="点击「浏览」选择文件夹，或直接输入路径" style="flex:1"
+            onkeydown="if(event.key==='Enter')scanFolder()">
+          <button class="btn btn-ghost" id="pick-folder-btn" onclick="pickFolder()" style="white-space:nowrap;padding:0 14px" title="打开系统文件夹选择框">
+            📂 浏览
+          </button>
+          <button class="btn btn-ghost" onclick="scanFolder()" style="white-space:nowrap;padding:0 14px">
+            🔍 扫描
+          </button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">
+          输入本地文件夹的完整路径，点扫描预览 PDF 列表，再点「开始导入」
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;margin-bottom:12px;align-items:center">
+        <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="folder-recursive" style="width:14px;height:14px">
+          包含子文件夹
+        </label>
+        <label style="font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" id="folder-skip-existing" checked style="width:14px;height:14px">
+          跳过已导入书籍
+        </label>
+      </div>
+      <div id="folder-scan-result" style="display:none">
+        <div style="background:var(--bg2);border-radius:8px;padding:12px;max-height:260px;overflow-y:auto">
+          <div id="folder-scan-summary" style="font-size:13px;font-weight:600;color:var(--text1);margin-bottom:10px"></div>
+          <div id="folder-scan-list" style="display:flex;flex-direction:column;gap:4px"></div>
+        </div>
+      </div>
+      <div id="folder-scan-empty" style="display:none;text-align:center;color:var(--text3);font-size:13px;padding:20px">
+        该文件夹中未找到 PDF 文件
+      </div>`;
+
+    if (type === 'url') return `
+      <div class="form-group">
+        <label class="form-label">标题（可选）</label>
+        <input class="form-input" id="add-url-title" placeholder="留空将自动提取标题">
+      </div>
+      <div class="form-group">
+        <label class="form-label">网址 *</label>
+        <input class="form-input" id="add-url" placeholder="https://...">
+      </div>`;
+    if (type === 'text') return `
+      <div class="form-group">
+        <label class="form-label">标题 *</label>
+        <input class="form-input" id="add-text-title" placeholder="给这段内容起个名字">
+      </div>
+      <div class="form-group">
+        <label class="form-label">内容 *</label>
+        <textarea class="form-textarea" id="add-text-content" style="min-height:160px" placeholder="粘贴文章、笔记、段落..."></textarea>
+      </div>`;
+  }
+
+  function tabBar() {
+    return `<div class="input-tabs">${tabs.map((t,i)=>`<div class="input-tab ${activeTab===t?'active':''}" onclick="switchAddTab('${t}')">${tabLabels[i]}</div>`).join('')}</div>`;
+  }
+
+  function modeSelect() {
+    return `<div class="form-group" style="margin-top:16px">
+      <label class="form-label">提炼模式</label>
+      <select class="form-select" id="extract-mode">
+        <option value="full">全量提炼（推荐）</option>
+        <option value="quotes">仅金句弹药库</option>
+        <option value="cases">仅故事与案例</option>
+        <option value="viewpoints">仅认知与观点</option>
+        <option value="actions">仅实操行动库</option>
+        <option value="topics">仅IP选题映射</option>
+      </select>
+    </div>`;
+  }
+
+  function actionRow(type) {
+    if (type === 'book') return `<button class="btn btn-ghost" onclick="closeModal()">取消</button>`;
+    if (type === 'folder') return `
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" id="folder-import-btn" onclick="submitFolderImport()" disabled style="opacity:0.5">
+        🚀 开始导入
+      </button>`;
+    return `
+      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="submitAdd()">🚀 开始提炼</button>`;
+  }
+
+  showModal(`
+  <div class="modal-header">
+    <div class="modal-title">➕ 添加内容</div>
+    <span class="modal-close" onclick="closeModal()">✕</span>
+  </div>
+  <div id="add-tab-bar">${tabBar()}</div>
+  <div id="add-tab-content">${tabContent(activeTab)}</div>
+  ${modeSelect()}
+  <div id="add-action-row" style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+    ${actionRow(activeTab)}
+  </div>`);
+
+  window.switchAddTab = function(type) {
+    activeTab = type;
+    folderScanResult = null;
+    document.getElementById('add-tab-bar').innerHTML = tabBar();
+    document.getElementById('add-tab-content').innerHTML = tabContent(type);
+    document.getElementById('add-action-row').innerHTML = actionRow(type);
+  };
+
+  window.handleDrop = function(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('drag');
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.pdf'));
+    if (files.length) handleFileSelect(files);
+  };
+
+  window.handleFileSelect = async function(files) {
+    const mode = document.getElementById('extract-mode')?.value || 'full';
+    for (const file of files) {
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('mode', mode);
+      document.getElementById('upload-progress').style.display = 'block';
+      document.getElementById('progress-label').textContent = `上传 ${file.name}...`;
+      try {
+        const res = await upload(fd, pct => {
+          document.getElementById('progress-fill').style.width = pct + '%';
+        });
+        document.getElementById('progress-label').textContent = `✅ ${file.name} 上传成功，正在后台提炼...`;
+        startPolling(res.task_id, res.source_id, res.title);
+      } catch(e) {
+        document.getElementById('progress-label').textContent = `❌ ${file.name} 上传失败: ${e.message}`;
+      }
+    }
+    setTimeout(() => { closeModal(); navigate('library'); }, 1500);
+  };
+
+  // ── 浏览本地文件夹（原生弹窗）──
+  window.pickFolder = async function() {
+    const btn = document.getElementById('pick-folder-btn');
+    const currentPath = document.getElementById('folder-path')?.value?.trim() || '';
+    if (btn) { btn.textContent = '⏳ 打开中...'; btn.disabled = true; }
+    try {
+      const params = currentPath ? `?initial_dir=${encodeURIComponent(currentPath)}` : '';
+      const res = await api('GET', `/pick-folder${params}`);
+      if (res.selected) {
+        document.getElementById('folder-path').value = res.selected;
+        // 选完直接触发扫描，省一步
+        await window.scanFolder();
+      } else {
+        showToast('未选择文件夹', 'info');
+      }
+    } catch(e) {
+      showToast('无法打开文件夹选择框：' + e.message, 'error');
+    } finally {
+      if (btn) { btn.textContent = '📂 浏览'; btn.disabled = false; }
+    }
+  };
+
+  // ── 文件夹扫描 ──
+  window.scanFolder = async function() {
+    const path = document.getElementById('folder-path')?.value?.trim();
+    console.log('[Scan] 扫描文件夹:', path);
+    if (!path) { showToast('请先输入文件夹路径', 'info'); return; }
+    const recursive = document.getElementById('folder-recursive')?.checked || false;
+    console.log('[Scan] recursive:', recursive);
+
+    const btn = document.querySelector('[onclick="scanFolder()"]');
+    if (btn) { btn.textContent = '扫描中...'; btn.disabled = true; }
+
+    try {
+      const url = `/sources/scan-folder?path=${encodeURIComponent(path)}&recursive=${recursive}`;
+      console.log('[Scan] 请求URL:', url);
+      const res = await api('GET', url);
+      console.log('[Scan] 响应:', res);
+      folderScanResult = res;
+
+      document.getElementById('folder-scan-empty').style.display = 'none';
+      document.getElementById('folder-scan-result').style.display = 'none';
+
+      if (!res.items || res.items.length === 0) {
+        document.getElementById('folder-scan-empty').style.display = 'block';
+        const importBtn = document.getElementById('folder-import-btn');
+        if (importBtn) { importBtn.disabled = true; importBtn.style.opacity = '0.5'; }
+        return;
+      }
+
+      const newCount = res.items.filter(i => !i.already_imported).length;
+      const skipCount = res.items.filter(i => i.already_imported).length;
+      document.getElementById('folder-scan-summary').innerHTML =
+        `共找到 <b style="color:var(--accent)">${res.items.length}</b> 本 PDF ` +
+        `· 新增 <b style="color:var(--green,#4ade80)">${newCount}</b> 本` +
+        (skipCount ? ` · 已导入 <span style="color:var(--text3)">${skipCount}</span> 本` : '');
+
+      const listEl = document.getElementById('folder-scan-list');
+      listEl.innerHTML = res.items.slice(0, 100).map(item => `
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:6px;background:${item.already_imported?'transparent':'var(--bg3,rgba(124,92,252,0.06))'};opacity:${item.already_imported?0.5:1}">
+          <span style="font-size:14px">${item.already_imported ? '✅' : '📄'}</span>
+          <span style="flex:1;font-size:12px;color:var(--text1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${item.filename}">${item.name}</span>
+          <span style="font-size:11px;color:var(--text3);white-space:nowrap">${item.size_mb}MB</span>
+          ${item.already_imported ? '<span style="font-size:10px;color:var(--text3);white-space:nowrap">已导入</span>' : ''}
+        </div>`).join('');
+      if (res.items.length > 100) {
+        listEl.innerHTML += `<div style="text-align:center;color:var(--text3);font-size:12px;padding:8px">... 仅显示前100条</div>`;
+      }
+
+      document.getElementById('folder-scan-result').style.display = 'block';
+      const importBtn = document.getElementById('folder-import-btn');
+      if (importBtn) {
+        if (newCount > 0) {
+          importBtn.disabled = false;
+          importBtn.style.opacity = '1';
+          importBtn.textContent = `🚀 导入 ${newCount} 本`;
+        } else {
+          importBtn.disabled = true;
+          importBtn.style.opacity = '0.5';
+          importBtn.textContent = '无新书可导入';
+        }
+      }
+    } catch(err) {
+      showToast('扫描失败: ' + err.message, 'error');
+    } finally {
+      if (btn) { btn.textContent = '🔍 扫描'; btn.disabled = false; }
+    }
+  };
+
+  // ── 文件夹导入提交 ──
+  window.submitFolderImport = async function() {
+    const path = document.getElementById('folder-path')?.value?.trim();
+    const recursive = document.getElementById('folder-recursive')?.checked || false;
+    const skip_existing = document.getElementById('folder-skip-existing')?.checked !== false;
+    const mode = document.getElementById('extract-mode')?.value || 'full';
+    if (!path) { showToast('请先输入文件夹路径', 'info'); return; }
+
+    const importBtn = document.getElementById('folder-import-btn');
+    if (importBtn) { importBtn.textContent = '导入中...'; importBtn.disabled = true; }
+
+    try {
+      const res = await api('POST', '/sources/import-folder', { folder_path: path, mode, recursive, skip_existing });
+      showToast(`✅ 已加入队列 ${res.queued} 本，跳过 ${res.skipped} 本，正在后台批量提炼...`, 'success');
+      // 为每本书启动轮询通知（最多前5本，避免太多轮询）
+      (res.tasks || []).slice(0, 5).forEach(t => startPolling(t.task_id, t.source_id, t.title));
+      if ((res.tasks || []).length > 5) {
+        showToast(`批量任务已启动，共 ${res.tasks.length} 本正在后台处理...`, 'info');
+      }
+      closeModal();
+      navigate('library');
+    } catch(err) {
+      showToast('导入失败: ' + err.message, 'error');
+      if (importBtn) { importBtn.textContent = '🚀 开始导入'; importBtn.disabled = false; }
+    }
+  };
+
+  window.submitAdd = async function() {
+    const mode = document.getElementById('extract-mode')?.value || 'full';
+    try {
+      if (activeTab === 'url') {
+        const url = document.getElementById('add-url')?.value?.trim();
+        const title = document.getElementById('add-url-title')?.value?.trim() || url;
+        if (!url) { showToast('请输入网址', 'info'); return; }
+        const res = await api('POST', '/sources/add', { title, type: 'url', content: url, mode });
+        startPolling(res.task_id, res.source_id, title);
+      } else if (activeTab === 'text') {
+        const title = document.getElementById('add-text-title')?.value?.trim();
+        const content = document.getElementById('add-text-content')?.value?.trim();
+        if (!title || !content) { showToast('请填写标题和内容', 'info'); return; }
+        const res = await api('POST', '/sources/add', { title, type: 'text', content, mode });
+        startPolling(res.task_id, res.source_id, title);
+      }
+      closeModal();
+      navigate('library');
+      showToast('已提交，正在后台提炼...', 'info');
+    } catch(e) { showToast('提交失败: ' + e.message, 'error'); }
+  };
+}
+
+// ─── Task Polling ─────────────────────────────────────────
+let _autoRefreshTimer = null;
+
+function startAutoRefresh() {
+  // 每 3 秒自动刷新书库和队列状态（当在资料库页面时）
+  if (_autoRefreshTimer) return;
+  _autoRefreshTimer = setInterval(() => {
+    if (currentPage === 'library') {
+      loadLibrary();
+      refreshQueueStatus();
+    }
+  }, 3000);
+}
+
+function stopAutoRefresh() {
+  if (_autoRefreshTimer) { clearInterval(_autoRefreshTimer); _autoRefreshTimer = null; }
+}
+
+function startPolling(taskId, sourceId, title) {
+  pollingTasks[taskId] = { sourceId, title };
+  startAutoRefresh();  // 有任务时启动自动刷新
+  const check = async () => {
+    try {
+      const task = await api('GET', `/tasks/${taskId}`);
+      if (task.status === 'done') {
+        showToast(`✅ 《${title}》提炼完成！${task.message}`, 'success');
+        if (currentPage === 'library') { loadLibrary(); refreshQueueStatus(); }
+        loadStats();
+        delete pollingTasks[taskId];
+        if (Object.keys(pollingTasks).length === 0) stopAutoRefresh();
+      } else if (task.status === 'error') {
+        showToast(`❌ 《${title}》提炼失败：${task.message}`, 'error');
+        if (currentPage === 'library') { loadLibrary(); refreshQueueStatus(); }
+        delete pollingTasks[taskId];
+        if (Object.keys(pollingTasks).length === 0) stopAutoRefresh();
+      } else {
+        setTimeout(check, 3000);
+      }
+    } catch(e) { setTimeout(check, 5000); }
+  };
+  setTimeout(check, 2000);
+}
+
+// ─── SEARCH ──────────────────────────────────────────────
+function onGlobalSearch(q) {
+  if (currentPage === 'library') loadLibrary();
+  else if (currentPage === 'materials') { materialsState.q = q; materialsState.page = 1; loadMaterials(); }
+  else if (currentPage === 'creations') renderCreations(document.getElementById('main-content'));
+}
+
+// ─── Modal ────────────────────────────────────────────────
+function showModal(html) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'active-modal';
+  overlay.innerHTML = `<div class="modal" onclick="event.stopPropagation()">${html}</div>`;
+  overlay.addEventListener('click', closeModal);
+  document.getElementById('modals').appendChild(overlay);
+}
+function closeModal() {
+  const m = document.getElementById('active-modal');
+  if (m) m.remove();
+}
+
+// ─── Toast ────────────────────────────────────────────────
+function showToast(msg, type = 'info', duration = 3000) {
+  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${icons[type]||''}</span><span>${msg}</span>`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), duration);
+}
+
+// ─── Utils ────────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function safeJson(s, def) {
+  try { return JSON.parse(s); } catch(e) { return def; }
+}
+function formatDate(s) {
+  if (!s) return '';
+  const d = new Date(s.replace(' ', 'T'));
+  if (isNaN(d)) return s;
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+}
+
+// ─── AI 模型切换 ─────────────────────────────────────────────────────
+let _aiModelState = { preferred: 'xunfei', available_models: [], minimax2_configured: false };
+
+const AI_ICONS = { xunfei: '⚡', minimax: '🔵', minimax2: '🟢', deepseek: '🌊' };
+const AI_COLORS = { xunfei: '#4f46e5', minimax: '#0ea5e9', minimax2: '#22c55e', deepseek: '#f97316' };
+
+async function loadAiModelState() {
+  try {
+    const s = await api('GET', '/ai-model');
+    _aiModelState = s;
+    const icon = AI_ICONS[s.preferred] || '🤖';
+    const label = s.preferred_label || s.preferred;
+    const btn = document.getElementById('ai-model-btn');
+    if (btn) {
+      btn.innerHTML = `<span>${icon}</span><span style="font-size:11px">${label}</span>`;
+      btn.style.borderColor = AI_COLORS[s.preferred] || '';
+      btn.style.color = AI_COLORS[s.preferred] || '';
+    }
+  } catch(e) {
+    const btn = document.getElementById('ai-model-btn');
+    if (btn) btn.textContent = '🤖 AI';
+  }
+}
+
+function openAiModelModal() {
+  renderAiModelCards();
+  // 填充已知 key
+  const ki = document.getElementById('minimax2-key-input');
+  if (ki) ki.value = '';
+  const si = document.getElementById('minimax2-key-status');
+  if (si) si.textContent = _aiModelState.minimax2_configured
+    ? `✅ 已配置（${_aiModelState.minimax2_key_preview}）`
+    : '未配置';
+  const bi = document.getElementById('minimax2-base-input');
+  if (bi && _aiModelState.minimax2_base) bi.value = _aiModelState.minimax2_base;
+  document.getElementById('ai-model-modal').style.display = 'flex';
+}
+
+function closeAiModelModal() {
+  document.getElementById('ai-model-modal').style.display = 'none';
+}
+
+function renderAiModelCards() {
+  const container = document.getElementById('ai-model-cards');
+  if (!container) return;
+  const models = _aiModelState.available_models || [];
+  const preferred = _aiModelState.preferred;
+  container.innerHTML = models.map(function(m) {
+    var isActive = m.id === preferred;
+    var icon = AI_ICONS[m.id] || '🤖';
+    var color = AI_COLORS[m.id] || 'var(--accent)';
+    var needsKey = m.id === 'minimax2' && !_aiModelState.minimax2_configured;
+    var bgColor = isActive ? (color + '22') : 'var(--bg3)';
+    var borderColor = isActive ? color : 'var(--border)';
+    var textColor = isActive ? color : 'var(--text)';
+    var dotBg = isActive ? color : 'transparent';
+    var dotCheck = isActive ? '✓' : '';
+    var keyWarn = needsKey ? ' <span style="color:#f97316">⚠️ 需先填写 Key</span>' : '';
+    return '<div class="ai-model-card' + (isActive ? ' active' : '') + '"'
+      + ' data-model="' + m.id + '"'
+      + ' onclick="selectAiModelCard(\'' + m.id + '\')"'
+      + ' style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r2);'
+      + 'border:2px solid ' + borderColor + ';cursor:pointer;background:' + bgColor + ';transition:all 0.15s">'
+      + '<span style="font-size:22px">' + icon + '</span>'
+      + '<div style="flex:1">'
+      + '<div style="font-size:13px;font-weight:700;color:' + textColor + '">' + m.label + '</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + m.note + keyWarn + '</div>'
+      + '</div>'
+      + '<div style="width:18px;height:18px;border-radius:50%;border:2px solid ' + borderColor + ';'
+      + 'background:' + dotBg + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">'
+      + dotCheck + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+let _selectedAiModel = null;
+function selectAiModelCard(modelId) {
+  _selectedAiModel = modelId;
+  // 更新所有卡片样式
+  document.querySelectorAll('.ai-model-card').forEach(card => {
+    const id = card.dataset.model;
+    const color = AI_COLORS[id] || 'var(--accent)';
+    const isActive = id === modelId;
+    card.style.borderColor = isActive ? color : 'var(--border)';
+    card.style.background = isActive ? `${color}15` : 'var(--bg3)';
+    const dot = card.querySelector('div:last-child');
+    if (dot) {
+      dot.style.borderColor = isActive ? color : 'var(--border)';
+      dot.style.background = isActive ? color : 'transparent';
+      dot.textContent = isActive ? '✓' : '';
+    }
+    const label = card.querySelector('div div:first-child');
+    if (label) label.style.color = isActive ? color : 'var(--text)';
+  });
+}
+
+function toggleMinimax2KeyVisibility() {
+  const inp = document.getElementById('minimax2-key-input');
+  const btn = document.getElementById('minimax2-show-btn');
+  if (!inp) return;
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '隐藏'; }
+  else { inp.type = 'password'; btn.textContent = '显示'; }
+}
+
+async function saveAiModel() {
+  const target = _selectedAiModel || _aiModelState.preferred;
+  const keyInput = document.getElementById('minimax2-key-input');
+  const baseInput = document.getElementById('minimax2-base-input');
+  const minimax2Key = keyInput ? keyInput.value.trim() : '';
+  const minimax2Base = baseInput ? baseInput.value.trim() : '';
+
+  // 如果选了 minimax2 但没填 key，且没有已配置的 key
+  if (target === 'minimax2' && !minimax2Key && !_aiModelState.minimax2_configured) {
+    showToast('⚠️ 请先填写 MiniMax 账号2 的 API Key', 'warn');
+    document.getElementById('minimax2-key-input')?.focus();
+    return;
+  }
+
+  try {
+    const body = { preferred: target };
+    if (minimax2Key) {
+      body.minimax2_key = minimax2Key;
+      if (minimax2Base) body.minimax2_base = minimax2Base;
+    }
+    const res = await api('POST', '/ai-model', body);
+    _aiModelState.preferred = res.preferred;
+    _aiModelState.preferred_label = res.label;
+    if (minimax2Key) {
+      _aiModelState.minimax2_configured = true;
+      _aiModelState.minimax2_key_preview = minimax2Key.slice(0, 8) + '****';
+    }
+    await loadAiModelState();
+    closeAiModelModal();
+    showToast(`✅ 已切换到 ${res.label}`, 'success');
+  } catch(e) {
+    showToast('切换失败：' + (e.message || e), 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 素材采集页面 (MediaCrawler 数据接入)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MediaCrawler UI (深度融合到 ip-arsenal)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// 状态
+let _mc = {
+  status: 'idle',
+  platform: 'dy',
+  crawlerType: 'search',
+  loginType: 'qrcode',
+  keywords: '',
+  enableComments: true,
+  enableSubComments: false,
+  headless: false,
+  saveOption: 'jsonl',
+  logs: [],
+  activeTab: 'control', // 'control' | 'data'
+  // data explorer
+  dataFiles: [],
+  currentDataFile: '',
+  dataRecords: [],
+  selectedRecords: new Set(),
+  wsStatus: null,
+  wsLogs: null,
+};
+
+// ─── MediaCrawler 主页面 ───────────────────────────────────────
+async function renderMediaCrawlerPage(c, params) {
+  _mc.activeTab = 'control';
+
+  c.innerHTML = `
+  <div class="mc-layout">
+    <!-- 顶部状态栏 -->
+    <div class="mc-topbar">
+      <div class="mc-status-bar">
+        <div class="mc-status-indicator" id="mc-status-dot"></div>
+        <span class="mc-status-text" id="mc-status-text">IDLE</span>
+        <span class="mc-status-info" id="mc-status-info"></span>
+      </div>
+      <div class="mc-topbar-actions">
+        <button class="mc-btn mc-btn-primary" id="mc-btn-start" onclick="mcStart()">▶ 启动</button>
+        <button class="mc-btn mc-btn-danger" id="mc-btn-stop" onclick="mcStop()" style="display:none">■ 停止</button>
+      </div>
+    </div>
+
+    <!-- 配置面板 -->
+    <div class="mc-config-panel">
+      <div class="mc-config-grid">
+        <div class="mc-field">
+          <label>平台</label>
+          <select id="mc-platform" onchange="mcConfigChange('platform', this.value)">
+            <option value="dy">抖音</option>
+            <option value="xhs">小红书</option>
+            <option value="wb">微博</option>
+            <option value="ks">快手</option>
+            <option value="bili">B站</option>
+            <option value="tieba">贴吧</option>
+            <option value="zhihu">知乎</option>
+          </select>
+        </div>
+        <div class="mc-field">
+          <label>登录方式</label>
+          <select id="mc-logintype" onchange="mcConfigChange('loginType', this.value)">
+            <option value="qrcode">二维码登录</option>
+            <option value="cookie">Cookie登录</option>
+          </select>
+        </div>
+        <div class="mc-field">
+          <label>爬虫类型</label>
+          <select id="mc-crawlertype" onchange="mcConfigChange('crawlerType', this.value)">
+            <option value="search">关键词搜索</option>
+            <option value="detail">指定ID详情</option>
+            <option value="creator">创作者主页</option>
+          </select>
+        </div>
+        <div class="mc-field">
+          <label>存储格式</label>
+          <select id="mc-saveoption" onchange="mcConfigChange('saveOption', this.value)">
+            <option value="jsonl">JSONL</option>
+            <option value="json">JSON</option>
+            <option value="csv">CSV</option>
+            <option value="excel">Excel</option>
+            <option value="sqlite">SQLite</option>
+          </select>
+        </div>
+      </div>
+      <div class="mc-field-full">
+        <label>关键词（多个用英文逗号分隔）</label>
+        <input type="text" id="mc-keywords" placeholder="如: 社会心理,婚姻情感,职场心理" oninput="mcConfigChange('keywords', this.value)" />
+      </div>
+      <div class="mc-checkboxes">
+        <label><input type="checkbox" id="mc-comments" checked onchange="mcConfigChange('enableComments', this.checked)" /> 获取评论</label>
+        <label><input type="checkbox" id="mc-subcomments" onchange="mcConfigChange('enableSubComments', this.checked)" /> 获取子评论</label>
+        <label><input type="checkbox" id="mc-headless" onchange="mcConfigChange('headless', this.checked)" /> 无头模式</label>
+      </div>
+    </div>
+
+    <!-- Tab 切换 -->
+    <div class="mc-tabs">
+      <button class="mc-tab active" id="mc-tab-control" onclick="mcSwitchTab('control')">⚡ 控制台</button>
+      <button class="mc-tab" id="mc-tab-data" onclick="mcSwitchTab('data')">📁 数据</button>
+    </div>
+
+    <!-- 控制台面板 -->
+    <div class="mc-panel" id="mc-panel-control">
+      <div class="mc-log-terminal" id="mc-log-terminal">
+        <div class="mc-log-empty">⬆ 点击"启动"按钮开始采集</div>
+      </div>
+    </div>
+
+    <!-- 数据面板 -->
+    <div class="mc-panel" id="mc-panel-data" style="display:none">
+      <div class="mc-data-layout">
+        <div class="mc-data-sidebar">
+          <div class="mc-data-platforms" id="mc-data-platforms"></div>
+          <div class="mc-data-files" id="mc-data-files"></div>
+        </div>
+        <div class="mc-data-main">
+          <div class="mc-data-toolbar" id="mc-data-toolbar">请选择平台和数据文件</div>
+          <div class="mc-data-records" id="mc-data-records">
+            <div class="mc-empty">⬅️ 从左侧选择数据文件</div>
+          </div>
+          <div class="mc-data-footer" id="mc-data-footer" style="display:none">
+            <span id="mc-selected-count">已选择: 0 条</span>
+            <button class="btn-primary btn-sm" onclick="mcSendToLibrary()">📤 发送到素材库</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+  .mc-layout { display: flex; flex-direction: column; height: 100%; background: var(--bg); }
+  .mc-topbar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .mc-status-bar { display: flex; align-items: center; gap: 10px; }
+  .mc-status-indicator { width: 10px; height: 10px; border-radius: 50%; background: var(--text3); }
+  .mc-status-indicator.running { background: #22c55e; box-shadow: 0 0 8px #22c55e; animation: pulse 1.5s infinite; }
+  .mc-status-indicator.stopping { background: #f59e0b; }
+  .mc-status-indicator.error { background: #ef4444; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .mc-status-text { font-size: 14px; font-weight: 700; color: var(--text); text-transform: uppercase; }
+  .mc-status-info { font-size: 12px; color: var(--text3); }
+  .mc-topbar-actions { display: flex; gap: 8px; }
+  .mc-btn { padding: 6px 16px; border-radius: var(--r2); border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .mc-btn-primary { background: var(--accent); color: #fff; }
+  .mc-btn-primary:hover { opacity: 0.9; }
+  .mc-btn-danger { background: #ef4444; color: #fff; }
+  .mc-btn-danger:hover { opacity: 0.9; }
+  .mc-config-panel { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .mc-config-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 10px; }
+  .mc-field { display: flex; flex-direction: column; gap: 4px; }
+  .mc-field label { font-size: 11px; color: var(--text3); font-weight: 500; }
+  .mc-field select, .mc-field-full input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--r2); background: var(--bg); color: var(--text); font-size: 13px; }
+  .mc-field-full { margin-bottom: 10px; }
+  .mc-field-full label { font-size: 11px; color: var(--text3); font-weight: 500; display: block; margin-bottom: 4px; }
+  .mc-field-full input { width: 100%; box-sizing: border-box; }
+  .mc-checkboxes { display: flex; gap: 16px; }
+  .mc-checkboxes label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
+  .mc-tabs { display: flex; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .mc-tab { padding: 10px 20px; border: none; background: none; color: var(--text3); font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; }
+  .mc-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .mc-tab:hover { color: var(--text); }
+  .mc-panel { flex: 1; overflow: hidden; }
+  .mc-log-terminal { height: 100%; overflow-y: auto; padding: 12px 16px; background: #0d1117; font-family: 'JetBrains Mono', 'Consolas', monospace; font-size: 12px; }
+  .mc-log-empty { color: #4b5563; padding: 20px; text-align: center; }
+  .mc-log-entry { padding: 2px 0; display: flex; gap: 8px; }
+  .mc-log-entry.info .mc-log-msg { color: #9ca3af; }
+  .mc-log-entry.warn .mc-log-msg { color: #f59e0b; }
+  .mc-log-entry.error .mc-log-msg { color: #f87171; }
+  .mc-log-entry.success .mc-log-msg { color: #4ade80; }
+  .mc-log-ts { color: #4b5563; flex-shrink: 0; }
+  .mc-log-level { width: 14px; flex-shrink: 0; }
+  .mc-log-msg { color: #e5e7eb; word-break: break-all; }
+  .mc-data-layout { display: flex; height: 100%; }
+  .mc-data-sidebar { width: 200px; border-right: 1px solid var(--border); overflow-y: auto; padding: 12px; background: var(--bg2); }
+  .mc-data-platform-item { padding: 6px 10px; border-radius: var(--r2); cursor: pointer; font-size: 12px; color: var(--text2); margin-bottom: 2px; }
+  .mc-data-platform-item:hover { background: var(--bg3); }
+  .mc-data-platform-item.active { background: rgba(124,92,252,0.15); color: var(--accent); font-weight: 600; }
+  .mc-data-file-item { padding: 5px 10px; border-radius: var(--r2); cursor: pointer; font-size: 11px; color: var(--text3); margin-bottom: 2px; }
+  .mc-data-file-item:hover { background: var(--bg3); color: var(--text); }
+  .mc-data-file-item.active { background: var(--bg3); color: var(--accent); font-weight: 600; }
+  .mc-data-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .mc-data-toolbar { padding: 8px 16px; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text3); min-height: 36px; }
+  .mc-data-records { flex: 1; overflow-y: auto; padding: 12px 16px; }
+  .mc-empty { text-align: center; padding: 40px; color: var(--text3); font-size: 14px; }
+  .mc-record { display: flex; gap: 10px; padding: 10px; border: 1px solid var(--border); border-radius: var(--r2); margin-bottom: 6px; background: var(--bg2); }
+  .mc-record:hover { border-color: var(--accent); }
+  .mc-record.selected { border-color: var(--accent); background: rgba(124,92,252,0.08); }
+  .mc-record input[type="checkbox"] { margin-top: 2px; flex-shrink: 0; cursor: pointer; }
+  .mc-record-body { flex: 1; min-width: 0; }
+  .mc-record-text { font-size: 12px; color: var(--text); line-height: 1.5; word-break: break-word; }
+  .mc-record-meta { display: flex; gap: 12px; font-size: 11px; color: var(--text3); margin-top: 6px; flex-wrap: wrap; }
+  .mc-data-footer { padding: 10px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg2); }
+  .btn-sm { padding: 4px 12px; font-size: 12px; }
+  </style>
+  `;
+
+  // 加载初始状态
+  mcLoadStatus();
+  mcConnectWs();
+}
+
+// ─── 爬虫控制 ─────────────────────────────────────────────────
+async function mcLoadStatus() {
+  try {
+    const res = await mcApi('GET', '/crawler/status');
+    _mc.status = res.status || 'idle';
+    _mc.platform = res.platform || 'dy';
+    _mc.crawlerType = res.crawler_type || 'search';
+    mcUpdateStatusUI();
+  } catch(e) {
+    _mc.status = 'error';
+    mcUpdateStatusUI();
+  }
+}
+
+function mcUpdateStatusUI() {
+  const dot = document.getElementById('mc-status-dot');
+  const text = document.getElementById('mc-status-text');
+  const info = document.getElementById('mc-status-info');
+  const btnStart = document.getElementById('mc-btn-start');
+  const btnStop = document.getElementById('mc-btn-stop');
+
+  dot.className = 'mc-status-indicator ' + _mc.status;
+  text.textContent = _mc.status.toUpperCase();
+
+  const statusText = {
+    idle: '空闲',
+    running: '采集中',
+    stopping: '停止中',
+    error: '错误'
+  };
+  text.textContent = statusText[_mc.status] || _mc.status.toUpperCase();
+
+  if (_mc.platform) {
+    const platformNames = { dy: '抖音', xhs: '小红书', wb: '微博', ks: '快手', bili: 'B站', tieba: '贴吧', zhihu: '知乎' };
+    info.textContent = _mc.platform ? platformNames[_mc.platform] || _mc.platform : '';
+  }
+
+  if (_mc.status === 'running') {
+    btnStart.style.display = 'none';
+    btnStop.style.display = 'block';
+  } else {
+    btnStart.style.display = 'block';
+    btnStop.style.display = 'none';
+  }
+}
+
+function mcConfigChange(key, value) {
+  if (key === 'platform') _mc.platform = value;
+  else if (key === 'loginType') _mc.loginType = value;
+  else if (key === 'crawlerType') _mc.crawlerType = value;
+  else if (key === 'keywords') _mc.keywords = value;
+  else if (key === 'enableComments') _mc.enableComments = value;
+  else if (key === 'enableSubComments') _mc.enableSubComments = value;
+  else if (key === 'headless') _mc.headless = value;
+  else if (key === 'saveOption') _mc.saveOption = value;
+}
+
+async function mcStart() {
+  const btn = document.getElementById('mc-btn-start');
+  btn.disabled = true;
+  btn.textContent = '启动中...';
+
+  try {
+    const crawlerTypeMap = { 'search': 'search', 'detail': 'detail', 'creator': 'creator' };
+    const loginTypeMap = { 'qrcode': 'qrcode', 'cookie': 'cookie' };
+    const saveOptionMap = { 'jsonl': 'jsonl', 'json': 'json', 'csv': 'csv', 'excel': 'excel', 'sqlite': 'sqlite' };
+
+    const req = {
+      platform: _mc.platform,
+      login_type: loginTypeMap[_mc.loginType] || 'qrcode',
+      crawler_type: crawlerTypeMap[_mc.crawlerType] || 'search',
+      keywords: _mc.keywords,
+      enable_comments: _mc.enableComments,
+      enable_sub_comments: _mc.enableSubComments,
+      headless: _mc.headless,
+      save_option: saveOptionMap[_mc.saveOption] || 'jsonl',
+    };
+
+    const res = await mcApi('POST', '/crawler/start', req);
+    if (res.status === 'ok') {
+      _mc.status = 'running';
+      mcUpdateStatusUI();
+      mcAppendLog({ level: 'success', message: '✅ 爬虫启动成功！' });
+      // 清空日志
+      _mc.logs = [];
+      document.getElementById('mc-log-terminal').innerHTML = '';
+    } else {
+      mcAppendLog({ level: 'error', message: '❌ 启动失败: ' + (res.message || '未知错误') });
+    }
+  } catch(e) {
+    mcAppendLog({ level: 'error', message: '❌ 启动失败: ' + (e.message || e) });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '▶ 启动';
+  }
+}
+
+async function mcStop() {
+  const btn = document.getElementById('mc-btn-stop');
+  btn.disabled = true;
+  btn.textContent = '停止中...';
+
+  try {
+    await mcApi('POST', '/crawler/stop');
+    _mc.status = 'stopping';
+    mcUpdateStatusUI();
+    mcAppendLog({ level: 'warn', message: '🛑 正在停止爬虫...' });
+  } catch(e) {
+    mcAppendLog({ level: 'error', message: '❌ 停止失败: ' + (e.message || e) });
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '■ 停止';
+  }
+}
+
+// ─── API 调用 ──────────────────────────────────────────────────
+const _mcApiBase = '/api/mediacrawler';
+
+async function mcApi(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const r = await fetch(_mcApiBase + path, opts);
+  if (!r.ok) { const e = await r.text(); throw new Error(e); }
+  return r.json();
+}
+
+// ─── 日志 ──────────────────────────────────────────────────────
+let _mcLogId = 0;
+
+function mcAppendLog(entry) {
+  _mc.logs.push(entry);
+  const terminal = document.getElementById('mc-log-terminal');
+  if (!terminal) return;
+
+  // 移除空状态提示
+  const empty = terminal.querySelector('.mc-log-empty');
+  if (empty) empty.remove();
+
+  const levelIcons = { info: 'ℹ', warn: '⚠', error: '✖', success: '✓' };
+  const ts = new Date().toLocaleTimeString('zh-CN', { hour12: false });
+
+  const div = document.createElement('div');
+  div.className = 'mc-log-entry ' + (entry.level || 'info');
+  div.innerHTML = `
+    <span class="mc-log-ts">${ts}</span>
+    <span class="mc-log-level">${levelIcons[entry.level] || '·'}</span>
+    <span class="mc-log-msg">${escapeHtml(entry.message || '')}</span>
+  `;
+  terminal.appendChild(div);
+  terminal.scrollTop = terminal.scrollHeight;
+}
+
+// ─── WebSocket 实时更新 ────────────────────────────────────────
+let _mcWsStatus = null;
+let _mcWsLogs = null;
+
+function mcConnectWs() {
+  mcDisconnectWs();
+
+  // Status WebSocket
+  const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const wsUrl = protocol + '//' + location.host + _mcApiBase + '/ws/status';
+
+  try {
+    _mcWsStatus = new WebSocket(wsUrl);
+
+    _mcWsStatus.onmessage = function(event) {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.status) {
+          _mc.status = data.status;
+          _mc.platform = data.platform || _mc.platform;
+          mcUpdateStatusUI();
+        }
+      } catch(e) {}
+    };
+
+    _mcWsStatus.onclose = function() {
+      _mcWsStatus = null;
+      // 2秒后重连
+      setTimeout(mcConnectWs, 2000);
+    };
+
+    _mcWsStatus.onerror = function() {
+      _mcWsStatus.close();
+    };
+  } catch(e) {}
+
+  // Logs WebSocket (通过轮询替代，因为跨域 WebSocket 较复杂)
+  mcPollLogs();
+}
+
+function mcDisconnectWs() {
+  if (_mcWsStatus) { _mcWsStatus.close(); _mcWsStatus = null; }
+  if (_mcWsLogs) { _mcWsLogs.close(); _mcWsLogs = null; }
+}
+
+async function mcPollLogs() {
+  if (_mc.status !== 'running' && _mc.status !== 'stopping') {
+    setTimeout(mcPollLogs, 3000);
+    return;
+  }
+
+  try {
+    const res = await mcApi('GET', '/crawler/logs?limit=20');
+    const logs = res.logs || [];
+    for (const log of logs) {
+      if (log.id > _mcLogId) {
+        mcAppendLog({ level: log.level, message: log.message });
+        _mcLogId = log.id;
+      }
+    }
+  } catch(e) {}
+
+  setTimeout(mcPollLogs, 1500);
+}
+
+// ─── Tab 切换 ─────────────────────────────────────────────────
+function mcSwitchTab(tab) {
+  _mc.activeTab = tab;
+  document.getElementById('mc-tab-control').classList.toggle('active', tab === 'control');
+  document.getElementById('mc-tab-data').classList.toggle('active', tab === 'data');
+  document.getElementById('mc-panel-control').style.display = tab === 'control' ? 'block' : 'none';
+  document.getElementById('mc-panel-data').style.display = tab === 'data' ? 'flex' : 'none';
+
+  if (tab === 'data') {
+    mcLoadDataFiles();
+  }
+}
+
+// ─── 数据浏览 ──────────────────────────────────────────────────
+let _mcDataPlatform = '';
+
+async function mcLoadDataFiles() {
+  const platforms = ['douyin', 'xhs', 'weibo', 'kuaishou', 'bilibili', 'tieba', 'zhihu'];
+  const platformNames = { douyin: '抖音', xhs: '小红书', weibo: '微博', kuaishou: '快手', bilibili: 'B站', tieba: '贴吧', zhihu: '知乎' };
+
+  const container = document.getElementById('mc-data-platforms');
+  container.innerHTML = platforms.map(p => `
+    <div class="mc-data-platform-item${_mcDataPlatform === p ? ' active' : ''}" onclick="mcSelectDataPlatform('${p}')">
+      ${platformNames[p] || p}
+    </div>
+  `).join('');
+}
+
+async function mcSelectDataPlatform(platform) {
+  _mcDataPlatform = platform;
+  _mc.currentDataFile = '';
+  _mc.dataRecords = [];
+  _mc.selectedRecords.clear();
+
+  mcLoadDataFiles(); // 重新渲染高亮
+
+  const filesContainer = document.getElementById('mc-data-files');
+  filesContainer.innerHTML = '<div style="color:var(--text3);font-size:11px;padding:4px">加载中...</div>';
+
+  try {
+    const res = await mcApi('GET', '/data/files?platform=' + platform);
+    _mc.dataFiles = res.files || [];
+    filesContainer.innerHTML = _mc.dataFiles.map(f => `
+      <div class="mc-data-file-item${_mc.currentDataFile === f.path ? ' active' : ''}" onclick="mcSelectDataFile('${f.path}')">
+        ${f.name}
+      </div>
+    `).join('') || '<div style="color:var(--text3);font-size:11px;padding:4px">无数据文件</div>';
+  } catch(e) {
+    filesContainer.innerHTML = '<div style="color:var(--error);font-size:11px;padding:4px">加载失败</div>';
+  }
+}
+
+async function mcSelectDataFile(filePath) {
+  _mc.currentDataFile = filePath;
+  _mc.dataRecords = [];
+  _mc.selectedRecords.clear();
+
+  // 重新渲染高亮
+  document.querySelectorAll('.mc-data-file-item').forEach(el => {
+    el.classList.toggle('active', el.textContent.trim() === filePath.split('/').pop());
+  });
+
+  const toolbar = document.getElementById('mc-data-toolbar');
+  toolbar.innerHTML = '<span style="color:var(--accent)">加载中...</span>';
+  document.getElementById('mc-data-records').innerHTML = '<div class="mc-empty loading-spinner">加载数据中...</div>';
+  document.getElementById('mc-data-footer').style.display = 'none';
+
+  try {
+    const encoded = encodeURIComponent(filePath);
+    const res = await mcApi('GET', '/data/files/' + encoded + '?preview=true&limit=50');
+    _mc.dataRecords = res.records || [];
+    _mc._dataTotal = res.total || 0;
+
+    toolbar.innerHTML = `${filePath.split('/').pop()} <span style="color:var(--text3)">(${res.total} 条)</span>`;
+    mcRenderDataRecords();
+  } catch(e) {
+    toolbar.innerHTML = '<span style="color:var(--error)">加载失败</span>';
+    document.getElementById('mc-data-records').innerHTML = '<div class="mc-empty">' + escapeHtml(e.message || '加载失败') + '</div>';
+  }
+}
+
+function mcRenderDataRecords() {
+  const container = document.getElementById('mc-data-records');
+  const footer = document.getElementById('mc-data-footer');
+
+  if (!_mc.dataRecords.length) {
+    container.innerHTML = '<div class="mc-empty">暂无数据</div>';
+    footer.style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = _mc.dataRecords.map((r, i) => {
+    const content = r.content || r.desc || r.title || '(无内容)';
+    const nickname = r.nickname || '';
+    const liked = r.liked_count || r.like_count || r.comment_like_count || '0';
+    const comment = r.comment_count || r.comments_count || r.sub_comment_count || '0';
+    const isSelected = _mc.selectedRecords.has(i);
+
+    return `
+    <div class="mc-record${isSelected ? ' selected' : ''}" onclick="mcToggleRecord(${i}, event)">
+      <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation()" />
+      <div class="mc-record-body">
+        <div class="mc-record-text">${escapeHtml(content.substring(0, 200))}${content.length > 200 ? '...' : ''}</div>
+        <div class="mc-record-meta">
+          ${nickname ? '<span>👤 ' + escapeHtml(nickname) + '</span>' : ''}
+          ${'<span>👍 ' + liked + '</span>'}
+          ${'<span>💬 ' + comment + '</span>'}
+          ${'<span>🌐 ' + (_mcDataPlatform || 'unknown') + '</span>'}
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+
+  footer.style.display = 'flex';
+  mcUpdateSelectedCount();
+}
+
+function mcToggleRecord(index, event) {
+  if (event.target.type === 'checkbox') return;
+  if (_mc.selectedRecords.has(index)) {
+    _mc.selectedRecords.delete(index);
+  } else {
+    _mc.selectedRecords.add(index);
+  }
+  const record = document.querySelectorAll('.mc-record')[index];
+  if (record) {
+    record.classList.toggle('selected', _mc.selectedRecords.has(index));
+    record.querySelector('input[type="checkbox"]').checked = _mc.selectedRecords.has(index);
+  }
+  mcUpdateSelectedCount();
+}
+
+function mcUpdateSelectedCount() {
+  const el = document.getElementById('mc-selected-count');
+  if (el) el.textContent = '已选择: ' + _mc.selectedRecords.size + ' 条';
+}
+
+async function mcSendToLibrary() {
+  if (_mc.selectedRecords.size === 0) {
+    showToast('请先选择要导入的内容', 'warning');
+    return;
+  }
+
+  const records = [];
+  for (const idx of _mc.selectedRecords) {
+    const r = _mc.dataRecords[idx];
+    const content = r.content || r.desc || r.title || '';
+    if (content) {
+      records.push({
+        platform: _mcDataPlatform,
+        content: content,
+        metadata: {
+          nickname: r.nickname || '',
+          liked_count: r.liked_count || r.like_count || 0,
+          comment_count: r.comment_count || r.comments_count || 0,
+          collect_count: r.collected_count || 0,
+          ip_location: r.ip_location || '',
+          source_keyword: r.source_keyword || '',
+          create_time: r.create_time || '',
+          note_url: r.note_url || r.aweme_url || '',
+        }
+      });
+    }
+  }
+
+  if (records.length === 0) {
+    showToast('没有有效内容可导入', 'warning');
+    return;
+  }
+
+  try {
+    const res = await api('POST', '/media/import', { records: records });
+    showToast('✅ 已导入 ' + res.imported + ' 条素材', 'success');
+    _mc.selectedRecords.clear();
+    document.getElementById('mc-data-records').innerHTML = '<div class="mc-empty">已导入完成，可继续选择更多内容导入</div>';
+    document.getElementById('mc-data-footer').style.display = 'none';
+  } catch(e) {
+    showToast('导入失败: ' + (e.message || e), 'error');
+  }
+}
+
+async function renderMediaPage(c, params) {
+  _mediaState.selected.clear();
+  _mediaState.records = [];
+  _mediaState.currentFile = '';
+
+  c.innerHTML = `
+  <div class="media-layout">
+    <div class="media-sidebar">
+      <div class="media-section-title">📡 素材采集</div>
+      <div class="media-platforms" id="media-platforms">加载中...</div>
+    </div>
+    <div class="media-main">
+      <div class="media-toolbar" id="media-toolbar">
+        <span class="text-secondary">请选择平台和文件</span>
+      </div>
+      <div class="media-records" id="media-records">
+        <div class="empty-state">⬅️ 请先从左侧选择平台和数据文件</div>
+      </div>
+      <div class="media-footer" id="media-footer" style="display:none">
+        <span id="media-selected-count">已选择: 0 条</span>
+        <button class="btn-primary" onclick="mediaSendToLibrary()">📤 发送到素材库</button>
+      </div>
+    </div>
+  </div>
+  <style>
+  .media-layout { display: flex; height: 100%; gap: 0; }
+  .media-sidebar { width: 220px; border-right: 1px solid var(--border); padding: 16px; overflow-y: auto; background: var(--bg2); }
+  .media-section-title { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 12px; }
+  .media-platform-item { padding: 8px 12px; border-radius: var(--r2); cursor: pointer; margin-bottom: 4px; font-size: 13px; color: var(--text2); }
+  .media-platform-item:hover { background: var(--bg3); }
+  .media-platform-item.active { background: rgba(124,92,252,0.15); color: var(--accent); font-weight: 600; }
+  .media-files { margin-top: 8px; padding-left: 8px; }
+  .media-file-item { padding: 6px 10px; border-radius: var(--r2); cursor: pointer; margin-bottom: 2px; font-size: 12px; color: var(--text3); }
+  .media-file-item:hover { background: var(--bg3); color: var(--text); }
+  .media-file-item.active { background: var(--bg3); color: var(--accent); font-weight: 600; }
+  .media-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .media-toolbar { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; min-height: 44px; }
+  .media-records { flex: 1; overflow-y: auto; padding: 12px 16px; }
+  .media-record { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--r2); margin-bottom: 8px; background: var(--bg2); transition: all 0.15s; }
+  .media-record:hover { border-color: var(--accent); }
+  .media-record.selected { border-color: var(--accent); background: rgba(124,92,252,0.08); }
+  .media-record input[type="checkbox"] { margin-top: 4px; flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
+  .media-record-content { flex: 1; min-width: 0; }
+  .media-record-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 8px; word-break: break-word; }
+  .media-record-meta { display: flex; gap: 16px; font-size: 11px; color: var(--text3); flex-wrap: wrap; }
+  .media-record-meta span { display: flex; align-items: center; gap: 4px; }
+  .media-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg2); }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); font-size: 14px; }
+  .loading-spinner { text-align: center; padding: 40px; color: var(--text3); }
+  </style>
+  `;
+
+  // 加载平台列表
+  loadMediaPlatforms();
+}
+
+async function loadMediaPlatforms() {
+  try {
+    const res = await api('GET', '/media/platforms');
+    _mediaState.platforms = res.platforms || [];
+    renderMediaPlatforms();
+  } catch(e) {
+    document.getElementById('media-platforms').innerHTML = '<div style="color:var(--error);font-size:12px;padding:8px">加载失败: ' + e.message + '</div>';
+  }
+}
+
+function renderMediaPlatforms() {
+  const container = document.getElementById('media-platforms');
+  if (!_mediaState.platforms.length) {
+    container.innerHTML = '<div style="color:var(--text3);font-size:12px">未找到采集数据<br>请先在 MediaCrawler 中采集数据</div>';
+    return;
+  }
+  container.innerHTML = _mediaState.platforms.map(p => `
+    <div class="media-platform-item${_mediaState.currentPlatform === p.id ? ' active' : ''}" onclick="selectMediaPlatform('${p.id}')">
+      ${p.name}
+    </div>
+    <div class="media-files" id="media-files-${p.id}" style="display:${_mediaState.currentPlatform === p.id ? 'block' : 'none'}">
+    </div>
+  `).join('');
+}
+
+async function selectMediaPlatform(platformId) {
+  _mediaState.currentPlatform = platformId;
+  _mediaState.currentFile = '';
+  _mediaState.records = [];
+  _mediaState.selected.clear();
+  renderMediaPlatforms();
+  renderMediaFiles(platformId);
+}
+
+async function renderMediaFiles(platformId) {
+  const container = document.getElementById('media-files-' + platformId);
+  if (!container) return;
+  container.innerHTML = '<div style="color:var(--text3);font-size:11px;padding:4px 8px">加载中...</div>';
+  try {
+    const res = await api('GET', '/media/files?platform=' + platformId);
+    _mediaState.files = res.files || [];
+    container.innerHTML = _mediaState.files.map(f => `
+      <div class="media-file-item${_mediaState.currentFile === f.path ? ' active' : ''}" onclick="selectMediaFile('${f.path}', '${platformId}')">
+        ${f.name} (${formatBytes(f.size)})
+      </div>
+    `).join('');
+    if (!_mediaState.files.length) {
+      container.innerHTML = '<div style="color:var(--text3);font-size:11px;padding:4px 8px">无数据文件</div>';
+    }
+  } catch(e) {
+    container.innerHTML = '<div style="color:var(--error);font-size:11px;padding:4px 8px">加载失败</div>';
+  }
+}
+
+async function selectMediaFile(filePath, platformId) {
+  _mediaState.currentFile = filePath;
+  _mediaState.records = [];
+  _mediaState.selected.clear();
+  renderMediaFiles(platformId);
+  document.getElementById('media-toolbar').innerHTML = '<span class="loading-spinner">加载数据中...</span>';
+  document.getElementById('media-records').innerHTML = '';
+  document.getElementById('media-footer').style.display = 'none';
+
+  try {
+    const res = await api('GET', '/media/data?platform=' + platformId + '&file=' + encodeURIComponent(filePath) + '&offset=0&limit=50');
+    _mediaState.records = res.records || [];
+    _mediaState._total = res.total || 0;
+    _mediaState._offset = res.offset || 0;
+    _mediaState._limit = res.limit || 50;
+    _mediaState._currentPlatform = platformId;
+    renderMediaToolbar();
+    renderMediaRecords();
+  } catch(e) {
+    document.getElementById('media-records').innerHTML = '<div class="empty-state">加载失败: ' + e.message + '</div>';
+  }
+}
+
+function renderMediaToolbar() {
+  const fileName = _mediaState.currentFile.split('/').pop();
+  document.getElementById('media-toolbar').innerHTML = `
+    <span>${getPlatformName(_mediaState._currentPlatform)}</span>
+    <span style="color:var(--text3)"> / </span>
+    <span>${fileName}</span>
+    <span style="color:var(--text3);margin-left:12px">共 ${_mediaState._total} 条</span>
+  `;
+}
+
+function getPlatformName(id) {
+  const names = { douyin: '抖音', xhs: '小红书', weibo: '微博', kuaishou: '快手', bili: 'B站', tieba: '贴吧', zhihu: '知乎' };
+  return names[id] || id;
+}
+
+function renderMediaRecords() {
+  const container = document.getElementById('media-records');
+  if (!_mediaState.records.length) {
+    container.innerHTML = '<div class="empty-state">暂无数据</div>';
+    document.getElementById('media-footer').style.display = 'none';
+    return;
+  }
+
+  container.innerHTML = _mediaState.records.map((r, i) => {
+    const content = r.content || r.desc || r.title || '(无内容)';
+    const nickname = r.nickname || r.user_nickname || '';
+    const liked = r.liked_count || r.like_count || r.comment_like_count || '0';
+    const comment = r.comment_count || r.comments_count || r.sub_comment_count || '0';
+    const collect = r.collected_count || r.forward_count || '0';
+    const ip = r.ip_location || '';
+    const platform = _mediaState._currentPlatform;
+    const isSelected = _mediaState.selected.has(i);
+
+    return `
+    <div class="media-record${isSelected ? ' selected' : ''}" onclick="toggleMediaRecord(${i}, event)">
+      <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation()" />
+      <div class="media-record-content">
+        <div class="media-record-text">${escapeHtml(content.substring(0, 300))}${content.length > 300 ? '...' : ''}</div>
+        <div class="media-record-meta">
+          ${nickname ? '<span>👤 ' + escapeHtml(nickname) + '</span>' : ''}
+          <span>👍 ' + liked + '</span>
+          <span>💬 ' + comment + '</span>
+          ${collect ? '<span>⭐ ' + collect + '</span>' : ''}
+          ${ip ? '<span>🌐 ' + ip + '</span>' : ''}
+          <span>📌 ' + platform + '</span>
+        </div>
+      </div>
+    </div>
+    `;
+  }).join('');
+
+  document.getElementById('media-footer').style.display = 'flex';
+  updateMediaSelectedCount();
+}
+
+function toggleMediaRecord(index, event) {
+  if (event.target.type === 'checkbox') return;
+  if (_mediaState.selected.has(index)) {
+    _mediaState.selected.delete(index);
+  } else {
+    _mediaState.selected.add(index);
+  }
+  // 更新 checkbox 状态
+  const record = document.querySelectorAll('.media-record')[index];
+  if (record) {
+    record.classList.toggle('selected', _mediaState.selected.has(index));
+    record.querySelector('input[type="checkbox"]').checked = _mediaState.selected.has(index);
+  }
+  updateMediaSelectedCount();
+}
+
+function updateMediaSelectedCount() {
+  document.getElementById('media-selected-count').textContent = '已选择: ' + _mediaState.selected.size + ' 条';
+}
+
+async function mediaSendToLibrary() {
+  if (_mediaState.selected.size === 0) {
+    showToast('请先选择要导入的内容', 'warning');
+    return;
+  }
+
+  const records = [];
+  for (const idx of _mediaState.selected) {
+    const r = _mediaState.records[idx];
+    const content = r.content || r.desc || r.title || '';
+    if (content) {
+      records.push({
+        platform: _mediaState._currentPlatform,
+        content: content,
+        metadata: {
+          nickname: r.nickname || '',
+          liked_count: r.liked_count || r.like_count || 0,
+          comment_count: r.comment_count || r.comments_count || 0,
+          collect_count: r.collected_count || 0,
+          ip_location: r.ip_location || '',
+          source_keyword: r.source_keyword || '',
+          create_time: r.create_time || '',
+          note_url: r.note_url || r.aweme_url || '',
+        }
+      });
+    }
+  }
+
+  if (records.length === 0) {
+    showToast('没有有效内容可导入', 'warning');
+    return;
+  }
+
+  try {
+    const res = await api('POST', '/media/import', { records: records });
+    showToast('✅ 已导入 ' + res.imported + ' 条素材', 'success');
+    // 清空选择
+    _mediaState.selected.clear();
+    document.getElementById('media-records').innerHTML = '<div class="empty-state">已导入完成，可继续选择更多内容导入</div>';
+    document.getElementById('media-footer').style.display = 'none';
+  } catch(e) {
+    showToast('导入失败: ' + (e.message || e), 'error');
+  }
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) return bytes + 'B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
