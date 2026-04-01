@@ -2301,12 +2301,12 @@ async function renderWechatPage(c, params={}) {
   const savedInputEscaped = _wfpSavedInput.replace(/`/g, '\\`').replace(/\$/g, '\\$');
 
   c.innerHTML = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:100%;min-height:0">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;height:calc(100vh - 120px)">
     <!-- 左栏：输入 + 主题 -->
-    <div style="display:flex;flex-direction:column;gap:10px;min-height:0;overflow:hidden">
-      <!-- 输入区：textarea 自适应填满可用空间 -->
-      <div style="display:flex;flex-direction:column;flex:1;min-height:150px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;gap:8px">
-        <div style="display:flex;align-items:center;justify-content:space-between">
+    <div style="display:flex;flex-direction:column;gap:10px;overflow:hidden">
+      <!-- 输入区：独立可滚动 -->
+      <div style="display:flex;flex-direction:column;flex:1;min-height:120px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px;gap:8px;overflow:hidden">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
           <span style="font-size:13px;font-weight:700;color:var(--text2)">📝 输入文章</span>
           <div style="display:flex;gap:6px;align-items:center">
             <button class="btn btn-primary btn-sm" onclick="doWechatPageFormat()" id="wfp-gen-btn">🎨 生成排版</button>
@@ -2314,9 +2314,9 @@ async function renderWechatPage(c, params={}) {
             <span id="wfp-word-count" style="font-size:11px;color:var(--text3)"></span>
           </div>
         </div>
-        <textarea id="wfp-input" placeholder="把文章粘贴到这里，支持 Markdown 格式..." style="flex:1;min-height:0;width:100%;padding:10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg1);color:var(--text1);resize:none;font-family:inherit;box-sizing:border-box;outline:none;line-height:1.7"></textarea>
+        <textarea id="wfp-input" placeholder="把文章粘贴到这里，支持 Markdown 格式..." style="flex:1;min-height:0;width:100%;padding:10px;font-size:13px;border:1px solid var(--border);border-radius:var(--r2);background:var(--bg1);color:var(--text1);resize:none;font-family:inherit;box-sizing:border-box;outline:none;line-height:1.7;overflow-y:auto"></textarea>
       </div>
-      <!-- 主题选择：填满剩余空间 -->
+      <!-- 主题选择：可滚动 -->
       <div style="flex:1;min-height:0;overflow-y:auto;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 14px">
         <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:8px">🎨 选择排版主题</div>
         <div id="wfp-themes-container"><div style="font-size:12px;color:var(--text3)">⏳ 加载主题...</div></div>
@@ -2325,7 +2325,7 @@ async function renderWechatPage(c, params={}) {
     </div>
 
     <!-- 右栏：排版预览 -->
-    <div style="display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden">
+    <div style="display:flex;flex-direction:column;gap:8px;overflow:hidden">
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;flex-wrap:wrap">
         <span style="font-size:13px;font-weight:700;color:var(--text2)">👁️ 排版预览</span>
         <span id="wfp-current-theme-badge" style="font-size:11px;padding:2px 8px;border-radius:99px;background:var(--bg3);color:var(--text2);display:none">🎨 wechat-native</span>
@@ -2334,7 +2334,7 @@ async function renderWechatPage(c, params={}) {
           <span style="font-size:10px;color:var(--text3)">粘贴到公众号编辑器</span>
         </div>
       </div>
-      <iframe id="wfp-preview" style="flex:1;min-height:0;width:100%;border:1px solid var(--border);border-radius:var(--r2);background:#fff;display:block"></iframe>
+      <iframe id="wfp-preview" style="flex:1;width:100%;border:1px solid var(--border);border-radius:var(--r2);background:#fff;display:block;min-height:0"></iframe>
     </div>
   </div>`;
 
