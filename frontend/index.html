@@ -1761,10 +1761,46 @@ async function aiRewriteEnsemble() {
         <div style="font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow:hidden">${escapeHtml(v.text.substring(0, 300))}${v.text.length > 300 ? '...' : ''}</div>
       `;
       card.onclick = () => {
-        document.getElementById('studio-output').value = v.text;
-        document.getElementById('studio-output').style.display = 'block';
-        picker.remove();
-        showToast(`已选择「${v.label}」`, 'success');
+        // 隐藏选择器，显示预览面板
+        picker.style.display = 'none';
+
+        // 移除旧的预览面板（如果有）
+        const oldPreview = document.getElementById('studio-version-preview');
+        if (oldPreview) oldPreview.remove();
+
+        // 创建预览面板
+        const preview = document.createElement('div');
+        preview.id = 'studio-version-preview';
+        preview.style.cssText = 'display:flex;flex-direction:column;gap:10px;padding:12px;background:var(--bg2);border-radius:var(--r2);';
+
+        const charCount = v.text.replace(/[^\u4e00-\u9fff]/g, '').length;
+        preview.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:13px;font-weight:700;color:var(--accent)">📋 ${v.label}（${charCount}字 · ${v.temp===0.7?'稳重':'创意'}风格）</span>
+            <div style="display:flex;gap:8px">
+              <button id="studio-version-back-btn" class="btn btn-ghost btn-sm" style="border-color:var(--border);color:var(--text2)">← 返回选择</button>
+              <button id="studio-version-confirm-btn" class="btn btn-sm" style="background:var(--accent);color:#fff;border:none">✓ 确认使用此版本</button>
+            </div>
+          </div>
+          <div id="studio-version-text" style="font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:500px;overflow-y:auto;padding:12px;background:var(--bg3);border-radius:var(--r2);border:1px solid var(--border)">${escapeHtml(v.text)}</div>
+        `;
+
+        container.insertBefore(preview, output);
+
+        // 返回选择器
+        document.getElementById('studio-version-back-btn').onclick = () => {
+          preview.remove();
+          picker.style.display = 'flex';
+        };
+
+        // 确认使用
+        document.getElementById('studio-version-confirm-btn').onclick = () => {
+          document.getElementById('studio-output').value = v.text;
+          document.getElementById('studio-output').style.display = 'block';
+          preview.remove();
+          picker.remove();
+          showToast(`已选择「${v.label}」`, 'success');
+        };
       };
       card.onmouseenter = () => card.style.borderColor = 'var(--accent)';
       card.onmouseleave = () => card.style.borderColor = 'var(--border)';
