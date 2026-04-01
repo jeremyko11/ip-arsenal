@@ -2276,15 +2276,18 @@ let _wfpPendingImport = '';  // 从创作台跳转带来的待导入内容
 // 向 iframe 写入任意 HTML（用 document.write，最可靠）
 function writeToIframe(iframeId, fullHtml) {
   const f = document.getElementById(iframeId);
-  if (!f) return;
-  // 清掉 src，避免 src 和 document.write 冲突
-  try { f.src = ''; } catch(e) {}
+  if (!f || !fullHtml) return;
+  // 直接使用 srcdoc，最可靠，避免 src='' 竞争导致白屏
   try {
-    const doc = f.contentDocument || f.contentWindow?.document;
-    if (doc) { doc.open(); doc.write(fullHtml); doc.close(); return; }
-  } catch(e) {}
-  // 降级：srcdoc
-  f.srcdoc = fullHtml;
+    f.removeAttribute('src');
+    f.srcdoc = fullHtml;
+  } catch(e) {
+    // 降级到 doc.write（iframe 未完全加载时可能失败）
+    try {
+      const doc = f.contentDocument || f.contentWindow?.document;
+      if (doc) { doc.open(); doc.write(fullHtml); doc.close(); }
+    } catch(e2) {}
+  }
 }
 
 // 设置 iframe 占位提示
@@ -2310,6 +2313,7 @@ async function renderWechatPage(c, params={}) {
           <span style="font-size:13px;font-weight:700;color:var(--text2)">📝 输入文章</span>
           <div style="display:flex;gap:6px;align-items:center">
             <button class="btn btn-primary btn-sm" onclick="doWechatPageFormat()" id="wfp-gen-btn">🎨 生成排版</button>
+            <button class="btn btn-ghost btn-sm" onclick="openWechatGallery()" title="主题画廊：一次预览所有主题">🖼️ Gallery</button>
             <button class="btn btn-ghost btn-sm" onclick="document.getElementById('wfp-input').value=''">🗑️</button>
             <span id="wfp-word-count" style="font-size:11px;color:var(--text3)"></span>
           </div>
@@ -2363,7 +2367,8 @@ async function renderWechatPage(c, params={}) {
     if (_wfpSavedHtml) {
       wfpHtmlResult = _wfpSavedHtml;
       const baseStyle = "*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{padding:16px 24px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333}img{max-width:100%;display:block;margin:8px auto}";
-      writeToIframe('wfp-preview', `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${wfpHtmlResult}</body></html>`);
+      const escapedHtml = wfpHtmlResult.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
+      writeToIframe('wfp-preview', `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${escapedHtml}</body></html>`);
       const copyBtn = document.getElementById('wfp-copy-btn');
       if (copyBtn) copyBtn.style.display = 'flex';
       const themeBadge = document.getElementById('wfp-current-theme-badge');
@@ -2375,6 +2380,24 @@ async function renderWechatPage(c, params={}) {
       setPreviewPlaceholder('wfp-preview', '← 左侧粘贴文章，选好主题，点「🎨 生成排版」<br><span style="font-size:12px;margin-top:8px;display:inline-block">排版完成后点「📋 复制内容」直接粘贴到公众号编辑器（保留样式）</span>');
     }
   }, 50);
+}
+
+// 打开主题画廊（新标签页）
+async function openWechatGallery() {
+  const content = document.getElementById('wfp-input')?.value?.trim();
+  try {
+    const blob = await fetch(API + '/wechat-gallery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: content || '', theme: wfpActiveTheme })
+    }).then(r => r.blob());
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    // 5分钟后自动释放 Blob URL
+    setTimeout(() => URL.revokeObjectURL(url), 5 * 60 * 1000);
+  } catch(e) {
+    showToast('画廊打开失败：' + e.message, 'error');
+  }
 }
 
 let wfpActiveTheme = 'wechat-native';
@@ -2445,12 +2468,23 @@ async function doWechatPageFormat(silent) {
   try {
     // 调用排版接口
     const res = await api('POST', '/wechat-format', { content, theme: wfpActiveTheme });
+    if (!res || !res.html) throw new Error('服务器返回数据异常');
     wfpHtmlResult = res.html;
     _wfpSavedHtml = wfpHtmlResult;
     _wfpSavedInput = content;
-    // 用 document.write 直接把完整 HTML 写进 iframe——最可靠，无跨域、无 Blob URL 问题
+    // 验证返回的 HTML 包含内联样式
+    const hasStyles = wfpHtmlResult.includes('style="');
+    if (!hasStyles) {
+      console.warn('[WechatFormat] API returned HTML without inline styles:', wfpHtmlResult.slice(0, 200));
+      showToast('警告：排版样式缺失，请检查主题是否正确', 'warn');
+    }
+    // 转义 HTML 中可能破坏模板字面量的字符（特别是 ${} 和反引号）
+    const escapedHtml = wfpHtmlResult
+      .replace(/`/g, '\\`')
+      .replace(/\$\{/g, '\\${');
+    // 用 srcdoc 写进 iframe，避免 src='' 竞争
     const baseStyle = "*{box-sizing:border-box}html,body{margin:0;padding:0;background:#fff}body{padding:16px 24px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;font-size:15px;line-height:1.75;color:#333}img{max-width:100%;display:block;margin:8px auto}";
-    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${wfpHtmlResult}</body></html>`;
+    const fullHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>${baseStyle}</style></head><body>${escapedHtml}</body></html>`;
     writeToIframe('wfp-preview', fullHtml);
     if (copyBtn) copyBtn.style.display = 'flex';
     if (countEl) countEl.textContent = res.word_count ? `约 ${res.word_count} 字` : '';
@@ -2464,6 +2498,7 @@ async function doWechatPageFormat(silent) {
   } catch(e) {
     setPreviewPlaceholder('wfp-preview', `❌ 排版失败：${e.message}`);
     showToast('排版失败：' + e.message, 'error');
+    wfpHtmlResult = '';
   } finally {
     if (genBtn) { genBtn.disabled = false; genBtn.textContent = '🎨 生成排版'; }
   }

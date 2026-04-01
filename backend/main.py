@@ -3260,6 +3260,303 @@ def wechat_preview(req: WechatFormatRequest):
     return HTMLResponse(content=full_page, media_type="text/html; charset=utf-8")
 
 
+# ─── 主题画廊（Gallery）─────────────────────────────────────────────────
+GALLERY_THEMES = [
+    # 深度长文（4）
+    "newspaper", "magazine", "ink", "coffee-house",
+    # 科技产品（4）
+    "bytedance", "github", "sspai", "midnight",
+    # 文艺随笔（4）
+    "terracotta", "mint-fresh", "sunset-amber", "lavender-dream",
+    # 活力动态（4）
+    "sports", "bauhaus", "chinese", "wechat-native",
+]
+
+GALLERY_DEMO_MARKDOWN = """\
+## 主要功能
+
+在数字化时代，**内容创作**变得越来越重要。一款好的排版工具，能让你的文章在众多内容中**脱颖而出**。
+
+> 好的排版不只是视觉享受，更是对读者的尊重。
+
+### 核心亮点
+
+- 完整的 Markdown 语法支持
+- 精美的主题样式
+- 一键复制到微信发布
+
+1. 撰写你的内容
+2. 选择喜欢的风格
+3. 一键复制粘贴
+
+---
+
+### 代码示例
+
+`inline code` 也是支持的。
+
+```python
+def hello():
+    print("Hello, World!")
+```
+
+| 功能 | 状态 |
+|------|------|
+| 实时预览 | 已支持 |
+| 主题选择 | 已支持 |
+
+> [!tip] 小技巧
+> 选择适合你文章风格的主题，效果更佳。
+"""
+
+
+def _render_gallery_theme(tid: str, theme_data: dict, html: str, footnote_html: str) -> tuple:
+    """渲染单个主题（用于并行 gallery）"""
+    # 每个线程需要自己的 import，因为 sys.path 是线程独立的
+    import sys
+    from pathlib import Path
+    format_dir = Path(__file__).parent.parent / "wechat-format"
+    if str(format_dir) not in sys.path:
+        sys.path.insert(0, str(format_dir))
+    import format as wfmt
+    rendered = wfmt.inject_inline_styles(html, theme_data)
+    fn_rendered = ""
+    if footnote_html:
+        fn_rendered = wfmt.inject_inline_styles(footnote_html, theme_data, skip_wrapper=True)
+    return tid, rendered + ("\n" + fn_rendered if fn_rendered else "")
+
+
+def generate_gallery_html(rendered_map: dict, theme_map: dict,
+                         theme_ids: list, title: str, word_count: int,
+                         recommended: list = None) -> str:
+    """生成主题画廊页面 HTML"""
+    if recommended is None:
+        recommended = []
+
+    base_style = (
+        "*{box-sizing:border-box}"
+        "html,body{margin:0;padding:0;background:#fff}"
+        "body{padding:16px 24px;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;"
+        "font-size:15px;line-height:1.75;color:#333}"
+        "img{max-width:100%;display:block;margin:8px auto}"
+    )
+
+    GROUPS = [
+        ("深度长文", ["newspaper", "magazine", "ink", "coffee-house"]),
+        ("科技产品", ["bytedance", "github", "sspai", "midnight"]),
+        ("文艺随笔", ["terracotta", "mint-fresh", "sunset-amber", "lavender-dream"]),
+        ("活力动态", ["sports", "bauhaus", "chinese", "wechat-native"]),
+    ]
+
+    buttons_html = ""
+    btn_index = 0
+    for group_name, group_ids in GROUPS:
+        group_tids = [t for t in group_ids if t in theme_ids]
+        if not group_tids:
+            continue
+        buttons_html += f'<div class="theme-group"><span class="group-label">{group_name}</span>'
+        for tid in group_tids:
+            theme = theme_map[tid]
+            accent = theme.get("colors", {}).get("accent", "#333")
+            active = " active" if btn_index == 0 else ""
+            is_recommended = " recommended" if tid in recommended else ""
+            name = theme.get("name", tid)
+            rec_label = '<span class="rec-badge">推荐</span>' if tid in recommended else ""
+            buttons_html += (
+                f'<button class="theme-btn{active}{is_recommended}" data-theme="{tid}" '
+                f'onclick="switchTheme(\'{tid}\')">'
+                f'<span class="theme-dot" style="background:{accent}"></span>'
+                f'{name}{rec_label}</button>'
+            )
+            btn_index += 1
+        buttons_html += '</div>\n'
+
+    previews_html = ""
+    for i, tid in enumerate(theme_ids):
+        display = "block" if i == 0 else "none"
+        previews_html += (
+            f'<div class="theme-preview" data-theme="{tid}" '
+            f'style="display:{display}">{rendered_map[tid]}</div>\n'
+        )
+
+    return f"""<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>{title} - 主题选择</title>
+<style>
+* {{ margin: 0; padding: 0; box-sizing: border-box; }}
+body {{ font-family: -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: #f5f5f7; min-height: 100vh; }}
+.toolbar {{ position: fixed; top: 0; left: 0; right: 0; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid #e0e0e0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; z-index: 200; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }}
+.toolbar-left {{ display: flex; align-items: center; gap: 16px; }}
+.toolbar-title {{ font-size: 15px; font-weight: 600; color: #1d1d1f; }}
+.toolbar-meta {{ font-size: 13px; color: #86868b; }}
+.toolbar-hint {{ font-size: 13px; color: #07c160; font-weight: 500; }}
+.main-container {{ max-width: 700px; margin: 80px auto 40px; padding: 0 20px; display: flex; flex-direction: column; align-items: center; gap: 24px; }}
+.theme-buttons {{ display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 600px; }}
+.theme-group {{ display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }}
+.group-label {{ font-size: 12px; color: #86868b; font-weight: 600; min-width: 60px; letter-spacing: 0.5px; }}
+.theme-btn {{ display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: #fff; border: 2px solid #e0e0e0; border-radius: 20px; font-size: 13px; font-weight: 500; color: #333; cursor: pointer; transition: all 0.2s; font-family: inherit; }}
+.theme-btn:hover {{ border-color: #ccc; background: #fafafa; }}
+.theme-btn.active {{ border-color: #07c160; background: rgba(7,193,96,0.06); color: #07c160; }}
+.theme-btn.recommended {{ position: relative; }}
+.theme-btn.recommended .rec-badge {{ position: absolute; top: -8px; right: -6px; background: #ff9500; color: #fff; font-size: 10px; line-height: 1; padding: 2px 5px; border-radius: 6px; font-weight: 600; pointer-events: none; }}
+.theme-dot {{ display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }}
+.phone-frame {{ width: 100%; max-width: 415px; background: #fff; border-radius: 16px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); overflow: hidden; }}
+.phone-header {{ background: #ededed; padding: 12px 16px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #999; border-bottom: 1px solid #e0e0e0; }}
+.preview-scroll {{ max-height: 600px; overflow-y: auto; padding: 20px; }}
+.theme-preview {{ font-family: -apple-system, "PingFang SC", sans-serif; }}
+.action-btn {{ width: 100%; max-width: 415px; padding: 14px 0; background: #07c160; color: #fff; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; font-family: inherit; }}
+.action-btn:hover {{ background: #06ae56; }}
+.action-btn:active {{ transform: scale(0.99); }}
+.action-btn.copied {{ background: #34c759; }}
+.font-size-selector {{ display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; padding: 8px 0; }}
+.fs-label {{ font-size: 13px; color: #999; }}
+.fs-btn {{ padding: 4px 12px; border: 1px solid #ddd; border-radius: 16px; background: #fff; font-size: 13px; color: #666; cursor: pointer; transition: all 0.2s; font-family: inherit; }}
+.fs-btn:hover {{ border-color: #07C160; color: #07C160; }}
+.fs-btn.active {{ background: #07C160; border-color: #07C160; color: #fff; }}
+@media (max-width: 600px) {{ .toolbar {{ padding: 10px 14px; }} .toolbar-hint {{ display: none; }} .main-container {{ margin-top: 68px; padding: 0 12px; }} .theme-buttons {{ display: grid; grid-template-columns: 1fr 1fr; width: 100%; }} .theme-btn {{ justify-content: center; }} .phone-frame {{ border-radius: 0; box-shadow: none; }} .preview-scroll {{ max-height: 500px; }} }}
+</style>
+</head>
+<body>
+<div class="toolbar">
+    <div class="toolbar-left">
+        <span class="toolbar-title">{title}</span>
+        <span class="toolbar-meta">{word_count} 字</span>
+    </div>
+    <span class="toolbar-hint">选一个你喜欢的风格</span>
+</div>
+<div class="main-container">
+    <div class="font-size-selector">
+        <span class="fs-label">字号</span>
+        <button class="fs-btn active" data-size="15" onclick="switchFontSize(15)">15px</button>
+        <button class="fs-btn" data-size="16" onclick="switchFontSize(16)">16px</button>
+    </div>
+    <div class="theme-buttons">
+{buttons_html}
+    </div>
+    <div class="phone-frame">
+        <div class="phone-header">微信公众号预览</div>
+        <div class="preview-scroll" id="previewScroll">
+{previews_html}
+        </div>
+    </div>
+    <button class="action-btn" id="copyBtn" onclick="applyTheme()">复制内容到剪贴板 → 公众号粘贴</button>
+</div>
+<script>
+var selectedTheme = '{theme_ids[0] if theme_ids else ""}';
+function switchTheme(themeId) {{
+    var previews = document.querySelectorAll('.theme-preview');
+    for (var i = 0; i < previews.length; i++) {{ previews[i].style.display = 'none'; }}
+    var target = document.querySelector('.theme-preview[data-theme="' + themeId + '"]');
+    if (target) {{ target.style.display = 'block'; }}
+    var btns = document.querySelectorAll('.theme-btn');
+    for (var i = 0; i < btns.length; i++) {{
+        if (btns[i].getAttribute('data-theme') === themeId) {{ btns[i].classList.add('active'); }} else {{ btns[i].classList.remove('active'); }}
+    }}
+    selectedTheme = themeId;
+    document.getElementById('previewScroll').scrollTop = 0;
+}}
+function applyTheme() {{
+    var target = document.querySelector('.theme-preview[data-theme="' + selectedTheme + '"]');
+    if (!target) return;
+    var range = document.createRange();
+    range.selectNodeContents(target);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    try {{ document.execCommand('copy'); }} catch(e) {{}}
+    sel.removeAllRanges();
+    var btn = document.getElementById('copyBtn');
+    var activeBtn = document.querySelector('.theme-btn.active');
+    var themeName = activeBtn ? activeBtn.textContent.trim().replace('推荐','').trim() : selectedTheme;
+    btn.textContent = '已复制「' + themeName + '」 ✓';
+    btn.classList.add('copied');
+    setTimeout(function() {{ btn.textContent = '复制内容到剪贴板 → 公众号粘贴'; btn.classList.remove('copied'); }}, 3000);
+}}
+function switchFontSize(size) {{
+    document.querySelectorAll('.fs-btn').forEach(function(btn) {{
+        if (parseInt(btn.dataset.size) === size) {{ btn.classList.add('active'); }} else {{ btn.classList.remove('active'); }}
+    }});
+    document.querySelectorAll('.theme-preview').forEach(function(preview) {{
+        preview.querySelectorAll('p, span, section').forEach(function(el) {{
+            var fs = parseInt(el.style.fontSize);
+            if (fs >= 14 && fs <= 18) {{ el.style.fontSize = size + 'px'; }}
+        }});
+    }});
+}}
+document.addEventListener('DOMContentLoaded', function() {{}});
+</script>
+</body>
+</html>"""
+
+
+@app.post("/api/wechat-gallery")
+def wechat_gallery(req: WechatFormatRequest):
+    """返回主题画廊页面，可一次预览所有主题"""
+    import re as _re
+    from pathlib import Path
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    from fastapi.responses import HTMLResponse
+
+    format_dir = BASE_DIR / "wechat-format"
+    if str(format_dir) not in sys.path:
+        sys.path.insert(0, str(format_dir))
+
+    try:
+        import format as wfmt
+    except ImportError as e:
+        raise HTTPException(500, f"排版模块加载失败：{e}")
+
+    content = req.content or GALLERY_DEMO_MARKDOWN
+
+    # 预处理（与 wechat_format 一致，跳过 wikilinks/本地图片）
+    title = wfmt.extract_title(content, Path("article.md"))
+    word_count = wfmt.count_words(content)
+    content = wfmt.strip_frontmatter(content)
+    content = wfmt.fix_cjk_spacing(content)
+    content = wfmt.fix_cjk_bold_punctuation(content)
+    content = wfmt.process_callouts(content)
+    content = wfmt.process_manual_footnotes(content)
+    content = wfmt.process_fenced_containers(content)
+    content = _re.sub(r'~~(.+?)~~', r'<del>\1</del>', content)
+
+    html = wfmt.md_to_html(content)
+    html, footnote_html = wfmt.extract_links_as_footnotes(html)
+
+    # 加载所有画廊主题
+    theme_map = {}
+    gallery_theme_ids = []
+    for tid in GALLERY_THEMES:
+        try:
+            theme_map[tid] = wfmt.load_theme(tid)
+            gallery_theme_ids.append(tid)
+        except Exception:
+            pass
+
+    if not gallery_theme_ids:
+        return HTMLResponse("<html><body><p>无可用主题</p></body></html>", media_type="text/html; charset=utf-8")
+
+    # 并行渲染所有主题
+    rendered_map = {}
+    with ThreadPoolExecutor(max_workers=min(8, len(gallery_theme_ids))) as executor:
+        futures = {
+            executor.submit(_render_gallery_theme, tid, theme_map[tid], html, footnote_html): tid
+            for tid in gallery_theme_ids
+        }
+        for future in as_completed(futures):
+            tid, rendered = future.result()
+            rendered_map[tid] = rendered
+
+    gallery_html = generate_gallery_html(
+        rendered_map, theme_map, gallery_theme_ids,
+        title, word_count, recommended=[req.theme] if req.theme in gallery_theme_ids else []
+    )
+
+    return HTMLResponse(content=gallery_html, media_type="text/html; charset=utf-8")
+
+
 # ─── 预览缓存（token → HTML）─────────────────────────────────────────────
 import uuid as _uuid
 _preview_cache: dict = {}  # token -> full_html
