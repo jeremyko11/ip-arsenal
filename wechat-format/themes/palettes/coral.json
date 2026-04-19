@@ -1,0 +1,13 @@
+{
+  "name": "珊瑚橙",
+  "accent": "#FF7F50",
+  "accent_light": "#FFA07A",
+  "primary": "#CD5C5C",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF5EE",
+  "code_bg": "#FFE4E1",
+  "hr_color": "#FF7F50",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFA07A",
+  "dark_accent": "#E9967A"
+}

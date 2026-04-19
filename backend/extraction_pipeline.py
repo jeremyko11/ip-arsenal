@@ -24,6 +24,15 @@ class ExtractionResult:
     structured_data: Dict
     confidence: float = 0.0
 
+    def to_dict(self):
+        return {
+            "round_name": self.round_name,
+            "model_used": self.model_used,
+            "content": self.content,
+            "structured_data": self.structured_data,
+            "confidence": self.confidence
+        }
+
 
 class MultiRoundExtractionPipeline:
     """多轮迭代提取流程"""
@@ -655,7 +664,7 @@ IP方向：{ip_direction}
         Returns:
             完整的提取结果
         """
-        from .chunking import chunk_book_text
+        from chunking import chunk_book_text
 
         print(f"[Pipeline] 开始多轮提取《{book_name}》")
 
@@ -688,7 +697,7 @@ IP方向：{ip_direction}
             })
 
         round2_results = self.round2_all_chapters(
-            book_name, flat_chunks, book_structure, progress_callback
+            book_name, flat_chunks, book_structure, progress_callback, max_workers=5
         )
 
         # Round 3: 跨章节分析

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<div id="test">Click me</div>
+<script>
+var r = {id: 'MYID'};
+
+// What the HTML parser gives for onclick="openMaterialDispatcher('\"+r.id+\"')"
+// The attribute value is: openMaterialDispatcher('\"+r.id+\"')
+// Plus the closing " from the HTML attribute
+
+// The argument to openMaterialDispatcher is: '\"+r.id+\"'
+var arg = String.fromCharCode(39,34,43,114,46,105,100,43,34,39);
+console.log('arg =', JSON.stringify(arg));
+console.log('arg chars:', [...arg].map(c => c.charCodeAt(0)));
+
+// Full onclick code: openMaterialDispatcher(arg)
+var onclick_code = 'openMaterialDispatcher(' + arg + ')';
+console.log('onclick_code:', onclick_code);
+
+function openMaterialDispatcher(x) {
+    document.getElementById('test').textContent = 'Called with: ' + x;
+}
+try {
+    eval(onclick_code);
+} catch(e) {
+    console.log('Error:', e.message);
+}
+</script>
+</body>
+</html>

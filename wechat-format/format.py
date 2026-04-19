@@ -97,8 +97,8 @@ def hello():
 # ── 路径 ────────────────────────────────────────────────────────────────
 SCRIPT_DIR = Path(__file__).parent
 SKILL_DIR = SCRIPT_DIR.parent
-THEMES_DIR = SKILL_DIR / "themes"
-TEMPLATE_DIR = SKILL_DIR / "templates"
+THEMES_DIR = SCRIPT_DIR / "themes"  # 主题在 wechat-format/themes/
+TEMPLATE_DIR = SCRIPT_DIR / "templates"
 
 with open(SKILL_DIR / "config.json", encoding="utf-8") as f:
     CONFIG = json.load(f)
@@ -1221,8 +1221,12 @@ def inject_inline_styles(html: str, theme: dict, skip_wrapper: bool = False) -> 
             # 只处理不在 pre 内的 code（pre 内的已经处理过了）
             html = re.sub(r'<code(?!\s+style)>', f'<code style="{s}">', html)
         else:
-            html = re.sub(rf"<{tag}(?!\s+style)>", f'<{tag} style="{s}">', html)
-            html = re.sub(rf"<{tag}(\s+(?!style)[^>]*)>", f'<{tag} style="{s}"\\1>', html)
+            # 改进正则：确保匹配完整标签名，不匹配 <pre> 中的 p 等，并处理已有属性
+            # 1. 处理不带属性的标签 <tag> -> <tag style="...">
+            html = re.sub(rf"<{tag}>", f'<{tag} style="{s}">', html)
+            # 2. 处理带属性的标签 <tag class="..."> -> <tag style="..." class="...">
+            #    排除已带 style 的标签 (?!.*style=)
+            html = re.sub(rf'<{tag}\s+(?![^>]*style=)([^>]+)>', f'<{tag} style="{s}" \\1>', html)
 
     # === 5.1 删除线样式 ===
     html = re.sub(r'<del>', '<del style="text-decoration:line-through;color:#999">', html)

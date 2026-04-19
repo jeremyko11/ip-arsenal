@@ -1,0 +1,13 @@
+{
+  "name": "奢华金",
+  "accent": "#DAA520",
+  "accent_light": "#F4E04D",
+  "primary": "#8B6914",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFFBEB",
+  "code_bg": "#FFF8DC",
+  "hr_color": "#DAA520",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#F4E04D",
+  "dark_accent": "#CD853F"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "晚霞橙",
+  "accent": "#FF6B35",
+  "accent_light": "#FFB347",
+  "primary": "#D62828",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF5F0",
+  "code_bg": "#FFE8DD",
+  "hr_color": "#FF6B35",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFB347",
+  "dark_accent": "#F77F00"
+}

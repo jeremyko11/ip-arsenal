@@ -1,0 +1,13 @@
+{
+  "name": "蜜桃粉",
+  "accent": "#FFA07A",
+  "accent_light": "#FFDAB9",
+  "primary": "#E9967A",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF5F0",
+  "code_bg": "#FFE4D6",
+  "hr_color": "#FFA07A",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFDAB9",
+  "dark_accent": "#F4A460"
+}

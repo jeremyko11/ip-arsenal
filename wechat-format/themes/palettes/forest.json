@@ -1,0 +1,13 @@
+{
+  "name": "森林绿",
+  "accent": "#2D6A4F",
+  "accent_light": "#95D5B2",
+  "primary": "#1B4332",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0FFF4",
+  "code_bg": "#E8F5E9",
+  "hr_color": "#2D6A4F",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#95D5B2",
+  "dark_accent": "#40916C"
+}

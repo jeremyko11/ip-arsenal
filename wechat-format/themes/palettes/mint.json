@@ -1,0 +1,13 @@
+{
+  "name": "薄荷绿",
+  "accent": "#06D6A0",
+  "accent_light": "#B8F2E6",
+  "primary": "#047857",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0FFF4",
+  "code_bg": "#E8F5E9",
+  "hr_color": "#06D6A0",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#B8F2E6",
+  "dark_accent": "#00B4A0"
+}

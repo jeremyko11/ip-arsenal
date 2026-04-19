@@ -1,0 +1,13 @@
+{
+  "name": "海洋蓝",
+  "accent": "#0077B6",
+  "accent_light": "#90E0EF",
+  "primary": "#03045E",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0F8FF",
+  "code_bg": "#E8F4F8",
+  "hr_color": "#0077B6",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#90E0EF",
+  "dark_accent": "#00B4D8"
+}

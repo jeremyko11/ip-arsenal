@@ -22,7 +22,7 @@ from extraction import (
 from prompts import EXTRACT_MODES, build_prompt, parse_materials, parse_atomic_notes
 
 # ─── 路由模块 ─────────────────────────────────────────────────────────
-from routes import sources, materials, wechat, pushutree, media, misc, ip_tools
+from routes import sources, materials, wechat, pushutree, media, misc
 
 # ─── 标准库（供路由和 process_source_task 使用）──────────────────────
 import json, sqlite3, uuid, time, asyncio, base64, io, threading
@@ -60,8 +60,7 @@ app.include_router(materials.router)
 app.include_router(wechat.router)
 app.include_router(pushutree.router)
 app.include_router(media.router)
-app.include_router(ip_tools.router)
-app.include_router(misc.router)  # 必须最后注册（包含 catch-all 前端路由）
+app.include_router(misc.router)
 
 @app.on_event('startup')
 def on_startup():
@@ -180,10 +179,12 @@ def parse_materials(source_id: str, raw_content: str) -> List[dict]:
 # ─── process_source_task 和 process_source_task_smart 已迁移到 services/process.py ─────
 # ─── API 路由已拆分到 routes/ 目录（sources.py / materials.py / wechat.py / pushutree.py / media.py / misc.py）─────
 
-if __name__ == "__main__":
-    import uvicorn, sys
+
+    import uvicorn, sys, io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
     print("IP Arsenal starting on http://localhost:8766")
-    print(f"[SmartExtraction] 智能提取模块: {'可用' if SMART_EXTRACTION_AVAILABLE else '不可用'}")
+    print(f"[SmartExtraction] 智能提取模块: {'可用' if _SMART_EXTRACTION_AVAILABLE else '不可用'}")
     # Worker 线程和任务恢复由 @app.on_event("startup") 统一处理
     uvicorn.run("main:app", host="0.0.0.0", port=8766, reload=False)
 

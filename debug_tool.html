@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>排版问题诊断</title>
+<style>
+body { font-family: -apple-system, sans-serif; padding: 20px; background: #f5f5f5; }
+.panel { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.error { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 6px; }
+.success { color: #155724; background: #d4edda; padding: 10px; border-radius: 6px; }
+.log { background: #f5f5f5; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 13px; max-height: 200px; overflow-y: auto; margin-top: 10px; }
+.log-entry { margin: 5px 0; padding: 5px; border-bottom: 1px solid #eee; }
+.log-entry.error { background: #fff5f5; }
+.log-entry.success { background: #f0fff0; }
+#debug-iframe { width: 100%; height: 300px; border: 1px solid #ddd; border-radius: 8px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<h1>🔧 排版问题诊断</h1>
+
+<div class="panel">
+  <h3>1. API 连接测试</h3>
+  <button onclick="testAPI()">测试 API</button>
+  <div id="api-result"></div>
+</div>
+
+<div class="panel">
+  <h3>2. 前端状态检测</h3>
+  <button onclick="checkState()">检查状态</button>
+  <div id="state-result"></div>
+</div>
+
+<div class="panel">
+  <h3>3. 日志</h3>
+  <div id="log" class="log"></div>
+</div>
+
+<div class="panel">
+  <h3>4. iframe 测试</h3>
+  <button onclick="testIframe()">测试 iframe 写入</button>
+  <iframe id="debug-iframe"></iframe>
+</div>
+
+<script>
+const API = 'http://localhost:8766/api';
+
+function log(msg, isError = false) {
+  const logDiv = document.getElementById('log');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry' + (isError ? ' error' : '');
+  entry.textContent = new Date().toLocaleTimeString() + ': ' + msg;
+  logDiv.insertBefore(entry, logDiv.firstChild);
+}
+
+async function testAPI() {
+  const result = document.getElementById('api-result');
+  result.innerHTML = '测试中...';
+
+  try {
+    // 测试主题 API
+    log('测试: GET /wechat-themes');
+    const themes = await fetch(API + '/wechat-themes').then(r => r.json());
+    log(`主题数量: ${themes.length}`, false);
+
+    // 测试排版 API
+    log('测试: POST /wechat-format');
+    const res = await fetch(API + '/wechat-format', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: '# Test\n\nHello **world**', theme: 'wechat-native' })
+    }).then(r => r.json());
+
+    log(`HTML 长度: ${res.html?.length || 0}`);
+    log(`包含样式: ${res.html?.includes('style=') || false}`);
+
+    if (res.html && res.html.includes('style=')) {
+      result.innerHTML = '<div class="success">✅ API 正常</div>';
+      log('API 测试成功', false);
+    } else {
+      result.innerHTML = '<div class="error">❌ API 返回异常</div>';
+      log('API 返回异常', true);
+    }
+  } catch (e) {
+    result.innerHTML = `<div class="error">❌ 错误: ${e.message}</div>`;
+    log('API 测试失败: ' + e.message, true);
+  }
+}
+
+function checkState() {
+  const result = document.getElementById('state-result');
+  let html = '';
+
+  // 检查关键元素
+  const elements = [
+    'wfp-input', 'wfp-gen-btn', 'wfp-preview', 'wfp-copy-btn',
+    'wfp-word-count', 'wfp-current-theme-badge', 'wfp-theme-desc'
+  ];
+
+  html += '<h4>元素检查:</h4>';
+  elements.forEach(id => {
+    const el = document.getElementById(id);
+    html += `${id}: ${el ? '✅ 存在' : '❌ 不存在'}<br>`;
+  });
+
+  // 检查全局变量
+  html += '<h4>全局变量:</h4>';
+  html += `typeof doWechatPageFormat: ${typeof doWechatPageFormat}<br>`;
+  html += `typeof wfpActiveTheme: ${typeof wfpActiveTheme}<br>`;
+  if (typeof wfpActiveTheme !== 'undefined') {
+    html += `wfpActiveTheme value: ${wfpActiveTheme}<br>`;
+  }
+
+  // 检查 textarea 内容
+  const textarea = document.getElementById('wfp-input');
+  if (textarea) {
+    html += `<h4>Textarea 内容长度:</h4>${textarea.value.length} 字符`;
+  }
+
+  result.innerHTML = html;
+  log('状态检查完成');
+}
+
+function testIframe() {
+  const iframe = document.getElementById('debug-iframe');
+  const testHtml = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="background:#e0ffe0;font-family:sans-serif;padding:20px"><h1>✅ iframe 写入成功!</h1><p>如果看到这个文字，说明 iframe 写入功能正常。</p><p style="color:#07c160"><strong>时间: ${new Date().toLocaleTimeString()}</strong></p></body></html>`;
+
+  try {
+    iframe.srcdoc = testHtml;
+    log('iframe 写入测试完成');
+  } catch (e) {
+    log('iframe 写入失败: ' + e.message, true);
+  }
+}
+
+// 页面加载时自动测试
+window.onload = function() {
+  log('诊断页面加载完成');
+  testAPI();
+};
+</script>
+</body>
+</html>

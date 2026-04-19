@@ -2295,10 +2295,6 @@ function setPreviewPlaceholder(iframeId, msgHtml) {
   writeToIframe(iframeId, `<!DOCTYPE html><html><body style="margin:0;padding:40px 20px;text-align:center;font-family:-apple-system,'PingFang SC',sans-serif;font-size:13px;color:#999">${msgHtml}</body></html>`);
 }
 
-// 公众号排版页面状态（必须在 renderWechatPage 之前定义，因为 loadWfPageThemes 会用到）
-let wfpActiveTheme = 'wechat-native';
-let wfpHtmlResult = '';
-
 async function renderWechatPage(c, params={}) {
   // 保存当前 textarea 内容（如果页面已存在）
   const existingInput = document.getElementById('wfp-input');
@@ -2403,6 +2399,9 @@ async function openWechatGallery() {
     showToast('画廊打开失败：' + e.message, 'error');
   }
 }
+
+let wfpActiveTheme = 'wechat-native';
+let wfpHtmlResult = '';
 
 async function loadWfPageThemes() {
   const container = document.getElementById('wfp-themes-container');

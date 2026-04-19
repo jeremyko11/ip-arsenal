@@ -1,0 +1,13 @@
+{
+  "name": "咖啡棕",
+  "accent": "#8B4513",
+  "accent_light": "#D2B48C",
+  "primary": "#5D3A1A",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF8F0",
+  "code_bg": "#F5E6D3",
+  "hr_color": "#8B4513",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#D2B48C",
+  "dark_accent": "#A0522D"
+}

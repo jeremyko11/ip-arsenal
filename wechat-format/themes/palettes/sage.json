@@ -1,0 +1,13 @@
+{
+  "name": "鼠尾草绿",
+  "accent": "#588157",
+  "accent_light": "#A3B18A",
+  "primary": "#3A5A40",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F5F9F0",
+  "code_bg": "#E8F0E0",
+  "hr_color": "#588157",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#A3B18A",
+  "dark_accent": "#4A7C59"
+}

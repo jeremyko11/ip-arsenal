@@ -9,11 +9,11 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'd:\P-workplac
 
 Start-Sleep -Seconds 3
 
-Write-Host "[2/2] Starting IP Arsenal (port 8765)..." -ForegroundColor Yellow
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\jeremyko11\WorkBuddy\Claw\ip-arsenal\backend'; python main.py" -WindowStyle Normal
+Write-Host "[2/2] Starting IP Arsenal (port 8766)..." -ForegroundColor Yellow
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd 'C:\Users\jeremyko11\WorkBuddy\Claw\ip-arsenal\backend'; python start_server.py" -WindowStyle Normal
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
 Write-Host "  Both services started!" -ForegroundColor Green
-Write-Host "  Open: http://localhost:8765" -ForegroundColor Green
+Write-Host "  Open: http://localhost:8766" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green

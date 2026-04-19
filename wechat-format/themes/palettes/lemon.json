@@ -1,0 +1,13 @@
+{
+  "name": "柠檬黄",
+  "accent": "#F9C74F",
+  "accent_light": "#FFF3B0",
+  "primary": "#E09F3E",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFFFF0",
+  "code_bg": "#FFFACD",
+  "hr_color": "#F9C74F",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFF3B0",
+  "dark_accent": "#F4A261"
+}

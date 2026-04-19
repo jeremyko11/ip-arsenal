@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="test">test</div>
+<script>
+// Test what onclick needs to be
+var r = {id: 'MYID'};
+
+// This is what we need:
+// onclick="openMaterialDispatcher('"+r.id+"')"
+// Where the JS string is: ' + r.id +
+// And the JS expression is valid
+
+// In the HTML file, to have a single quote in JS code inside a double-quoted HTML attribute,
+// we need to escape it: \'
+// So: onclick="openMaterialDispatcher(\'"+r.id+"')"
+// But wait, the " inside the JS code is not needed!
+
+// What we actually need:
+// onclick="openMaterialDispatcher('"+r.id+"')"
+// Where ' starts a JS string, "+r.id+" is the concatenation, ' ends the string
+
+// To write this in HTML, inside a double-quoted attribute:
+// onclick="openMaterialDispatcher(\''+r.id+'\')"
+// This gives: onclick="openMaterialDispatcher('"+r.id+"')"
+// Which JS sees: openMaterialDispatcher('"+r.id+"')
+
+var onclick_val = "'"+r.id+"'";
+console.log("onclick_val:", onclick_val);
+
+var expr = "openMaterialDispatcher(" + onclick_val + ")";
+console.log("expr:", expr);
+
+function openMaterialDispatcher(x) {
+    document.getElementById('test').textContent = x;
+}
+
+try {
+    eval(expr);
+} catch(e) {
+    console.log("Error:", e.message);
+}
+</script>
+</body>
+</html>

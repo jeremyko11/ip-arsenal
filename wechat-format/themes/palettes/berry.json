@@ -1,0 +1,13 @@
+{
+  "name": "浆果紫",
+  "accent": "#9B2335",
+  "accent_light": "#D4A5A5",
+  "primary": "#5C1A1B",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF5F5",
+  "code_bg": "#FAE5E5",
+  "hr_color": "#9B2335",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#D4A5A5",
+  "dark_accent": "#A52A2A"
+}

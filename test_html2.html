@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<div id="test" onclick="foo('+r.id+')">click</div>
+<script>
+var r = {id: 'MYID'};
+function foo(x) { document.getElementById('test').textContent = x; }
+</script>
+</body>
+</html>

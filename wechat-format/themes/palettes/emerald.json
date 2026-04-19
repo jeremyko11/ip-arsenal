@@ -1,0 +1,13 @@
+{
+  "name": "翡翠绿",
+  "accent": "#50C878",
+  "accent_light": "#98FB98",
+  "primary": "#228B22",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0FFF0",
+  "code_bg": "#E0FFE0",
+  "hr_color": "#50C878",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#98FB98",
+  "dark_accent": "#3CB371"
+}

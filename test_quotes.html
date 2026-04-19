@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<div id="test1" onclick="foo('+r.id+')">test1 - literal string</div>
+<div id="test2" onclick="foo(42)">test2 - constant</div>
+<script>
+var r = {id: 'MYID'};
+function foo(x) {
+    document.getElementById('test1').style.color = 'red';
+    document.getElementById('test1').textContent = 'test1 clicked: ' + x;
+}
+document.getElementById('test2').onclick = function() {
+    foo('constant works');
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "樱花粉",
+  "accent": "#FF69B4",
+  "accent_light": "#FFB6C1",
+  "primary": "#C71585",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF0F5",
+  "code_bg": "#FFE4E1",
+  "hr_color": "#FF69B4",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFB6C1",
+  "dark_accent": "#DB7093"
+}

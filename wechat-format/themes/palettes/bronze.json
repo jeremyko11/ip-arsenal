@@ -1,0 +1,13 @@
+{
+  "name": "古铜色",
+  "accent": "#CD7F32",
+  "accent_light": "#DAA06D",
+  "primary": "#8B4513",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF8F0",
+  "code_bg": "#F5E6D3",
+  "hr_color": "#CD7F32",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#DAA06D",
+  "dark_accent": "#B8860B"
+}

@@ -1,0 +1,13 @@
+{
+  "name": "钢铁灰",
+  "accent": "#4682B4",
+  "accent_light": "#A9A9A9",
+  "primary": "#2F4F4F",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F5F5F5",
+  "code_bg": "#E8E8E8",
+  "hr_color": "#4682B4",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#A9A9A9",
+  "dark_accent": "#5F9EA0"
+}

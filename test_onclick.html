@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="test">onclick value:</div>
+<script>
+var r = {id: 'MYID'};
+
+// Test what '\"'+r.id+'\"' evaluates to in JS
+var s = '\"'+r.id+'\"';
+console.log('s =', s);
+console.log('typeof s:', typeof s);
+
+// Test the full function call
+function openMaterialDrawer(x) {
+    document.getElementById('test').textContent = 'openMaterialDispatcher called with: ' + x;
+}
+</script>
+</body>
+</html>

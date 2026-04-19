@@ -1,0 +1,13 @@
+{
+  "name": "玫瑰红",
+  "accent": "#E63946",
+  "accent_light": "#FFB4A2",
+  "primary": "#9D0208",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF0F0",
+  "code_bg": "#FFE5E5",
+  "hr_color": "#E63946",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#FFB4A2",
+  "dark_accent": "#D00000"
+}

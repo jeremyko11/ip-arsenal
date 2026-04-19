@@ -1,0 +1,13 @@
+{
+  "name": "天空蓝",
+  "accent": "#00B4D8",
+  "accent_light": "#ADE8F4",
+  "primary": "#0077B6",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0F9FF",
+  "code_bg": "#E0F4FF",
+  "hr_color": "#00B4D8",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#ADE8F4",
+  "dark_accent": "#0096C7"
+}

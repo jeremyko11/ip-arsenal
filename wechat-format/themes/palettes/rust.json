@@ -1,0 +1,13 @@
+{
+  "name": "铁锈红",
+  "accent": "#B7410E",
+  "accent_light": "#CD853F",
+  "primary": "#8B0000",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#FFF0E0",
+  "code_bg": "#F5DEB3",
+  "hr_color": "#B7410E",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#CD853F",
+  "dark_accent": "#A0522D"
+}

@@ -1,847 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IP 军火库 · 知识资产管理平台</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-/* ─── Reset & Variables ───────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Default: Light theme */
-:root {
-  --bg: #ffffff;
-  --bg2: #f8f9fa;
-  --bg3: #f1f3f4;
-  --border: #e8eaed;
-  --border2: #dadce0;
-  --text: #202124;
-  --text2: #5f6368;
-  --text3: #9aa0a6;
-  --accent: #4A90D9;
-  --accent2: #3B82F6;
-  --accent-glow: rgba(74, 144, 217, 0.12);
-  --green: #34d399;
-  --orange: #fb923c;
-  --red: #f87171;
-  --yellow: #fbbf24;
-  --blue: #60a5fa;
-  --pink: #f472b6;
-  --cyan: #22d3ee;
-  --r: 10px;
-  --r2: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
-  --shadow-lg: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
-}
-
-/* Dark theme */
-html.dark {
-  --bg: #09090b;
-  --bg2: #18181b;
-  --bg3: #27272a;
-  --border: #3f3f46;
-  --border2: #52525b;
-  --text: #fafafa;
-  --text2: #a1a1aa;
-  --text3: #71717a;
-  --shadow: 0 4px 16px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.5);
-}
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #a1a1aa; }
-html.dark ::-webkit-scrollbar-thumb { background: #52525b; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #71717a; }
-
-/* Theme toggle button */
-.theme-toggle {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg2);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-.theme-toggle:hover { background: var(--bg3); }
-  border-radius: 8px;
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* ─── Layout ─────────────────────────────────────────── */
-#app { display: flex; height: 100vh; overflow: hidden; }
-
-/* Sidebar - Siftly zinc-900 style */
-.sidebar {
-  width: 228px;
-  min-width: 228px;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  gap: 0;
-  overflow-y: auto;
-  -webkit-font-smoothing: antialiased;
-}
-.sidebar-logo {
-  display: flex; align-items: center; gap: 10px;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border);
-}
-.sidebar-logo .logo-icon {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: linear-gradient(135deg, #4A90D9, #F5A623);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.sidebar-logo .logo-text { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
-.sidebar-logo .logo-sub { font-size: 10px; color: var(--text3); margin-top: 1px; }
-
-/* Siftly-style nav items */
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px;
-  margin: 2px 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text3);
-  user-select: none;
-  transition: all 0.15s ease;
-}
-.nav-item:hover {
-  background: var(--bg3);
-  color: var(--text2);
-}
-.nav-item.active {
-  background: var(--accent-glow);
-  color: var(--accent);
-}
-.nav-item .nav-icon {
-  font-size: 15px;
-  width: 20px;
-  text-align: center;
-  flex-shrink: 0;
-}
-.nav-section {
-  font-size: 10px;
-  color: var(--text3);
-  padding: 16px 18px 6px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-/* Stats at bottom - Siftly style */
-.sidebar-stats {
-  margin-top: auto;
-  margin: 12px;
-  padding: 12px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 12px; }
-.stat-row:last-child { margin-bottom: 0; }
-.stat-label { color: var(--text3); }
-.stat-val { color: var(--accent); font-weight: 600; font-size: 13px; }
-
-/* Main content */
-.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-.topbar {
-  height: 56px; min-height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 24px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
-}
-.topbar-title { font-size: 16px; font-weight: 600; color: var(--text); }
-.topbar-right { display: flex; align-items: center; gap: 8px; }
-
-/* AI model button - Siftly style */
-.ai-model-btn {
-  border: 1px solid var(--border);
-  background: var(--bg3);
-  color: var(--text2);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 12px;
-  gap: 6px;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-.ai-model-btn:hover { background: var(--border); color: var(--text); }
-
-.content { flex: 1; overflow-y: auto; padding: 24px; }
-
-/* ─── Buttons - Siftly Style ─────────────────────────────────────────── */
-.btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 18px; border-radius: 10px;
-  font-size: 13px; font-weight: 500;
-  cursor: pointer; border: 1px solid transparent; transition: all 0.15s;
-  white-space: nowrap;
-}
-.btn-primary { background: #2563EB; color: #fff; }
-.btn-primary:hover { background: #3B82F6; }
-.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
-.btn-danger { background: transparent; color: var(--red); border: 1px solid var(--border); }
-.btn-danger:hover { background: rgba(248, 113, 113, 0.1); border-color: var(--red); }
-.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
-.btn-icon { padding: 8px; font-size: 14px; border-radius: 8px; }
-
-/* ─── Cards - Siftly Style ───────────────────────────────────────────── */
-.card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: all 0.2s;
-}
-.card:hover { border-color: var(--border2); box-shadow: var(--shadow); }
-
-/* ─── Search bar - Siftly Style ──────────────────────────────────────── */
-.search-bar {
-  display: flex; align-items: center; gap: 10px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 16px;
-  flex: 1; max-width: 400px;
-}
-.search-bar input {
-  background: transparent; border: none; outline: none;
-  color: var(--text); font-size: 13px; flex: 1;
-  min-width: 0;
-}
-.search-bar input::placeholder { color: var(--text3); }
-.search-bar .search-icon { color: var(--text3); font-size: 14px; }
-
-/* ─── Tags / Pills - Siftly Style ────────────────────────────────────── */
-.tag {
-  display: inline-flex; align-items: center; gap: 4px;
-  padding: 4px 10px; border-radius: 6px;
-  font-size: 11px; font-weight: 600;
-}
-.tag-quote  { background: rgba(74, 144, 217, 0.15); color: #60a5fa; }
-.tag-case   { background: rgba(52, 211, 153, 0.15); color: #34d399; }
-.tag-viewpoint { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
-.tag-action { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
-.tag-topic  { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
-.tag-rating { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-.tag-safe   { background: rgba(52, 211, 153, 0.15); color: #34d399; }
-.tag-context{ background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-.tag-forbidden { background: rgba(248, 113, 113, 0.15); color: #f87171; }
-
-/* ─── Input / Select - Siftly Style ──────────────────────────────────── */
-.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.form-label { font-size: 12px; font-weight: 600; color: var(--text2); }
-.form-input, .form-select, .form-textarea {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--text);
-  font-size: 13px;
-  transition: all 0.15s;
-  outline: none;
-  font-family: inherit;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  border-color: #4A90D9;
-  box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
-}
-.form-select { cursor: pointer; }
-.form-textarea { resize: vertical; min-height: 100px; }
-
-/* ─── Modal - Siftly Style ────────────────────────────────────────────── */
-.modal-overlay {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.7);
-  display: flex; align-items: center; justify-content: center;
-  backdrop-filter: blur(4px);
-  animation: fadeIn 0.15s;
-}
-.modal {
-  background: var(--bg2); border: 1px solid var(--border2);
-  border-radius: var(--r); padding: 28px;
-  width: 540px; max-width: 95vw;
-  max-height: 85vh; overflow-y: auto;
-  animation: slideUp 0.2s;
-  box-shadow: var(--shadow);
-}
-.modal-lg { width: 720px; }
-.modal-xl { width: 900px; }
-.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.modal-title { font-size: 16px; font-weight: 700; }
-.modal-close { cursor: pointer; color: var(--text3); font-size: 20px; line-height: 1; padding: 4px; transition: color 0.15s; }
-.modal-close:hover { color: var(--text); }
-
-@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
-@keyframes slideUp { from { transform:translateY(20px); opacity:0 } to { transform:translateY(0); opacity:1 } }
-
-/* ─── Progress bar ────────────────────────────────────── */
-.progress-bar {
-  background: var(--bg3); border-radius: 99px; height: 8px; overflow: hidden;
-}
-.progress-fill {
-  height: 100%; border-radius: 99px;
-  background: linear-gradient(90deg, var(--accent), var(--cyan));
-  transition: width 0.4s;
-}
-
-/* ─── Home page ───────────────────────────────────────── */
-.home-hero {
-  text-align: center; padding: 48px 0 32px;
-}
-.home-hero h1 {
-  font-size: 32px; font-weight: 800;
-  background: linear-gradient(135deg, #fff 0%, var(--accent) 60%, var(--cyan) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  margin-bottom: 10px;
-}
-.home-hero p { color: var(--text2); font-size: 15px; }
-
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-.stat-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 20px;
-  text-align: center;
-  transition: transform 0.15s, border-color 0.15s;
-}
-.stat-card:hover { transform: translateY(-2px); border-color: var(--border2); }
-.stat-card .stat-num { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
-.stat-card .stat-name { font-size: 12px; color: var(--text3); }
-
-.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 32px; }
-.quick-btn {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 18px 16px;
-  text-align: center; cursor: pointer;
-  transition: all 0.15s;
-}
-.quick-btn:hover { border-color: var(--accent); background: rgba(124,92,252,0.05); transform: translateY(-2px); }
-.quick-btn .quick-icon { font-size: 28px; margin-bottom: 8px; }
-.quick-btn .quick-label { font-size: 13px; font-weight: 600; color: var(--text2); }
-.quick-btn .quick-desc { font-size: 11px; color: var(--text3); margin-top: 3px; }
-
-/* ─── Source cards ────────────────────────────────────── */
-.source-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-.source-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 18px;
-  cursor: pointer; transition: all 0.15s;
-  position: relative; overflow: hidden;
-}
-.source-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-}
-.source-card.book::before { background: linear-gradient(90deg, var(--accent), #a855f7); }
-.source-card.url::before  { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
-.source-card.text::before { background: linear-gradient(90deg, var(--green), var(--cyan)); }
-.source-card.image::before{ background: linear-gradient(90deg, var(--orange), var(--yellow)); }
-.source-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: var(--shadow); }
-.source-card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.source-card-title { font-size: 14px; font-weight: 700; line-height: 1.4; }
-.source-card-type { font-size: 18px; }
-.source-card-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-.source-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
-
-/* Status badge */
-.status-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 600;
-}
-.status-badge.done     { background: rgba(34,197,94,0.12); color: var(--green); }
-.status-badge.processing { background: rgba(59,130,246,0.12); color: var(--blue); }
-.status-badge.pending  { background: rgba(234,179,8,0.12); color: var(--yellow); }
-.status-badge.error    { background: rgba(239,68,68,0.12); color: var(--red); }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-.status-badge.processing .status-dot { animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* ─── Material cards ──────────────────────────────────── */
-.materials-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-.cat-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.cat-tab {
-  padding: 6px 14px; border-radius: 99px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
-  transition: all 0.15s;
-}
-.cat-tab:hover { border-color: var(--accent); color: var(--accent); }
-.cat-tab.active { border-color: var(--accent); background: rgba(124,92,252,0.1); color: var(--accent); }
-
-.material-list { display: flex; flex-direction: column; gap: 12px; }
-.material-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r2); padding: 16px;
-  transition: all 0.15s;
-}
-.material-card:hover { border-color: var(--border2); }
-.material-card.starred { border-color: rgba(234,179,8,0.4); }
-.material-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.material-content { font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-all; }
-.material-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
-.material-actions { display: flex; gap: 6px; }
-.material-source { font-size: 11px; color: var(--text3); }
-
-/* ─── Creator / Studio ────────────────────────────────── */
-.studio-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; height: calc(100vh - 60px); overflow: hidden; }
-.studio-panel { display: flex; flex-direction: column; gap: 0; overflow: hidden; }
-.studio-panel.scrollable { overflow: auto; }
-.studio-panel-header { font-size: 13px; font-weight: 700; color: var(--text2); padding: 12px 16px; background: var(--bg3); border-radius: var(--r2) var(--r2) 0 0; border: 1px solid var(--border); border-bottom: none; }
-.studio-textarea {
-  flex: 1; background: var(--bg2); border: 1px solid var(--border);
-  border-top: none; border-radius: 0 0 var(--r2) var(--r2);
-  padding: 16px; color: var(--text); font-size: 13px;
-  line-height: 1.7; resize: none; outline: none;
-  font-family: inherit;
-  overflow-y: auto;
-}
-.studio-textarea:focus { border-color: var(--accent); }
-
-.studio-toolbar { display: flex; align-items: center; gap: 8px; padding: 12px 0; flex-wrap: wrap; }
-.platform-btn {
-  padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
-  cursor: pointer; border: 1px solid var(--border2); color: var(--text2);
-  transition: all 0.15s; background: transparent;
-}
-.platform-btn:hover, .platform-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* ─── WeChat Format Panel ─────────────────────────────── */
-.wf-panel { border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; margin-top: 16px; }
-.wf-panel-header {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px; background: var(--bg3);
-  border-bottom: 1px solid var(--border); cursor: pointer;
-  user-select: none;
-}
-.wf-panel-header:hover { background: var(--border); }
-.wf-panel-title { font-size: 13px; font-weight: 700; color: var(--text2); flex: 1; }
-.wf-panel-body { padding: 14px 16px; display: none; flex-direction: column; gap: 12px; }
-.wf-panel-body.open { display: flex; }
-
-.wf-theme-group { margin-bottom: 4px; }
-.wf-theme-group-label { font-size: 11px; color: var(--text3); font-weight: 600; margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
-.wf-theme-grid { display: flex; flex-wrap: wrap; gap: 6px; }
-.wf-theme-btn {
-  padding: 5px 11px; border-radius: 6px; font-size: 12px;
-  border: 1px solid var(--border2); color: var(--text2);
-  cursor: pointer; background: transparent; transition: all 0.15s;
-  white-space: nowrap;
-}
-.wf-theme-btn:hover { border-color: var(--accent); color: var(--accent); }
-.wf-theme-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-.wf-theme-desc { font-size: 11px; color: var(--text3); margin-top: 4px; min-height: 16px; }
-
-.wf-preview-wrap {
-  border: 1px solid var(--border); border-radius: var(--r2);
-  background: #ffffff; color: #333; min-height: 300px; max-height: 600px;
-  overflow-y: auto; padding: 20px; font-size: 15px; line-height: 1.75;
-}
-.wf-preview-wrap * { max-width: 100%; }
-.wf-preview-placeholder { color: #aaa; font-size: 13px; text-align: center; padding: 40px 0; }
-.wf-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.wf-copy-html-btn { font-size: 12px; }
-.wf-word-count { font-size: 11px; color: var(--text3); margin-left: auto; }
-
-/* ─── 朴树之道 ───────────────────────────────────────────── */
-.pt-modal-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-  z-index: 2000; display: flex; align-items: center; justify-content: center;
-}
-.pt-modal {
-  background: var(--bg2); border-radius: var(--r); padding: 28px;
-  width: 480px; max-width: 95vw; max-height: 85vh; overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-}
-.pt-modal-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-.pt-modal-sub { font-size: 12px; color: var(--text3); margin-bottom: 20px; }
-.pt-form-row { margin-bottom: 14px; }
-.pt-form-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; font-weight: 600; }
-.pt-progress-bar-wrap { background: var(--bg3); border-radius: 99px; height: 8px; overflow: hidden; margin: 10px 0 6px; }
-.pt-progress-bar { height: 100%; background: linear-gradient(90deg, #22c55e, #16a34a); border-radius: 99px; transition: width 0.4s ease; }
-.pt-progress-text { font-size: 12px; color: var(--text3); }
-
-.pt-page { padding: 0; }
-.pt-page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-
-/* 独立创建面板 */
-.pt-create-panel {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); margin-bottom: 8px; overflow: hidden;
-}
-.pt-create-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 18px; cursor: pointer; user-select: none;
-  font-size: 13px; font-weight: 600; color: var(--text1);
-  border-bottom: 1px solid transparent;
-  transition: background 0.15s;
-}
-.pt-create-header:hover { background: var(--bg3); }
-.pt-create-body { padding: 18px; border-top: 1px solid var(--border); }
-.pt-upload-area {
-  border: 2px dashed var(--border); border-radius: var(--r);
-  padding: 20px 12px; text-align: center; cursor: pointer;
-  font-size: 13px; color: var(--text3);
-  transition: all 0.15s; background: var(--bg1);
-}
-.pt-upload-area:hover { border-color: #22c55e; color: #22c55e; background: rgba(34,197,94,0.05); }
-.pt-series-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-.pt-series-card {
-  background: var(--bg2); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 18px; cursor: pointer;
-  transition: all 0.15s; position: relative; overflow: hidden;
-}
-.pt-series-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background: linear-gradient(90deg,#22c55e,#16a34a); }
-.pt-series-card:hover { border-color: #22c55e; transform: translateY(-2px); box-shadow: var(--shadow); }
-.pt-series-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
-.pt-series-meta { font-size: 12px; color: var(--text3); display: flex; gap: 12px; flex-wrap: wrap; }
-.pt-series-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
-
-.pt-detail-back { font-size: 13px; color: var(--accent); cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 4px; }
-.pt-detail-back:hover { text-decoration: underline; }
-.pt-episode-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-.pt-ep-tab {
-  padding: 6px 14px; border-radius: 99px; font-size: 12px; cursor: pointer;
-  border: 1px solid var(--border); color: var(--text2); background: transparent;
-  transition: all 0.15s; white-space: nowrap;
-}
-.pt-ep-tab:hover { border-color: #22c55e; color: #22c55e; }
-.pt-ep-tab.active { background: #22c55e; color: #fff; border-color: #22c55e; }
-.pt-content-box {
-  background: var(--bg3); border-radius: var(--r2); padding: 20px;
-  font-size: 14px; line-height: 1.8; white-space: pre-wrap; word-break: break-word;
-  min-height: 300px; max-height: 60vh; overflow-y: auto;
-}
-.pt-content-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-
-/* Basket (素材购物车) */
-.basket-panel {
-  position: fixed; right: 0; top: 56px; bottom: 0;
-  width: 300px; background: var(--bg2);
-  border-left: 1px solid var(--border);
-  transform: translateX(100%);
-  transition: transform 0.25s;
-  z-index: 100;
-  display: flex; flex-direction: column;
-}
-.basket-panel.open { transform: translateX(0); }
-.basket-header { padding: 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.basket-items { flex: 1; overflow-y: auto; padding: 12px; }
-.basket-item { background: var(--bg3); border-radius: var(--r2); padding: 10px 12px; margin-bottom: 8px; font-size: 12px; line-height: 1.5; position: relative; }
-.basket-item-remove { position: absolute; top: 6px; right: 8px; cursor: pointer; color: var(--text3); font-size: 14px; }
-.basket-item-remove:hover { color: var(--red); }
-.basket-footer { padding: 12px; border-top: 1px solid var(--border); }
-
-/* Floating basket btn */
-.basket-fab {
-  position: fixed; bottom: 24px; right: 24px;
-  width: 52px; height: 52px; border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #a855f7);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 22px;
-  box-shadow: 0 4px 20px rgba(124,92,252,0.5);
-  transition: transform 0.15s;
-  z-index: 9999;
-}
-.basket-fab:hover { transform: scale(1.1); }
-/* 有内容时脉冲动画，提示用户购物车有东西 */
-.basket-fab.has-items {
-  animation: basket-pulse 2s infinite;
-  box-shadow: 0 4px 25px rgba(124,92,252,0.7);
-}
-@keyframes basket-pulse {
-  0%   { box-shadow: 0 4px 20px rgba(124,92,252,0.5); }
-  50%  { box-shadow: 0 4px 30px rgba(124,92,252,0.9), 0 0 0 8px rgba(124,92,252,0.15); }
-  100% { box-shadow: 0 4px 20px rgba(124,92,252,0.5); }
-}
-.basket-count {
-  position: absolute; top: -4px; right: -4px;
-  background: var(--red); color: #fff;
-  font-size: 11px; font-weight: 700;
-  width: 18px; height: 18px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-}
-
-/* ─── Misc ────────────────────────────────────────────── */
-.empty-state { text-align: center; padding: 80px 24px; color: var(--text3); }
-.empty-state .empty-icon { font-size: 56px; margin-bottom: 16px; }
-.empty-state p { font-size: 14px; margin-bottom: 20px; }
-
-.upload-zone {
-  border: 2px dashed var(--border2); border-radius: var(--r);
-  padding: 40px; text-align: center; cursor: pointer;
-  transition: all 0.15s; color: var(--text3);
-}
-.upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: rgba(124,92,252,0.05); color: var(--accent); }
-.upload-zone .upload-icon { font-size: 40px; margin-bottom: 10px; }
-
-.divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-.flex { display: flex; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-8 { gap: 8px; }
-.gap-12 { gap: 12px; }
-.mt-4 { margin-top: 4px; }
-.mt-12 { margin-top: 12px; }
-.text-sm { font-size: 12px; }
-.text-muted { color: var(--text3); }
-.font-bold { font-weight: 700; }
-
-.input-tabs { display: flex; gap: 0; margin-bottom: 20px; border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; }
-.input-tab {
-  flex: 1; padding: 10px; text-align: center; font-size: 12px; font-weight: 600;
-  cursor: pointer; color: var(--text3); background: var(--bg3); transition: all 0.15s;
-  border-right: 1px solid var(--border);
-}
-.input-tab:last-child { border-right: none; }
-.input-tab:hover { color: var(--text); }
-.input-tab.active { background: var(--accent); color: #fff; }
-
-/* Toast */
-.toast-container {
-  position: fixed; top: 20px; right: 20px; z-index: 9999;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.toast {
-  background: var(--bg3); border: 1px solid var(--border2);
-  border-radius: var(--r2); padding: 12px 16px;
-  font-size: 13px; min-width: 220px;
-  box-shadow: var(--shadow);
-  animation: toastIn 0.2s;
-  display: flex; align-items: center; gap: 8px;
-}
-.toast.success { border-left: 3px solid var(--green); }
-.toast.error   { border-left: 3px solid var(--red); }
-.toast.info    { border-left: 3px solid var(--blue); }
-@keyframes toastIn { from { transform: translateX(100%); opacity:0 } to { transform: translateX(0); opacity:1 } }
-
-/* Highlight */
-.highlight { color: var(--accent); }
-
-/* Pagination */
-.pagination { display: flex; gap: 6px; align-items: center; justify-content: center; margin-top: 24px; }
-.page-btn {
-  width: 32px; height: 32px; border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 13px;
-  border: 1px solid var(--border2); color: var(--text2);
-  transition: all 0.15s; background: transparent;
-}
-.page-btn:hover, .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-/* Detail drawer */
-.drawer {
-  position: fixed; right: 0; top: 0; bottom: 0;
-  width: 600px; max-width: 95vw;
-  background: var(--bg2); border-left: 1px solid var(--border);
-  z-index: 500; overflow-y: auto;
-  transform: translateX(100%); transition: transform 0.25s;
-  box-shadow: var(--shadow);
-}
-.drawer.open { transform: translateX(0); }
-.drawer-overlay {
-  position: fixed; inset: 0; z-index: 499;
-  background: rgba(0,0,0,0.4);
-  display: none;
-}
-.drawer-overlay.open { display: block; }
-.drawer-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg2); z-index: 1; }
-.drawer-body { padding: 24px; }
-
-/* ─── Page visibility ─────────────────────────────────── */
-.page { display: none; }
-.page.active { display: block; }
-.page-fill { display: none; }
-.page-fill.active { display: flex; flex-direction: column; }
-</style>
-</head>
-<body>
-
-<div id="app">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-icon">⚔️</div>
-      <div>
-        <div class="logo-text">IP 军火库</div>
-        <div class="logo-sub">知识资产管理</div>
-      </div>
-    </div>
-
-    <div class="nav-section">导航</div>
-    <div class="nav-item active" onclick="navigate('home')" data-page="home">
-      <span class="nav-icon">🏠</span> 首页总览
-    </div>
-    <div class="nav-item" onclick="navigate('library')" data-page="library">
-      <span class="nav-icon">📚</span> 资料库
-    </div>
-    <div class="nav-item" onclick="navigate('materials')" data-page="materials">
-      <span class="nav-icon">💎</span> 素材库
-    </div>
-    <div class="nav-item" onclick="navigate('studio')" data-page="studio">
-      <span class="nav-icon">✍️</span> 创作台
-    </div>
-    <div class="nav-item" onclick="navigate('creations')" data-page="creations">
-      <span class="nav-icon">📋</span> 我的创作
-    </div>
-    <div class="nav-item" onclick="navigate('pushutree')" data-page="pushutree">
-      <span class="nav-icon">🌳</span> 朴树之道
-    </div>
-    <div class="nav-item" onclick="navigate('wechat')" data-page="wechat">
-      <span class="nav-icon">📱</span> 公众号排版
-    </div>
-    <div class="nav-item" onclick="navigate('mediacrawler')" data-page="mediacrawler">
-      <span class="nav-icon">📡</span> MediaCrawler
-    </div>
-    <div class="nav-item" onclick="navigate('settings')" data-page="settings">
-      <span class="nav-icon">⚙️</span> 设置
-    </div>
-
-    <div class="nav-section">快捷</div>
-    <div class="nav-item" onclick="openAddModal()">
-      <span class="nav-icon">➕</span> 添加内容
-    </div>
-    <div class="nav-item" onclick="navigate('materials', {starred: 1})">
-      <span class="nav-icon">⭐</span> 收藏夹
-    </div>
-    <div class="nav-item" onclick="navigate('materials', {review_only: 1})" style="color:#f97316" title="查看智能提取后需要人工审核的素材">
-      <span class="nav-icon">⚠️</span> 待审核
-    </div>
-
-    <div class="sidebar-stats" id="sidebar-stats">
-      <div class="stat-row"><span class="stat-label">📚 书籍</span><span class="stat-val" id="ss-sources">0</span></div>
-      <div class="stat-row"><span class="stat-label">💎 素材</span><span class="stat-val" id="ss-materials">0</span></div>
-      <div class="stat-row"><span class="stat-label">⭐ 收藏</span><span class="stat-val" id="ss-starred">0</span></div>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <main class="main">
-    <div class="topbar">
-      <div class="topbar-title" id="page-title">首页总览</div>
-      <div class="topbar-right">
-        <div class="search-bar" id="global-search" style="display:none">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="全局搜索..." id="global-search-input" oninput="onGlobalSearch(this.value)">
-        </div>
-        <!-- AI 模型切换按钮 -->
-        <button class="btn btn-sm ai-model-btn" id="ai-model-btn" onclick="openAiModelModal()" title="切换 AI 模型">
-          <span id="ai-model-icon">🤖</span>
-          <span id="ai-model-label">加载中...</span>
-        </button>
-        <button class="btn btn-primary btn-sm" onclick="openAddModal()">➕ 添加内容</button>
-        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="切换明/暗主题">🌙</button>
-      </div>
-    </div>
-
-    <div class="content" id="main-content">
-      <!-- Pages rendered here -->
-    </div>
-  </main>
-</div>
-
-<!-- Basket FAB -->
-<div class="basket-fab" onclick="toggleBasket()" title="素材购物车">
-  🧺
-  <div class="basket-count" id="basket-count" style="display:none">0</div>
-</div>
-
-<!-- Basket Panel -->
-<div class="basket-panel" id="basket-panel">
-  <div class="basket-header">
-    <div class="font-bold">🧺 素材购物车</div>
-    <span class="modal-close" onclick="toggleBasket()">✕</span>
-  </div>
-  <div class="basket-items" id="basket-items-list"></div>
-  <div class="basket-footer">
-    <button class="btn btn-primary" style="width:100%" onclick="sendToStudio()">✍️ 发送到创作台</button>
-  </div>
-</div>
-
-<!-- Modals container -->
-<div id="modals"></div>
-
-<!-- AI 模型切换弹窗 -->
-<div class="modal-overlay" id="ai-model-modal" style="display:none" onclick="if(event.target===this)closeAiModelModal()">
-  <div class="modal" style="width:480px;max-width:95vw">
-    <div class="modal-header">
-      <span class="modal-title">🤖 AI 模型切换</span>
-      <span class="modal-close" onclick="closeAiModelModal()">×</span>
-    </div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:16px">
-      选择后，所有提炼任务从该模型开始调用，失败后自动降级到下一级。
-    </div>
-    
-    <!-- 模型选择卡片 -->
-    <div id="ai-model-cards" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px"></div>
-
-    <!-- MiniMax 账号2 Key 配置区 -->
-    <div id="minimax2-key-section" style="background:var(--bg3);border-radius:var(--r2);padding:14px;border:1px solid var(--border);margin-bottom:16px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--text)">🔑 MiniMax 账号2 API Key</div>
-      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">
-        新账号开会员后，在 
-        <a href="https://www.minimaxi.com/user-center/basic-information/interface-key" target="_blank" style="color:var(--accent)">MiniMax 控制台</a> 
-        复制 API Key 填入：
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="password" id="minimax2-key-input" placeholder="sk-..." 
-          style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 12px;color:var(--text);font-size:13px;outline:none"
-          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-        <button class="btn btn-sm" id="minimax2-show-btn" onclick="toggleMinimax2KeyVisibility()" style="min-width:52px">显示</button>
-      </div>
-      <div id="minimax2-key-status" style="font-size:11px;color:var(--text3);margin-top:6px"></div>
-      <!-- API Base URL（可选） -->
-      <div style="margin-top:10px">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:4px">API Base（默认官方直连，一般不用改）</div>
-        <input type="text" id="minimax2-base-input" value="https://api.minimax.chat/v1"
-          style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:8px 12px;color:var(--text);font-size:12px;outline:none;box-sizing:border-box"
-          onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
-      </div>
-    </div>
-
-    <div style="display:flex;gap:8px;justify-content:flex-end">
-      <button class="btn" onclick="closeAiModelModal()">取消</button>
-      <button class="btn btn-primary" onclick="saveAiModel()">✅ 应用切换</button>
-    </div>
-  </div>
-</div>
-<!-- Toast container -->
-<div class="toast-container" id="toast-container"></div>
-<!-- Detail drawer -->
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-<div class="drawer" id="detail-drawer">
-  <div class="drawer-header">
-    <div class="modal-title" id="drawer-title">素材详情</div>
-    <span class="modal-close" onclick="closeDrawer()">✕</span>
-  </div>
-  <div class="drawer-body" id="drawer-body"></div>
-</div>
-
-<script>
 // ─── State ──────────────────────────────────────────────
 const API = 'http://localhost:8766/api';
 let currentPage = 'home';
@@ -1150,6 +307,41 @@ async function recoverAllStuck() {
   }
 }
 
+// 构建卡片HTML（抽出来方便复用）
+function buildSourceCardHTML(s) {
+  const typeIcon = {book:'📖', url:'🌐', text:'📝', image:'🖼️', epub:'📗', txt:'📄'};
+  const statusLabel = {done:'已完成', processing:'处理中', pending:'等待中', error:'出错了'};
+  const typeBadge = s.is_scanned && s.type==='book'
+    ? ' <span title="扫描版·已AI-OCR" style="font-size:11px;background:rgba(249,115,22,0.15);color:#f97316;padding:1px 6px;border-radius:99px;vertical-align:middle">OCR</span>'
+    : (s.type==='epub' ? ' <span style="font-size:11px;background:rgba(34,197,94,0.15);color:#22c55e;padding:1px 6px;border-radius:99px;vertical-align:middle">EPUB</span>'
+    : (s.type==='txt' ? ' <span style="font-size:11px;background:rgba(96,165,250,0.15);color:#60a5fa;padding:1px 6px;border-radius:99px;vertical-align:middle">TXT</span>' : ''));
+  return `<div class="source-card ${s.type} ${s.status === 'processing' ? 'is-processing' : ''}" data-source-id="${s.id}" onclick="viewSourceMaterials('${s.id}','${escHtml(s.title)}')">
+    <div class="source-card-header">
+      <div class="source-card-title">${escHtml(s.title)}</div>
+      <div class="source-card-type">${typeIcon[s.type]||'📄'}${typeBadge}</div>
+    </div>
+    <div class="source-card-meta">
+      <span>${s.page_count > 0 ? s.page_count+'页' : ''}</span>
+      <span>${s.char_count > 0 ? Math.round(s.char_count/1000)+'K字' : ''}</span>
+      <span>${formatDate(s.created_at)}</span>
+    </div>
+    <div class="source-card-footer">
+      <div class="status-badge ${s.status}">
+        <div class="status-dot"></div>
+        ${statusLabel[s.status]||s.status}
+        ${s.status === 'done' ? `<span class="material-count" style="margin-left:4px;color:var(--text3)">${s.material_count}条</span>` : ''}
+      </div>
+      <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
+        ${s.status === 'error' ? `<button class="btn btn-ghost btn-sm" onclick="reprocess('${s.id}')">重试</button>` : ''}
+        ${(s.status === 'done' || s.status === 'pending') ? `<button class="btn btn-ghost btn-sm btn-smart" title="智能提炼：分层Chunking+四轮迭代+质量评分（比普通提炼更深度）" onclick="smartExtract('${s.id}','${escHtml(s.title)}')">🧠 智能</button>` : ''}
+        <button class="btn btn-ghost btn-sm btn-share" title="朴树之道分享：一键把书变成系列文案（无需先提炼）" onclick="openPushutreeModal('${s.id}','${escHtml(s.title)}')">🌳 分享</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteSource('${s.id}')">🗑️</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+// 丝滑增量更新：只更新变化的卡片，不全量替换
 async function loadLibrary() {
   const q = document.getElementById('global-search-input')?.value || '';
   const type = document.getElementById('lib-filter-type')?.value || '';
@@ -1157,41 +349,82 @@ async function loadLibrary() {
     const sources = await api('GET', `/sources?q=${encodeURIComponent(q)}&type=${type}`);
     const grid = document.getElementById('source-grid');
     if (!grid) return;
+
+    // 计算数据指纹，只在变化时更新DOM
+    const fingerprint = sources.map(s => s.id + s.status + s.material_count).join('|');
+    if (fingerprint === _lastSourcesHash && sources.length > 0) return;
+    _lastSourcesHash = fingerprint;
+
+    // 记录当前存在的卡片ID
+    const existingIds = new Set(
+      [...grid.querySelectorAll('.source-card')].map(el => el.dataset.sourceId)
+    );
+    const newIds = new Set(sources.map(s => s.id));
+
     if (!sources.length) {
       grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
         <div class="empty-icon">📚</div>
         <p>还没有资料，点击右上角添加第一本书吧</p>
         <button class="btn btn-primary" onclick="openAddModal()">➕ 添加资料</button>
       </div>`;
+      existingIds.forEach(id => {
+        const card = grid.querySelector(`[data-source-id="${id}"]`);
+        if (card) card.remove();
+      });
       return;
     }
-    const typeIcon = {book:'📖', url:'🌐', text:'📝', image:'🖼️', epub:'📗', txt:'📄'};
-    const statusLabel = {done:'已完成', processing:'处理中', pending:'等待中', error:'出错了'};
-    grid.innerHTML = sources.map(s => `
-    <div class="source-card ${s.type}" data-source-id="${s.id}" onclick="viewSourceMaterials('${s.id}','${escHtml(s.title)}')">
-      <div class="source-card-header">
-        <div class="source-card-title">${escHtml(s.title)}</div>
-        <div class="source-card-type">${typeIcon[s.type]||'📄'}${s.is_scanned && s.type==='book' ? ' <span title="扫描版·已AI-OCR" style="font-size:11px;background:rgba(249,115,22,0.15);color:#f97316;padding:1px 6px;border-radius:99px;vertical-align:middle">OCR</span>' : (s.type==='epub' ? ' <span style="font-size:11px;background:rgba(34,197,94,0.15);color:#22c55e;padding:1px 6px;border-radius:99px;vertical-align:middle">EPUB</span>' : (s.type==='txt' ? ' <span style="font-size:11px;background:rgba(96,165,250,0.15);color:#60a5fa;padding:1px 6px;border-radius:99px;vertical-align:middle">TXT</span>' : ''))}</div>
-      </div>
-      <div class="source-card-meta">
-        <span>${s.page_count > 0 ? s.page_count+'页' : ''}</span>
-        <span>${s.char_count > 0 ? Math.round(s.char_count/1000)+'K字' : ''}</span>
-        <span>${formatDate(s.created_at)}</span>
-      </div>
-      <div class="source-card-footer">
-        <div class="status-badge ${s.status}">
-          <div class="status-dot"></div>
-          ${statusLabel[s.status]||s.status}
-          ${s.status === 'done' ? `<span style="margin-left:4px;color:var(--text3)">${s.material_count}条</span>` : ''}
-        </div>
-        <div style="display:flex;gap:6px" onclick="event.stopPropagation()">
-          ${s.status === 'error' ? `<button class="btn btn-ghost btn-sm" onclick="reprocess('${s.id}')">重试</button>` : ''}
-          ${(s.status === 'done' || s.status === 'pending') ? `<button class="btn btn-ghost btn-sm" style="color:#a78bfa;border-color:#a78bfa" title="智能提炼：分层Chunking+四轮迭代+质量评分（比普通提炼更深度）" onclick="smartExtract('${s.id}','${escHtml(s.title)}')">🧠 智能</button>` : ''}
-          <button class="btn btn-ghost btn-sm" style="color:#22c55e;border-color:#22c55e" title="朴树之道分享：一键把书变成系列文案（无需先提炼）" onclick="openPushutreeModal('${s.id}','${escHtml(s.title)}')">🌳 分享</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteSource('${s.id}')">🗑️</button>
-        </div>
-      </div>
-    </div>`).join('');
+
+    // 有数据时，移除"加载中"占位符（empty-state）
+    const emptyState = grid.querySelector('.empty-state');
+    if (emptyState) emptyState.remove();
+
+    // 增量更新策略：只增删改变化的卡片
+    sources.forEach((s, newIdx) => {
+      const existingCard = grid.querySelector(`[data-source-id="${s.id}"]`);
+      if (existingCard) {
+        // 检查是否需要更新（比如状态变化）
+        const needsUpdate = existingCard.dataset.status !== s.status ||
+                           existingCard.dataset.materialCount !== String(s.material_count);
+        if (needsUpdate) {
+          // 丝滑更新：用 CSS animation 重新触发动画
+          existingCard.style.animation = 'none';
+          existingCard.offsetHeight; // 触发 reflow
+          existingCard.outerHTML = buildSourceCardHTML(s);
+          const newCard = grid.querySelector(`[data-source-id="${s.id}"]`);
+          if (newCard) {
+            newCard.style.animation = 'cardUpdate var(--duration-normal) var(--ease-out-expo) both';
+          }
+        }
+        existingIds.delete(s.id);
+      } else {
+        // 新卡片：添加 entering 类触发动画
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = buildSourceCardHTML(s);
+        const newCard = tempDiv.firstElementChild;
+        newCard.classList.add('entering');
+        if (newIdx < 10) {
+          newCard.style.animationDelay = `${newIdx * 50}ms`;
+        }
+        grid.appendChild(newCard);
+      }
+    });
+
+    // 移除消失的卡片（带动画）
+    existingIds.forEach(id => {
+      const card = grid.querySelector(`[data-source-id="${id}"]`);
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-8px) scale(0.98)';
+        setTimeout(() => card.remove(), 200);
+      }
+    });
+
+    // 按顺序重新排列DOM（保持与API返回顺序一致）
+    sources.forEach(s => {
+      const card = grid.querySelector(`[data-source-id="${s.id}"]`);
+      if (card) grid.appendChild(card);
+    });
+
   } catch(e) {
     showToast('加载失败: ' + e.message, 'error');
   }
@@ -1744,7 +977,7 @@ async function aiRewriteEnsemble() {
     versions.forEach((v, i) => {
       const charCount = v.text ? v.text.replace(/[^\u4e00-\u9fff]/g, '').length : 0;
       const card = document.createElement('div');
-      card.style.cssText = 'border:1px solid var(--border);border-radius:var(--r2);padding:12px;cursor:pointer;background:var(--bg3);transition:all 0.15s;';
+      card.style.cssText = 'border:1px solid var(--border);border-radius:var(--r2);padding:12px;cursor:pointer;background:var(--bg3);transition:all var(--duration-fast) var(--ease-smooth);';
       card.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
           <span style="font-size:12px;font-weight:700;color:${i===0?'#22c55e':'#f59e0b'}">${v.label}</span>
@@ -2295,10 +1528,6 @@ function setPreviewPlaceholder(iframeId, msgHtml) {
   writeToIframe(iframeId, `<!DOCTYPE html><html><body style="margin:0;padding:40px 20px;text-align:center;font-family:-apple-system,'PingFang SC',sans-serif;font-size:13px;color:#999">${msgHtml}</body></html>`);
 }
 
-// 公众号排版页面状态（必须在 renderWechatPage 之前定义，因为 loadWfPageThemes 会用到）
-let wfpActiveTheme = 'wechat-native';
-let wfpHtmlResult = '';
-
 async function renderWechatPage(c, params={}) {
   // 保存当前 textarea 内容（如果页面已存在）
   const existingInput = document.getElementById('wfp-input');
@@ -2403,6 +1632,9 @@ async function openWechatGallery() {
     showToast('画廊打开失败：' + e.message, 'error');
   }
 }
+
+let wfpActiveTheme = 'wechat-native';
+let wfpHtmlResult = '';
 
 async function loadWfPageThemes() {
   const container = document.getElementById('wfp-themes-container');
@@ -3200,7 +2432,23 @@ function openAddModal(defaultType = 'book') {
 
   function modeSelect() {
     return `<div class="form-group" style="margin-top:16px">
-      <label class="form-label">提炼模式</label>
+      <label class="form-label">提炼方式</label>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;border:2px solid var(--accent);cursor:pointer;background:rgba(74,144,217,0.08);transition:all var(--duration-fast) var(--ease-smooth)" id="label-normal" onclick="document.getElementById('extract-type-normal').checked=true;document.getElementById('label-normal').style.borderColor='var(--accent)';document.getElementById('label-normal').style.background='rgba(74,144,217,0.08)';document.getElementById('label-smart').style.borderColor='var(--border)';document.getElementById('label-smart').style.background='var(--bg2)'">
+          <input type="radio" name="extract-type" id="extract-type-normal" value="normal" checked style="display:none">
+          <div>
+            <div style="font-weight:600;font-size:13px">⚡ 普通提炼</div>
+            <div style="font-size:11px;color:var(--text3)">快速，约5-10分钟</div>
+          </div>
+        </label>
+        <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;border:2px solid var(--border);cursor:pointer;background:var(--bg2);transition:all var(--duration-fast) var(--ease-smooth)" id="label-smart" onclick="document.getElementById('extract-type-smart').checked=true;document.getElementById('label-smart').style.borderColor='var(--accent-purple)';document.getElementById('label-smart').style.background='rgba(167,139,250,0.08)';document.getElementById('label-normal').style.borderColor='var(--border)';document.getElementById('label-normal').style.background='var(--bg2)'">
+          <input type="radio" name="extract-type" id="extract-type-smart" value="smart" style="display:none">
+          <div>
+            <div style="font-weight:600;font-size:13px">🧠 智能提炼</div>
+            <div style="font-size:11px;color:var(--text3)">深度，约25-30分钟</div>
+          </div>
+        </label>
+      </div>
       <select class="form-select" id="extract-mode">
         <option value="full">全量提炼（推荐）</option>
         <option value="quotes">仅金句弹药库</option>
@@ -3253,6 +2501,7 @@ function openAddModal(defaultType = 'book') {
 
   window.handleFileSelect = async function(files) {
     const mode = document.getElementById('extract-mode')?.value || 'full';
+    const extractType = document.querySelector('input[name="extract-type"]:checked')?.value || 'normal';
     for (const file of files) {
       const fd = new FormData();
       fd.append('file', file);
@@ -3263,7 +2512,14 @@ function openAddModal(defaultType = 'book') {
         const res = await upload(fd, pct => {
           document.getElementById('progress-fill').style.width = pct + '%';
         });
-        document.getElementById('progress-label').textContent = `✅ ${file.name} 上传成功，正在后台提炼...`;
+        // 如果选择了智能提炼，上传后调用智能提炼接口
+        if (extractType === 'smart') {
+          document.getElementById('progress-label').textContent = `✅ ${file.name} 上传成功，正在启动智能提炼...`;
+          await api('POST', `/sources/${res.source_id}/extract-smart`);
+          document.getElementById('progress-label').textContent = `✅ ${file.name} 上传成功，智能提炼已启动（25-30分钟）`;
+        } else {
+          document.getElementById('progress-label').textContent = `✅ ${file.name} 上传成功，正在后台提炼...`;
+        }
         startPolling(res.task_id, res.source_id, res.title);
       } catch(e) {
         document.getElementById('progress-label').textContent = `❌ ${file.name} 上传失败: ${e.message}`;
@@ -3367,6 +2623,7 @@ function openAddModal(defaultType = 'book') {
     const recursive = document.getElementById('folder-recursive')?.checked || false;
     const skip_existing = document.getElementById('folder-skip-existing')?.checked !== false;
     const mode = document.getElementById('extract-mode')?.value || 'full';
+    const extractType = document.querySelector('input[name="extract-type"]:checked')?.value || 'normal';
     if (!path) { showToast('请先输入文件夹路径', 'info'); return; }
 
     const importBtn = document.getElementById('folder-import-btn');
@@ -3374,9 +2631,17 @@ function openAddModal(defaultType = 'book') {
 
     try {
       const res = await api('POST', '/sources/import-folder', { folder_path: path, mode, recursive, skip_existing });
-      showToast(`✅ 已加入队列 ${res.queued} 本，跳过 ${res.skipped} 本，正在后台批量提炼...`, 'success');
-      // 为每本书启动轮询通知（最多前5本，避免太多轮询）
-      (res.tasks || []).slice(0, 5).forEach(t => startPolling(t.task_id, t.source_id, t.title));
+      // 如果选择了智能提炼，为每本书启动智能提炼
+      if (extractType === 'smart') {
+        for (const task of (res.tasks || [])) {
+          await api('POST', `/sources/${task.source_id}/extract-smart`);
+        }
+        showToast(`✅ 已加入队列 ${res.queued} 本，跳过 ${res.skipped} 本，智能提炼已启动`, 'success');
+      } else {
+        showToast(`✅ 已加入队列 ${res.queued} 本，跳过 ${res.skipped} 本，正在后台批量提炼...`, 'success');
+        // 为每本书启动轮询通知（最多前5本，避免太多轮询）
+        (res.tasks || []).slice(0, 5).forEach(t => startPolling(t.task_id, t.source_id, t.title));
+      }
       if ((res.tasks || []).length > 5) {
         showToast(`批量任务已启动，共 ${res.tasks.length} 本正在后台处理...`, 'info');
       }
@@ -3390,39 +2655,52 @@ function openAddModal(defaultType = 'book') {
 
   window.submitAdd = async function() {
     const mode = document.getElementById('extract-mode')?.value || 'full';
+    const extractType = document.querySelector('input[name="extract-type"]:checked')?.value || 'normal';
     try {
       if (activeTab === 'url') {
         const url = document.getElementById('add-url')?.value?.trim();
         const title = document.getElementById('add-url-title')?.value?.trim() || url;
         if (!url) { showToast('请输入网址', 'info'); return; }
         const res = await api('POST', '/sources/add', { title, type: 'url', content: url, mode });
-        startPolling(res.task_id, res.source_id, title);
+        if (extractType === 'smart') {
+          await api('POST', `/sources/${res.source_id}/extract-smart`);
+          showToast('已提交，智能提炼已启动（25-30分钟）', 'info');
+        } else {
+          startPolling(res.task_id, res.source_id, title);
+          showToast('已提交，正在后台提炼...', 'info');
+        }
       } else if (activeTab === 'text') {
         const title = document.getElementById('add-text-title')?.value?.trim();
         const content = document.getElementById('add-text-content')?.value?.trim();
         if (!title || !content) { showToast('请填写标题和内容', 'info'); return; }
         const res = await api('POST', '/sources/add', { title, type: 'text', content, mode });
-        startPolling(res.task_id, res.source_id, title);
+        if (extractType === 'smart') {
+          await api('POST', `/sources/${res.source_id}/extract-smart`);
+          showToast('已提交，智能提炼已启动（25-30分钟）', 'info');
+        } else {
+          startPolling(res.task_id, res.source_id, title);
+          showToast('已提交，正在后台提炼...', 'info');
+        }
       }
       closeModal();
       navigate('library');
-      showToast('已提交，正在后台提炼...', 'info');
     } catch(e) { showToast('提交失败: ' + e.message, 'error'); }
   };
 }
 
 // ─── Task Polling ─────────────────────────────────────────
 let _autoRefreshTimer = null;
+let _lastSourcesHash = '';  // 用于检测数据变化
 
 function startAutoRefresh() {
-  // 每 3 秒自动刷新书库和队列状态（当在资料库页面时）
+  // 每 10 秒自动刷新书库和队列状态（当在资料库页面时）
   if (_autoRefreshTimer) return;
   _autoRefreshTimer = setInterval(() => {
     if (currentPage === 'library') {
       loadLibrary();
       refreshQueueStatus();
     }
-  }, 3000);
+  }, 10000);
 }
 
 function stopAutoRefresh() {
@@ -3562,7 +2840,7 @@ function renderAiModelCards() {
       + ' data-model="' + m.id + '"'
       + ' onclick="selectAiModelCard(\'' + m.id + '\')"'
       + ' style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r2);'
-      + 'border:2px solid ' + borderColor + ';cursor:pointer;background:' + bgColor + ';transition:all 0.15s">'
+      + 'border:2px solid ' + borderColor + ';cursor:pointer;background:' + bgColor + ';transition:all var(--duration-fast) var(--ease-smooth)">'
       + '<span style="font-size:22px">' + icon + '</span>'
       + '<div style="flex:1">'
       + '<div style="font-size:13px;font-weight:700;color:' + textColor + '">' + m.label + '</div>'
@@ -3786,7 +3064,7 @@ async function renderMediaCrawlerPage(c, params) {
   .mc-status-text { font-size: 14px; font-weight: 700; color: var(--text); text-transform: uppercase; }
   .mc-status-info { font-size: 12px; color: var(--text3); }
   .mc-topbar-actions { display: flex; gap: 8px; }
-  .mc-btn { padding: 6px 16px; border-radius: var(--r2); border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .mc-btn { padding: 6px 16px; border-radius: var(--r2); border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--duration-fast) var(--ease-smooth); }
   .mc-btn-primary { background: var(--accent); color: #fff; }
   .mc-btn-primary:hover { opacity: 0.9; }
   .mc-btn-danger { background: #ef4444; color: #fff; }
@@ -4282,7 +3560,7 @@ async function renderMediaPage(c, params) {
   .media-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   .media-toolbar { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 13px; min-height: 44px; }
   .media-records { flex: 1; overflow-y: auto; padding: 12px 16px; }
-  .media-record { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--r2); margin-bottom: 8px; background: var(--bg2); transition: all 0.15s; }
+  .media-record { display: flex; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--r2); margin-bottom: 8px; background: var(--bg2); transition: all var(--duration-fast) var(--ease-smooth); }
   .media-record:hover { border-color: var(--accent); }
   .media-record.selected { border-color: var(--accent); background: rgba(124,92,252,0.08); }
   .media-record input[type="checkbox"] { margin-top: 4px; flex-shrink: 0; width: 16px; height: 16px; cursor: pointer; }
@@ -4508,6 +3786,3 @@ function escapeHtml(text) {
   div.textContent = text;
   return div.innerHTML;
 }
-</script>
-</body>
-</html>

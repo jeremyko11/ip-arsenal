@@ -1,0 +1,13 @@
+{
+  "name": "午夜蓝",
+  "accent": "#3A86FF",
+  "accent_light": "#8ECAE6",
+  "primary": "#023E8A",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F0F8FF",
+  "code_bg": "#E3F2FD",
+  "hr_color": "#3A86FF",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#8ECAE6",
+  "dark_accent": "#0077B6"
+}

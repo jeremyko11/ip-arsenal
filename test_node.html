@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<div id="test" onclick="openMaterialDrawer('TEST')">Click me</div>
+<script>
+var r = {id: 'MYID'};
+
+// What we have in the file:
+var onclick_val = String.fromCharCode(39,34,43,114,46,105,100,43,34,39,41);
+console.log("onclick_val =", onclick_val);
+console.log("onclick_val chars:", [...onclick_val].map(c => c.charCodeAt(0)));
+
+// What the full onclick expression would be:
+var expr = "openMaterialDrawer(" + onclick_val + ")";
+console.log("Full expr:", expr);
+
+// Try to eval it
+function openMaterialDrawer(x) {
+    console.log("Called with:", x);
+}
+try {
+    eval(expr);
+} catch(e) {
+    console.log("Error:", e.message);
+}
+</script>
+</body>
+</html>

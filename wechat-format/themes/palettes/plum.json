@@ -1,0 +1,13 @@
+{
+  "name": "梅子紫",
+  "accent": "#6A0DAD",
+  "accent_light": "#9370DB",
+  "primary": "#4B0082",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F8F0FF",
+  "code_bg": "#E8E0F0",
+  "hr_color": "#6A0DAD",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#9370DB",
+  "dark_accent": "#7B68EE"
+}

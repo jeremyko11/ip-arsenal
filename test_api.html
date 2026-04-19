@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>排版诊断</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #log { background: #f5f5f5; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-size: 12px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>排版问题诊断</h1>
+    <button onclick="runTest()">运行测试</button>
+    <div id="log"></div>
+    <h2>预览:</h2>
+    <iframe id="preview" style="width: 100%; height: 400px; border: 1px solid #ccc;"></iframe>
+
+    <script>
+        const API = 'http://localhost:8766/api';
+
+        function log(msg, type='') {
+            const div = document.getElementById('log');
+            div.innerHTML += `<span class="${type}">${msg}</span>\n`;
+        }
+
+        async function api(method, path, body) {
+            log(`API call: ${method} ${API}${path}`);
+            const opts = { method, headers: { 'Content-Type': 'application/json' } };
+            if (body) opts.body = JSON.stringify(body);
+            const r = await fetch(API + path, opts);
+            log(`Response status: ${r.status}`);
+            if (!r.ok) {
+                const e = await r.text();
+                log(`Error: ${e}`, 'error');
+                throw new Error(e);
+            }
+            return r.json();
+        }
+
+        async function runTest() {
+            log('开始测试...');
+            try {
+                // Step 1: Test themes API
+                log('\n=== 1. 测试主题API ===');
+                const themes = await api('GET', '/wechat-themes');
+                log(`主题数量: ${themes.length}`, 'success');
+
+                // Step 2: Test format API
+                log('\n=== 2. 测试排版API ===');
+                const content = '# 标题\n\n正文内容。\n\n## 章节\n\n- 项目1\n- 项目2';
+                const res = await api('POST', '/wechat-format', { content, theme: 'wechat-native' });
+                log(`主题: ${res.theme}`);
+                log(`字数: ${res.word_count}`);
+                log(`HTML长度: ${res.html ? res.html.length : 0}`);
+
+                if (res.html) {
+                    log(`包含style=): ${res.html.includes('style=')}`, 'success');
+                    log(`包含gradient: ${res.html.includes('gradient')}`, 'success');
+                    log(`包含border: ${res.html.includes('border')}`, 'success');
+
+                    // Step 3: Write to iframe
+                    log('\n=== 3. 写入预览iframe ===');
+                    const iframe = document.getElementById('preview');
+                    iframe.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>${res.html}</body></html>`;
+                    log('已写入iframe', 'success');
+                } else {
+                    log('HTML为空!', 'error');
+                }
+
+            } catch(e) {
+                log(`错误: ${e.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>

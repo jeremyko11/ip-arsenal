@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test</title></head>
+<body>
+<script>
+// Test what "onclick=\"openMaterialDrawer(\'"+r.id+"\')\"" produces
+
+// In HTML attribute: onclick="openMaterialDispatcher(\'"+r.id+"\')"
+// The attribute value (raw chars) is: openMaterialDispatcher(\'"+r.id+"\')
+// When JS evaluates this as an expression:
+
+var r = {id: 'MYID'};
+
+// The string as it appears in the onclick attribute (raw, no JS evaluation yet):
+var raw_string = "openMaterialDrawer(\'"+r.id+"\')";
+console.log("raw_string:", raw_string);
+console.log("raw_string length:", raw_string.length);
+console.log("raw_string chars:", JSON.stringify(raw_string));
+
+// This is what JS would see as the expression:
+try {
+    // Simulate: openMaterialDrawer(\'"+r.id+"\')
+    // Which is: openMaterialDrawer( \' "+r.id+" \' )
+    // \' = ' (escaped quote), \" = " (not an escape, so literal ")
+    var result = eval("openMaterialDrawer(" + raw_string + ")");
+} catch(e) {
+    console.log("Error:", e.message);
+}
+
+function openMaterialDrawer(x) {
+    console.log("openMaterialDispatcher called with:", x);
+}
+</script>
+
+<!-- Try the actual HTML onclick -->
+<div onclick="openMaterialDispatcher('TEST')">Click me - openMaterialDispatcher</div>
+<div onclick="var s = \&quot;openMaterialDrawer(\&quot;'+r.id+'\\\&quot;)\&quot;; console.log('s=',s);">Click me - inspect</div>
+</body>
+</html>

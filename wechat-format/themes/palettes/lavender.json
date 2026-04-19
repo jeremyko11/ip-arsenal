@@ -1,0 +1,13 @@
+{
+  "name": "薰衣草紫",
+  "accent": "#7B68EE",
+  "accent_light": "#DDA0DD",
+  "primary": "#4B0082",
+  "background": "#FFFFFF",
+  "blockquote_bg": "#F8F0FF",
+  "code_bg": "#EDE7F6",
+  "hr_color": "#7B68EE",
+  "footnote_bg": "#FFFFFF",
+  "table_border": "#DDA0DD",
+  "dark_accent": "#9370DB"
+}
